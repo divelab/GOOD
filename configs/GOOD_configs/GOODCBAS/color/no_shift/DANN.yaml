@@ -1,0 +1,12 @@
+includes:
+  - base.yaml
+model:
+  model_name: DANN_GCN
+ood:
+  ood_alg: DANN
+  ood_param: 0.01
+train:
+  max_epoch: 200
+  lr: 3e-3
+  mile_stones: [200]
+

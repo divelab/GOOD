@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+dataset:
+  dataset_name: GOODArxiv
+  domain: time
+train:
+  max_epoch: 100
+  train_bs: 4096
+  num_steps: 100
+  weight_decay: 0

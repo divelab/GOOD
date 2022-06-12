@@ -1,0 +1,26 @@
+task: train
+random_seed: 123
+exp_round: null
+log_file: default
+gpu_idx: 0
+ckpt_root: null
+ckpt_dir: null
+save_tag: null
+pytest: False
+train:
+  weight_decay: 0.
+  save_gap: 10
+  tr_ctn: False
+  ctn_epoch: 0
+  alpha: 0.2  # parameter for DANN
+model:
+  dim_hidden: 300
+  dim_ffn: 300
+  dropout_rate: 0.5
+dataset:
+  dataset_root: null
+  generate: False
+  dim_node: null
+  dim_edge: null
+  num_classes: null
+  num_envs: null

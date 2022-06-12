@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: vGIN
+ood:
+  ood_alg: ERM
+  ood_param: -1.
+train:
+  max_epoch: 250
+  lr: 1e-3
+  mile_stones: [190]
+
+

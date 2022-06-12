@@ -1,0 +1,11 @@
+includes:
+  - ../base.yaml
+dataset:
+  dataset_name: GOODZINC
+  domain: scaffold
+train:
+  max_epoch: 200
+  train_bs: 32
+  val_bs: 4096
+  test_bs: 4096
+  weight_decay: 0
