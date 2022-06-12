@@ -62,14 +62,14 @@ html_static_path = ['_static']
 
 
 # -- Extension configuration -------------------------------------------------
-epub_show_urls = 'footnote'
+# epub_show_urls = 'footnote'
 
 autosummary_generate = True
 # autodoc_default_options = {
 # }
 
-def autodoc_skip_member(app, what, name, obj, skip, options):
-    return None
-
-def setup(app):
-    app.connect('autodoc-skip-member', autodoc_skip_member)
+# def autodoc_skip_member(app, what, name, obj, skip, options):
+#     return None
+#
+# def setup(app):
+#     app.connect('autodoc-skip-member', autodoc_skip_member)

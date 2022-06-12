@@ -4,14 +4,12 @@
    contain the root `toctree` directive.
 
 Welcome to GOOD's documentation!
-=============================
+========================================
 
 .. toctree::
    :maxdepth: 3
 
    _autosummary/GOOD
-
-
 
 
 Indices and tables

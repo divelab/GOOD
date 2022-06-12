@@ -3,15 +3,31 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+install_requires = [
+    'cilog==1.2.3',
+    'gdown==4.4.0',
+    'matplotlib==3.5.2',
+    'munch==2.5.0',
+    'networkx==2.8',
+    'ogb==1.3.3',
+    'pytest==7.1.2',
+    'ruamel.yaml==0.17.21',
+    'sphinx~=4.5',
+    'sphinx-rtd-theme==1.0.0',
+    'tensorboard==2.8.0',
+    'tqdm==4.64.0',
+    'typed-argument-parser==1.7.2'
+]
+
 setuptools.setup(
-    name="GraphOOD",
+    name="graph-ood",
     version="0.1.0",
     author="Shurui Gui, Xiner Li",
     author_email="shurui.gui@tamu.edu",
-    description="A small example package",
+    description="GOOD: A Graph Out-of-Distribution Benchmark",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    license='GNU GENERAL PUBLIC LICENSE Version 3',
+    license='GPLv3',
     url="https://github.com/divelab/GOOD",
     project_urls={
         "Bug Tracker": "https://github.com/divelab/GOOD/issues",
@@ -23,6 +39,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"GOOD": "GOOD"},
-    install_requires=[],
+    install_requires=install_requires,
     python_requires=">=3.8",
 )

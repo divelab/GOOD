@@ -1,3 +1,4 @@
 .idea/**
 storage
 docs/build
+/docs/source/_autosummary/
