@@ -25,17 +25,11 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Assign package verstions
+    - name: Install dependencies
       run: |
         TORCH=1.10.1
         CUDA_TOOLKIT=11.3
         CUDA=cu113
-    - name: Install dependencies
-      run: |
-        echo $TORCH
-        conda --version
-        conda create -y -n graphood python=3.8
-        source activate graphood
         conda install -y pytorch==$TORCH cudatoolkit=$CUDA_TOOLKIT -c pytorch -c conda-forge
         conda install -y -c conda-forge rdkit==2020.09.5
         pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
