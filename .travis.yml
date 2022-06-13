@@ -32,7 +32,7 @@ install:
   - conda install -y pytorch==${TORCH} -c pytorch -c conda-forge
   - conda install -y -c conda-forge rdkit
   - pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
-  - pip install .
+  - pip install -e .
 
 script:
   - travis_wait 120 pytest
