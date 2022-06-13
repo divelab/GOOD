@@ -48,7 +48,7 @@ Then you can compare your results with the leaderboard.
 our leaderboard results for comparison. Note that, this is a growing project, so we will include new OOD algorithms gradually.
 Besides, if you hope to include your algorithms in the leaderboard, please contact us or contribute to this project. A big welcome!
 * **Reproducibility:** 
-  * OOD Datasets: GOOD provide full OOD split generalization code for reproduction, and generation for new datasets.
+  * OOD Datasets: GOOD provides full OOD split generalization code for reproduction, and generation for new datasets.
   * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
 
 
@@ -65,17 +65,27 @@ GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-ver
 
 ### Pip (Beta)
 
+#### Take the merit of whole project (recommended)
+
+```shell
+git clone https://github.com/divelab/GOOD.git && cd GOOD
+pip install -e .
+```
+
 #### Only use modules independently (pending)
 
 ```shell
 pip install graph-ood
 ```
 
-#### Take the merit of whole project (recommended)
-
-```shell
-pip install -e .
-```
-
 ## Quick Start
 
+### Project usage
+It is a good beginning to directly make it work. Here, we provide command line script `goodtg` to access the main function located at `GOOD.kernel.pipeline:main`.
+Choosing a config file in `configs/GOOD_configs`, we can start a task:
+
+```shell
+goodtg --config_path GOOD_configs/GOODCMNIST/color/concept/DANN.yaml
+```
+
+### Module usage

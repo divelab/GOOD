@@ -13,7 +13,7 @@ install_requires = [
     'pytest==7.1.2',
     'ruamel.yaml==0.17.21',
     'sphinx>=4.5',
-    'protobuf>=3.20.1'
+    'protobuf==3.20.1',
     'sphinx-rtd-theme==1.0.0',
     'tensorboard==2.8.0',
     'tqdm==4.64.0',
@@ -41,5 +41,10 @@ setuptools.setup(
     ],
     package_dir={"GOOD": "GOOD"},
     install_requires=install_requires,
+    entry_points = {
+        'console_scripts': [
+            'goodtg = GOOD.kernel.pipeline:main'
+        ]
+    },
     python_requires=">=3.8",
 )
