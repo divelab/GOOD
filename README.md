@@ -11,13 +11,12 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![License][license-image]][license-url]
 > We are actively building the document
 
-* [Overview](overview)
-* [Why GOOD?](why-good?)
-* [Tutorial](tutorial)
+* [Overview](#overview)
+* [Why GOOD?](#why-good?)
+* [Tutorial](#tutorial)
 
 ## Overview
 
-------------------------------------------------------
 Out-of-distribution (OOD) learning deals with scenarios in which training and test data follow different distributions. 
 Although general OOD problems have been intensively studied in machine learning, graph OOD is only an emerging area of research. 
 Currently, there lacks a systematic benchmark tailored to graph OOD method evaluation. 
@@ -33,14 +32,17 @@ Any contribution is welcomed!
 
 ## Why GOOD?
 
-----------------------------------------------------
 Whether you are an experienced researcher for graph out-of-distribution problem or a first-time learner of graph deep learning, 
 here are several reasons for you to use GOOD as your Graph OOD research, study, and development toolkit.
 
-* **Easy-to-use APIs:**
-* **Flexibility:**
-* **Easy-to-extend architecture:**
+* **Easy-to-use APIs:** GOOD provides simple apis for loading OOD algorithms, graph neural networks, and datasets, so that you can take only several lines of code to start.
+* **Flexibility:** Full OOD split generalization code is provided for extensions and any new graph OOD dataset contributions.
+OOD algorithm base class can be easily overwrite to create new OOD methods.
+* **Easy-to-extend architecture:** ()
 * **Easy comparisons with the leaderboard:**
+* **Reproducibility:** 
+  * OOD Datasets: GOOD provide full OOD split generalization code for reproduction, and generation for new datasets.
+  * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
 
 ## Tutorial
 
