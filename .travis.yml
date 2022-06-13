@@ -29,7 +29,7 @@ install:
 
   - conda create -y -n graphood python=${PYTHON_VERSION}
   - conda activate graphood
-  - conda install -y pytorch==${TORCH_VERSION} -c pytorch -c conda-forge
+  - conda install -y pytorch==${TORCH} -c pytorch -c conda-forge
   - conda install -y -c conda-forge rdkit
   - pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
   - pip install .
