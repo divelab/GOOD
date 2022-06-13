@@ -1,0 +1,48 @@
+name: Python Package using Conda
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build-good:
+    name: build package good
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Assign package verstions
+      run: |
+        TORCH=1.10.1
+        CUDA_TOOLKIT=11.3
+        CUDA=cu113
+    - name: Install dependencies
+      run: |
+        conda create -y -n graphood python=3.8
+        conda activate graphood
+        conda install -y pytorch==1.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
+        conda install -y -c conda-forge rdkit==2020.09.5
+        pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+        pip install torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+        pip install torch-geometric~=2.0
+    - name: Install GOOD
+      run: |
+        pip install -e .
+    - name: Test with pytest
+      run: |
+        conda install pytest
+        pytest
