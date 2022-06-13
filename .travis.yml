@@ -4,7 +4,7 @@ os:
   - linux
 
 vm:
-  size: medium
+  size: large
 
 branches:
   only:
@@ -35,11 +35,11 @@ install:
   - pip install -e .
 
 script:
-  - travis_wait 120 pytest
+  - travis_wait 120 pytest --cov=GOOD
 
 after_success:
-  - echo "without codecov"
-#  - codecov || echo "codecov upload failed"
+#  - echo "without codecov"
+  - codecov || echo "codecov upload failed"
 
 notifications:
   email: false
