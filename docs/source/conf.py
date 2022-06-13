@@ -68,8 +68,10 @@ autosummary_generate = True
 # autodoc_default_options = {
 # }
 
-# def autodoc_skip_member(app, what, name, obj, skip, options):
-#     return None
-#
-# def setup(app):
-#     app.connect('autodoc-skip-member', autodoc_skip_member)
+def autodoc_skip_member(app, what, name, obj, skip, options):
+    if name == 'synthetic_data':
+        return True
+    return None
+
+def setup(app):
+    app.connect('autodoc-skip-member', autodoc_skip_member)

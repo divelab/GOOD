@@ -25,6 +25,7 @@ def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
 
 @register.ood_alg_register
 class Coral(BaseOODAlg):
+
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(Coral, self).__init__(config)
         self.feat = None
@@ -34,6 +35,19 @@ class Coral(BaseOODAlg):
         return model_output[0]
 
     def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+        """
+        Thdskdjslf
+
+        Args:
+            loss:
+            data:
+            mask:
+            config:
+            **kwargs:
+
+        Returns:
+
+        """
         loss_list = []
         covariance_matrices = []
         for i in range(config.dataset.num_envs):

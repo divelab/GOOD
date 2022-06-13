@@ -121,6 +121,11 @@ class GOODArxiv(InMemoryDataset):
 
     @property
     def processed_dir(self):
+        '''
+
+        Returns:
+
+        '''
         return osp.join(self.root, self.name, self.domain, 'processed')
 
     @property

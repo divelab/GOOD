@@ -9,10 +9,11 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![Documentation Status](https://readthedocs.org/projects/good/badge/?version=latest)](https://good.readthedocs.io/en/latest/?badge=latest)
 ![Last Commit](https://img.shields.io/github/last-commit/divelab/DIG)
 [![License][license-image]][license-url]
-> We are actively building the document
+> We are actively building the document.
 
 * [Overview](#overview)
-* [Why GOOD?](#why-good?)
+* [Why GOOD?](#why-good-)
+* [Installation](installation)
 * [Tutorial](#tutorial)
 
 ## Overview
@@ -38,11 +39,20 @@ here are several reasons for you to use GOOD as your Graph OOD research, study, 
 * **Easy-to-use APIs:** GOOD provides simple apis for loading OOD algorithms, graph neural networks, and datasets, so that you can take only several lines of code to start.
 * **Flexibility:** Full OOD split generalization code is provided for extensions and any new graph OOD dataset contributions.
 OOD algorithm base class can be easily overwrite to create new OOD methods.
-* **Easy-to-extend architecture:** ()
-* **Easy comparisons with the leaderboard:**
+* **Easy-to-extend architecture:** In addition to play as a package, GOOD is also an integrated and well-organized project ready to be further developed.
+All algorithms, models, and datasets can be easily registered by `register` and automatically embedded into the designed pipeline like a breeze!
+The only thing the user need to do is writing your own OOD algorithm class, your own model class, or your new dataset class.
+Then you can compare your results with the leaderboard.
+* **Easy comparisons with the leaderboard:** We provide insightful comparisons from multiple perspectives. Any researches and studies can use
+our leaderboard results for comparison. Note that, this is a growing project, so we will include new OOD algorithms gradually.
+Besides, if you hope to include your algorithms in the leaderboard, please contact us or contribute to this project. A big welcome!
 * **Reproducibility:** 
   * OOD Datasets: GOOD provide full OOD split generalization code for reproduction, and generation for new datasets.
   * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
+
+## Installation
+
+
 
 ## Tutorial
 

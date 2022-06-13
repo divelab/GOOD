@@ -7,9 +7,14 @@ Welcome to GOOD's documentation!
 ========================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
-   _autosummary/GOOD
+   _autosummary/GOOD.data
+   _autosummary/GOOD.definitions
+   _autosummary/GOOD.kernel
+   _autosummary/GOOD.networks
+   _autosummary/GOOD.ood_algorithms
+   _autosummary/GOOD.utils
 
 
 Indices and tables

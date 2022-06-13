@@ -12,7 +12,8 @@ install_requires = [
     'ogb==1.3.3',
     'pytest==7.1.2',
     'ruamel.yaml==0.17.21',
-    'sphinx~=4.5',
+    'sphinx>=4.5',
+    'protobuf>=3.20.1'
     'sphinx-rtd-theme==1.0.0',
     'tensorboard==2.8.0',
     'tqdm==4.64.0',
