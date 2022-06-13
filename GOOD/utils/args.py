@@ -20,8 +20,8 @@ class TrainArgs(Tap):
     num_steps: int = None  # Number of steps in each epoch for node classification
 
     lr: float = None  # learning rate
-    mile_stones: List[int] = None
-    weight_decay: float = None  # 5e-4  # weight decay
+    mile_stones: List[int] = None  # Milestones for a scheduler to decrease learning rate: 0.1
+    weight_decay: float = None  # weight decay
 
     alpha = None  # parameter for DANN
 

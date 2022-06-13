@@ -40,7 +40,7 @@ def load_task(task, model, loader, ood_algorithm, config: Union[CommonArgs, Munc
     elif task == 'test':
 
         # config model
-        print('#D#Config model...')
+        print('#D#Config model and output the best checkpoint info...')
         test_score, test_loss = config_model(model, 'test', config=config)
 
 
