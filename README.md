@@ -10,7 +10,7 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
 [Documentation](https://good.readthedocs.io)
-> We are actively building the document. It is not a final!
+> We are actively building the document.
 
 * [Overview](#overview)
 * [Why GOOD?](#why-good-)
