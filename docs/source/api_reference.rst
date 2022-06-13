@@ -5,4 +5,9 @@ GOOD API Reference
    :toctree: _autosummary
    :recursive:
 
-   GOOD
+   GOOD.data
+   GOOD.definitions
+   GOOD.kernel
+   GOOD.networks
+   GOOD.ood_algorithms
+   GOOD.utils
