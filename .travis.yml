@@ -9,6 +9,7 @@ vm:
 branches:
   only:
   - main
+  - GOOD-travis
 
 env:
   jobs:
@@ -27,7 +28,7 @@ install:
   - conda info -a
 
   - conda create -y -n graphood python=${PYTHON_VERSION}
-  - source activate graphood
+  - conda activate graphood
   - conda install -y pytorch==${TORCH_VERSION} -c pytorch -c conda-forge
   - conda install -y -c conda-forge rdkit
   - pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
@@ -37,6 +38,7 @@ script:
   - travis_wait 120 pytest
 
 after_success:
+  - echo "without codecov"
 #  - codecov || echo "codecov upload failed"
 
 notifications:
