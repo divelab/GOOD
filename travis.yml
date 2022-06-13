@@ -1,0 +1,43 @@
+language: shell
+
+os:
+  - linux
+
+vm:
+  size: medium
+
+branches:
+  only:
+  - main
+
+env:
+  jobs:
+    - TORCH=1.10.1 PYTHON_VERSION=3.8 IDX=cpu
+
+install:
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  - conda create -y -n graphood python=${PYTHON_VERSION}
+  - source activate graphood
+  - conda install -y pytorch==${TORCH_VERSION} -c pytorch -c conda-forge
+  - conda install -y -c conda-forge rdkit
+  - pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
+  - pip install .
+
+script:
+  - travis_wait 120 pytest
+
+after_success:
+#  - codecov || echo "codecov upload failed"
+
+notifications:
+  email: false
