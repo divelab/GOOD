@@ -25,7 +25,7 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-        conda init
+        source /home/runner/.bashrc
     - name: Assign package verstions
       run: |
         TORCH=1.10.1
