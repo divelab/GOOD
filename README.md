@@ -9,12 +9,13 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![Documentation Status](https://readthedocs.org/projects/good/badge/?version=latest)](https://good.readthedocs.io/en/latest/?badge=latest)
 ![Last Commit](https://img.shields.io/github/last-commit/divelab/DIG)
 [![License][license-image]][license-url]
+[![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 > We are actively building the document.
 
 * [Overview](#overview)
 * [Why GOOD?](#why-good-)
-* [Installation](installation)
-* [Tutorial](#tutorial)
+* [Installation](#installation)
+* [Quick start](#quick-start)
 
 ## Overview
 
@@ -50,9 +51,31 @@ Besides, if you hope to include your algorithms in the leaderboard, please conta
   * OOD Datasets: GOOD provide full OOD split generalization code for reproduction, and generation for new datasets.
   * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
 
-## Installation
 
+## Installation 
 
+### Conda dependencies
 
-## Tutorial
+GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-versions/), [PyG (>=2.0)](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), and
+[RDKit (>=2020.09.5)](https://www.rdkit.org/docs/Install.html). For more details: [conda environment](https://github.com/divelab/GOOD/blob/main/environment.yml)
+
+> Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.3), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
+>
+> Attention! Due to a known issue, please install PyG through Pip to avoid incompatibility.
+
+### Pip (Beta)
+
+#### Only use modules independently (pending)
+
+```shell
+pip install graph-ood
+```
+
+#### Take the merit of whole project (recommended)
+
+```shell
+pip install -e .
+```
+
+## Quick Start
 

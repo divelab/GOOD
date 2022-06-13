@@ -177,7 +177,16 @@ def process_configs(config: Union[CommonArgs, Munch]):
     config.metric = Metric()
     config.train_helper = TrainHelper()
 
-
+"""
+Args:
+    config (Munch(dir)): The dictionary of .... below
+        - ood
+            - ood_param (Union[List, Float]): The ood parameter
+            - ood_alg (str)
+    Examples
+        IRM(xx, xx, config=munchify({}))
+        
+"""
 def config_summoner(args: CommonArgs) -> Union[CommonArgs, Munch]:
     config, duplicate_warnings, duplicate_errors = load_config(args.config_path)
     args2config(config, args)
