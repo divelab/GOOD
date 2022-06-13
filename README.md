@@ -13,6 +13,7 @@ GOOD: A Graph Out-of-Distribution Benchmark
 
 * [Overview](overview)
 * [Why GOOD?](why-good?)
+* [Tutorial](tutorial)
 
 ## Overview
 
@@ -40,3 +41,6 @@ here are several reasons for you to use GOOD as your Graph OOD research, study, 
 * **Flexibility:**
 * **Easy-to-extend architecture:**
 * **Easy comparisons with the leaderboard:**
+
+## Tutorial
+
