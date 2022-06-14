@@ -20,7 +20,7 @@ class Regenerator(object):
         download_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
         self.config.dataset.generate = True
-        self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets')
+        self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets', self.config.dataset.dataset_name)
         init(self.config)
         generate_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
@@ -63,8 +63,9 @@ def test_regenerate(dataset_paths):
             assert torch.equal(download_dataset.data.train_mask, generate_dataset.data.train_mask)
             assert torch.equal(download_dataset.data.val_mask, generate_dataset.data.val_mask)
             assert torch.equal(download_dataset.data.test_mask, generate_dataset.data.test_mask)
+        return regenerator.config.dataset.dataset_name
 
     for dataset_path in dataset_paths:
-        regenerate_dataset(dataset_path)
+        dataset_name = regenerate_dataset(dataset_path)
     # release regenerate datasets space
-    shutil.rmtree(os.path.join(STORAGE_DIR, 'regenerate_datasets'))
+    shutil.rmtree(os.path.join(STORAGE_DIR, 'regenerate_datasets', dataset_name))
