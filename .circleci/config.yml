@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run:
-          name: install miniconda
+          name: Setup environment
           command: |
             wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
@@ -18,9 +18,6 @@ jobs:
             conda config --set always_yes yes --set changeps1 no
             conda update -q conda 
             conda info -a
-      - run:
-          name: Setup environment
-          command: |
             TORCH=1.10.1 
             PYTHON_VERSION=3.8 
             IDX=cpu
