@@ -11,6 +11,8 @@ install_requires = [
     'networkx==2.8',
     'ogb==1.3.3',
     'pytest==7.1.2',
+    'pytest-cov~=3.0',
+    'pytest-xdist~=2.5',
     'ruamel.yaml==0.17.21',
     'sphinx>=4.5',
     'protobuf==3.20.1',
