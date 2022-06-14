@@ -33,6 +33,7 @@ jobs:
           name: Test
           no_output_timeout: 2h
           command: | 
+            conda activate graphood
             pytest --cov=GOOD -n auto
       - codecov/upload
 
