@@ -1,3 +1,9 @@
+"""
+Algorithms Coral
+==================================
+Implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignment for Deep Domain Adaptation"
+<https://arxiv.org/abs/1609.02907>`_ paper
+"""
 import torch
 
 from GOOD import register
@@ -6,10 +12,20 @@ from .BaseOOD import BaseOODAlg
 
 
 def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
-    """
+    r"""
     Compute Covariance matrix of the input data
-    :param input_data:
-    :param config:
+
+    Args:
+        input_data (Batch): feature of the input data
+        config (Munch): munchified dictionary of args (:obj:`config.device`)
+
+    .. code-block:: python
+
+        config = munchify({device: torch.device('cuda')})
+
+    Returns (float):
+        covariance value of the input features
+
     """
     n = input_data.shape[0]  # batch_size
 
@@ -25,27 +41,52 @@ def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
 
 @register.ood_alg_register
 class Coral(BaseOODAlg):
+    r"""
+    Implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignment for Deep Domain Adaptation"
+    <https://arxiv.org/abs/1609.02907>`_ paper
+
+        Args:
+            config (Munch): munchified dictionary of args
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(Coral, self).__init__(config)
         self.feat = None
 
     def output_postprocess(self, model_output, **kwargs):
+        r"""
+        Process the raw output of model; get feature representations
+
+        Args:
+            model_output (Tensor): model raw output
+
+        Returns (Tensor):
+            model raw predictions
+
+        """
         self.feat = model_output[1]
         return model_output[0]
 
     def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
-        """
-        Thdskdjslf
+        r"""
+        Process loss based on Deep Coral algorithm
 
         Args:
-            loss:
-            data:
-            mask:
-            config:
-            **kwargs:
+            loss (Tensor): base loss between model predictions and input labels
+            data (Batch): input data
+            mask (Tensor): NAN masks for data formats
+            config (Munch): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
 
-        Returns:
+        .. code-block:: python
+
+            config = munchify({device: torch.device('cuda'),
+                                   dataset: {num_envs: int(10)},
+                                   ood: {ood_param: float(0.1)}
+                                   })
+
+
+        Returns (float):
+            loss based on Deep Coral algorithm
 
         """
         loss_list = []
