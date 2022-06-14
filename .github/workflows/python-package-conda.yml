@@ -23,6 +23,7 @@ jobs:
         TORCH=1.10.1
         CUDA_TOOLKIT=11.3
         CUDA=cu113
+        source $CONDA_PREFIX/etc/profile.d/conda.sh
         conda create -n test-good python=3.8
         $CONDA_EXE activate test-good
         conda install -y pytorch==$TORCH cudatoolkit=$CUDA_TOOLKIT -c pytorch -c conda-forge
