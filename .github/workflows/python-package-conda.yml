@@ -11,7 +11,7 @@ on:
 jobs:
   build-good:
     name: build package good
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       max-parallel: 5
 
@@ -21,15 +21,12 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.8
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
         TORCH=1.10.1
         CUDA_TOOLKIT=11.3
         CUDA=cu113
+        conda create -n test-good python=3.8
         conda install -y pytorch==$TORCH cudatoolkit=$CUDA_TOOLKIT -c pytorch -c conda-forge
         conda install -y -c conda-forge rdkit==2020.09.5
         pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
@@ -40,5 +37,4 @@ jobs:
         pip install -e .
     - name: Test with pytest
       run: |
-        conda install pytest
-        pytest
+        pytest --cov=GOOD -n auto
