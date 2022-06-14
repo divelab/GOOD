@@ -35,7 +35,7 @@ install:
   - pip install -e .
 
 script:
-  - travis_wait 120 pytest --cov=GOOD
+  - travis_wait 180 pytest --cov=GOOD
 
 after_success:
 #  - echo "without codecov"
