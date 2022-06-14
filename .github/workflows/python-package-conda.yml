@@ -24,6 +24,7 @@ jobs:
         CUDA_TOOLKIT=11.3
         CUDA=cu113
         conda create -n test-good python=3.8
+        conda activate test-good
         conda install -y pytorch==$TORCH cudatoolkit=$CUDA_TOOLKIT -c pytorch -c conda-forge
         conda install -y -c conda-forge rdkit==2020.09.5
         pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
@@ -35,4 +36,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov=GOOD -n auto
+    - name: Clear environment test-good
+      run: |
+        conda remove -y -n test-good --all
 
