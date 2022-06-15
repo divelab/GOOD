@@ -7,6 +7,8 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![Documentation Status](https://readthedocs.org/projects/good/badge/?version=latest)](https://good.readthedocs.io/en/latest/?badge=latest)
 ![Last Commit](https://img.shields.io/github/last-commit/divelab/DIG)
 [![License][license-image]][license-url]
+[![codecov](https://codecov.io/gh/divelab/GOOD/branch/main/graph/badge.svg?token=W41HSP0XCY)](https://codecov.io/gh/divelab/GOOD)
+[![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
 [Documentation](https://good.readthedocs.io)
