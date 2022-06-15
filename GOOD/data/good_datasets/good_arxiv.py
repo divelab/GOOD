@@ -217,7 +217,7 @@ class GOODArxiv(InMemoryDataset):
             val_ratio = 0.2
             test_ratio = 0.2
         else:
-            train_ratio = 0.5
+            train_ratio = 0.5  # This is not a fault, it is for specific year splits.
             val_ratio = 0.2
             test_ratio = 0.2
 
