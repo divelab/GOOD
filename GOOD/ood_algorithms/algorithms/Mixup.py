@@ -1,3 +1,7 @@
+"""
+Implementation of the Mixup algorithm from `"Mixup for Node and Graph Classification"
+<https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper
+"""
 import copy
 
 import numpy as np
@@ -9,14 +13,21 @@ from .BaseOOD import BaseOODAlg
 
 
 def idNode(data, id_a2b, config: Union[CommonArgs, Munch]):
-    """
-    Modified from https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46
-    Args:
-        data:
-        id_a2b:
+    r"""
+    Mixup node according to given index. Modified from `"MixupForGraph/mixup.py"
+    <https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46>`_ code.
 
-    Returns:
-    :param config:
+    Args:
+        data (Batch): input data
+        id_a2b (Tensor): the random permuted index tensor to index each mixup pair
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`)
+
+    .. code-block:: python
+
+        config = munchify({device: torch.device('cuda')})
+
+    Returns (Batch):
+        mixed-up data
 
     """
     data.x = None
@@ -40,13 +51,21 @@ def idNode(data, id_a2b, config: Union[CommonArgs, Munch]):
 
 
 def shuffleData(data, config: Union[CommonArgs, Munch]):
-    """
-    Modified from https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46
+    r"""
+    Prepare data and index for node mixup. Modified from `"MixupForGraph/mixup.py"
+    <https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46>`_ code.
+
     Args:
-        data:
+        data (Batch): input data
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`)
+
+    .. code-block:: python
+
+        config = munchify({device: torch.device('cuda')})
 
     Returns:
-    :param config:
+        [data (Batch) - mixed-up data,
+        id_a2b (Tensor) - the random permuted index tensor to index each mixup pair]
 
     """
     data = copy.deepcopy(data)
@@ -66,6 +85,13 @@ def shuffleData(data, config: Union[CommonArgs, Munch]):
 
 @register.ood_alg_register
 class Mixup(BaseOODAlg):
+    r"""
+    Implementation of the Mixup algorithm from `"Mixup for Node and Graph Classification"
+    <https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.model.model_level`, :obj:`config.metric.loss_func()`, :obj:`config.ood.ood_param`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(Mixup, self).__init__(config)
         self.lam = None
@@ -73,6 +99,31 @@ class Mixup(BaseOODAlg):
         self.id_a2b = None
 
     def input_preprocess(self, data, targets, mask, node_norm, training, config: Union[CommonArgs, Munch], **kwargs):
+        r"""
+        Set input data and mask format to prepare for mixup
+
+        Args:
+            data (Batch): input data
+            targets (Tensor): input labels
+            mask (Tensor): NAN masks for data formats
+            node_norm (Tensor): node weights for normalization (for node prediction only)
+            training (bool): whether the task is training
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.ood.ood_param`)
+
+        .. code-block:: python
+
+            config = munchify({device: torch.device('cuda'),
+                                   ood: {ood_param: float(0.1)}
+                                   })
+
+
+        Returns:
+            [data (Batch) - processed input data,
+            targets (Tensor) - processed input labels,
+            mask (Tensor) - processed NAN masks for data formats,
+            node_norm (Tensor) - processed node weights for normalization]
+
+        """
         if training:
             targets = targets.float()
             alpha = config.ood.ood_param  # 2,4
@@ -89,6 +140,27 @@ class Mixup(BaseOODAlg):
         return data, targets, mask, node_norm
 
     def loss_calculate(self, raw_pred, targets, mask, node_norm, config: Union[CommonArgs, Munch]):
+        r"""
+        Calculate loss based on Mixup algorithm
+
+        Args:
+            raw_pred: model predictions
+            targets (Tensor): input labels
+            mask (Tensor): NAN masks for data formats
+            node_norm (Tensor): node weights for normalization (for node prediction only)
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.metric.loss_func()`, :obj:`config.model.model_level`)
+
+        .. code-block:: python
+
+            config = munchify({model: {model_level: str('graph')},
+                                   metric: {loss_func()}
+                                   })
+
+
+        Returns (Tensor):
+            loss based on Mixup algorithm
+
+        """
         loss_a = config.metric.loss_func(raw_pred, targets, reduction='none') * mask
         loss_b = config.metric.loss_func(raw_pred, targets[self.id_a2b], reduction='none') * mask
         if config.model.model_level == 'node':

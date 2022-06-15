@@ -1,8 +1,6 @@
 """
-Algorithms Coral
-==================================
 Implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignment for Deep Domain Adaptation"
-<https://arxiv.org/abs/1609.02907>`_ paper
+<https://link.springer.com/chapter/10.1007/978-3-319-49409-8_35>`_ paper
 """
 import torch
 
@@ -17,7 +15,7 @@ def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
 
     Args:
         input_data (Batch): feature of the input data
-        config (Munch): munchified dictionary of args (:obj:`config.device`)
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`)
 
     .. code-block:: python
 
@@ -43,10 +41,10 @@ def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
 class Coral(BaseOODAlg):
     r"""
     Implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignment for Deep Domain Adaptation"
-    <https://arxiv.org/abs/1609.02907>`_ paper
+    <https://link.springer.com/chapter/10.1007/978-3-319-49409-8_35>`_ paper
 
         Args:
-            config (Munch): munchified dictionary of args
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
     """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
@@ -75,7 +73,7 @@ class Coral(BaseOODAlg):
             loss (Tensor): base loss between model predictions and input labels
             data (Batch): input data
             mask (Tensor): NAN masks for data formats
-            config (Munch): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
 
         .. code-block:: python
 

@@ -1,7 +1,5 @@
 """
-GOODArxiv
-==================================
-The Arxiv dataset.
+The GOOD-Arxiv dataset.
 """
 
 import itertools

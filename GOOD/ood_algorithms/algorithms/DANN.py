@@ -1,3 +1,7 @@
+"""
+Implementation of the DANN algorithm from `"Domain-Adversarial Training of Neural Networks"
+<https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper
+"""
 import torch
 
 from GOOD import register
@@ -7,15 +11,52 @@ from .BaseOOD import BaseOODAlg
 
 @register.ood_alg_register
 class DANN(BaseOODAlg):
+    r"""
+    Implementation of the DANN algorithm from `"Domain-Adversarial Training of Neural Networks"
+    <https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.model_level`, :obj:`config.metric.cross_entropy_with_logit()`, :obj:`config.ood.ood_param`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DANN, self).__init__(config)
         self.dc_pred = None
 
     def output_postprocess(self, model_output, **kwargs):
+        r"""
+        Process the raw output of model; get domain classifier predictions
+
+        Args:
+            model_output (Tensor): model raw output
+
+        Returns (Tensor):
+            model raw predictions
+
+        """
         self.dc_pred = model_output[1]
         return model_output[0]
 
     def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+        r"""
+        Process loss based on DANN algorithm
+
+        Args:
+            loss (Tensor): base loss between model predictions and input labels
+            data (Batch): input data
+            mask (Tensor): NAN masks for data formats
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.model_level`, :obj:`config.metric.cross_entropy_with_logit()`, :obj:`config.ood.ood_param`)
+
+        .. code-block:: python
+
+            config = munchify({model: {model_level: str('graph')},
+                                   metric: {cross_entropy_with_logit()},
+                                   ood: {ood_param: float(0.1)}
+                                   })
+
+        Returns (float):
+            loss based on DANN algorithm
+
+        """
         if config.model.model_level == 'node':
             dc_loss: torch.Tensor = config.metric.cross_entropy_with_logit(self.dc_pred[data.train_mask],
                                                              data.env_id[data.train_mask], reduction='none')
