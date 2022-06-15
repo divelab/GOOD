@@ -40,7 +40,7 @@ config_root = Path(ROOT_DIR, 'configs', 'GOOD_configs')
 for dataset_path in config_root.iterdir():
     if not dataset_path.is_dir():
         continue
-    if dataset_path.name in ['GOODPCBA', 'GOODZINC']:
+    if dataset_path.name in ['GOODPCBA', 'GOODZINC', 'OODArxiv']:
         continue
     for domain_path in dataset_path.iterdir():
         if not domain_path.is_dir():
