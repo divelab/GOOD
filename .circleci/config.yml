@@ -34,6 +34,6 @@ jobs:
           no_output_timeout: 2h
           command: | 
             conda activate graphood
-            pytest test/reproduce_sample --cov=GOOD -n auto
+            pytest test/test_reproduce_sample --cov=GOOD -n auto
       - codecov/upload
 
