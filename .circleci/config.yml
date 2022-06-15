@@ -1,0 +1,39 @@
+version: 2.1
+orbs:
+  codecov: codecov/codecov@3.2.3
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202010-01 # recommended linux image
+    resource_class: large
+    steps:
+      - checkout # check out the code in the project directory
+      - run:
+          name: Setup environment
+          command: |
+            wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            source "$HOME/miniconda/etc/profile.d/conda.sh"
+            hash -r
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda 
+            conda info -a
+            TORCH=1.10.1 
+            PYTHON_VERSION=3.8 
+            IDX=cpu
+            conda init bash
+            source $HOME/.bashrc
+            conda create -y -n graphood python=${PYTHON_VERSION}
+            conda activate graphood
+            conda install -y pytorch==${TORCH} -c pytorch -c conda-forge
+            conda install -y -c conda-forge rdkit==2020.09.5
+            pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
+            pip install -e .
+      - run:
+          name: Test
+          no_output_timeout: 1h
+          command: | 
+            conda activate graphood
+            pytest test/test_reproduce_sample --cov-report xml --cov=GOOD
+      - codecov/upload
+
