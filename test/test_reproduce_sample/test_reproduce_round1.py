@@ -35,12 +35,13 @@ class Reproducer(object):
         return test_score, test_loss.cpu().numpy(), test_stat['score'], test_stat['loss'].cpu().numpy()
 
 
+dataset2alg = {'GOODHIV': ['IRM', 'GroupDRO'], 'GOODCora': ['Mixup'], 'GOODMotif': ['VREx', 'DANN'], 'GOODCBAS': ['ERM', 'Coral']}
 config_paths = []
 config_root = Path(ROOT_DIR, 'configs', 'GOOD_configs')
 for dataset_path in config_root.iterdir():
     if not dataset_path.is_dir():
         continue
-    if dataset_path.name in ['GOODPCBA', 'GOODZINC', 'OODArxiv']:
+    if dataset_path.name not in dataset2alg.keys():
         continue
     for domain_path in dataset_path.iterdir():
         if not domain_path.is_dir():
@@ -50,6 +51,8 @@ for dataset_path in config_root.iterdir():
                 continue
             for ood_config_path in shift_path.iterdir():
                 if 'base' in ood_config_path.name:
+                    continue
+                if ood_config_path.stem not in dataset2alg[dataset_path.name]:
                     continue
                 config_paths.append(str(ood_config_path))
 

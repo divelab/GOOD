@@ -31,7 +31,7 @@ jobs:
             pip install -e .
       - run:
           name: Test
-          no_output_timeout: 2h
+          no_output_timeout: 1h
           command: | 
             conda activate graphood
             pytest test/test_reproduce_sample --cov=GOOD
