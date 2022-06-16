@@ -17,24 +17,19 @@ GOOD: A Graph Out-of-Distribution Benchmark
 * [Overview](#overview)
 * [Why GOOD?](#why-good-)
 * [Installation](#installation)
-* [Quick start](#quick-start)
+* [Quick tutorial](#quick-tutorial)
   * [Module usage (recommended: use only GOOD datasets)](#module-usage)
   * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
+* [Reproducibility](#reproducibility)
+* [Contact](#contact)
 
 ## Overview
 
-Out-of-distribution (OOD) learning deals with scenarios in which training and test data follow different distributions. 
-Although general OOD problems have been intensively studied in machine learning, graph OOD is only an emerging area of research. 
-Currently, there lacks a systematic benchmark tailored to graph OOD method evaluation. 
-This project is for Graph Out-of-distribution development, known as GOOD.
-We explicitly make distinctions between covariate and concept shifts and design data splits that accurately reflect different shifts. 
-We consider both graph and node prediction tasks as there are key differences when designing shifts. 
-Currently, GOOD contains 8 datasets with 14 domain selections. When combined with covariate, concept, and no shifts, we obtain 42 different splits. 
-We provide performance results on 7 commonly used baseline methods with 10 random runs. 
-This results in 294 dataset-model combinations in total. Our results show significant performance gaps between in-distribution and OOD settings. 
-We hope our results also shed light on different performance trends between covariate and concept shifts by different methods. 
-This GOOD benchmark is a growing project and expects to expand in both quantity and variety of resources as the area develops.
-Any contribution is welcomed!
+**GOOD** (Graph OOD) is a graph out-of-distribution (OOD) algorithm benchmarking library depending on PyTorch and PyG
+to make develop and benchmark OOD algorithms easily.
+
+Currently, GOOD contains 8 datasets with 14 domain selections. When combined with covariate, concept, and no shifts, we obtain 42 different splits.
+We provide performance results on 7 commonly used baseline methods with 10 random runs.
 
 ## Why GOOD?
 
@@ -61,7 +56,7 @@ Besides, if you hope to include your algorithms in the leaderboard, please conta
 ### Conda dependencies
 
 GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-versions/), [PyG (>=2.0)](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), and
-[RDKit (>=2020.09.5)](https://www.rdkit.org/docs/Install.html). For more details: [conda environment](https://github.com/divelab/GOOD/blob/main/environment.yml)
+[RDKit (>=2020.09.5)](https://www.rdkit.org/docs/Install.html). For more details: [conda environment](/../../blob/main/environment.yml)
 
 > Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.3), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
 >
@@ -82,7 +77,7 @@ git clone https://github.com/divelab/GOOD.git && cd GOOD
 pip install -e .
 ```
 
-## Quick Start
+## Quick Tutorial
 
 ### Module usage
 
@@ -91,11 +86,11 @@ There are two ways to import 8 GOOD datasets with 14 domain selections and total
 ```python
 # Directly import
 from GOOD.data.good_datasets.good_hiv import GOODHIV
-hiv_datasets = GOODHIV.load(dataset_root, domain='scaffold', shift='covariate', generate=False)
-# Or using register
+hiv_datasets, hiv_meta_info = GOODHIV.load(dataset_root, domain='scaffold', shift='covariate', generate=False)
+# Or use register
 from GOOD import register as good_reg
-hiv_datasets = good_reg.datasets['GOODHIV'].load(dataset_root, domain='scaffold', shift='covariate', generate=False)
-cmnist_datasets = good_reg.datasets['GOODCMNIST'].load(dataset_root, domain='color', shift='concept', generate=False)
+hiv_datasets, hiv_meta_info = good_reg.datasets['GOODHIV'].load(dataset_root, domain='scaffold', shift='covariate', generate=False)
+cmnist_datasets, cmnist_meta_info = good_reg.datasets['GOODCMNIST'].load(dataset_root, domain='color', shift='concept', generate=False)
 ```
 
 #### GOOD GNNs
@@ -135,7 +130,7 @@ Choosing a config file in `configs/GOOD_configs`, we can start a task:
 goodtg --config_path GOOD_configs/GOODCMNIST/color/concept/DANN.yaml
 ```
 
-Specifically, the task is clearly divided into three parts:
+Specifically, the task is clearly divided into three steps:
 1. **Config**
 ```python
 from GOOD import config_summoner
@@ -176,4 +171,36 @@ train(model, loader, ood_algorithm, config)
 from GOOD.kernel.evaluation import evaluate
 test_stat = evaluate(model, loader, ood_algorithm, 'test', config)
 ```
+
+## Reproducibility
+
+For reproducibility, we provide full configurations used to obtain leaderboard results in [configs/GOOD_configs](/../../blob/main/configs/GOOD_configs).
+
+We further provide two tests: dataset regeneration test and test result check.
+
+### Dataset regeneration test
+
+This test regenerates all datasets again and compares them with the datasets using in original training process locates.
+Test details can be found at [test_regenerate_datasets.py](/../../blob/main/test/test_reproduce_full/test_regenerate_datasets.py).
+For a quick review, we provide a [full regeneration test report](https://drive.google.com/file/d/1jIShh3eBXAQ_oQCFL9AVU3OpUlVprsbo/view?usp=sharing).
+
+### Leaderboard results test
+
+This test loads [all checkpoints in round 1](https://drive.google.com/file/d/17FfHYCP0-wwUILPD-PczwjjrYQHKxU-l/view?usp=sharing) and
+compares their results with saved ones. Test details can be found at [test_reproduce_round1.py](/../../blob/main/test/test_reproduce_full/test_reproduce_round1.py).
+For a fast review, we also post our [full round1 reproduce report](https://drive.google.com/file/d/1kR4k0E0y6Rtcx4WbjevSxKviHrkx3G1y/view?usp=sharing).
+
+These reports are in `html` format. Please download them and open them in your browser.: )
+
+### Sampled tests
+
+In order to keep the validity of our code all the time, we link our project with circleci service and provide several 
+sampled tests to go through (because of the limitation of computational resources in CI platforms).
+
+
+## Contact
+
+Please submit new issues for any technical questions.
+
+Please contact [Shurui Gui](mailto:shurui.gui@tamu.edu) and [Shuiwang Ji](mailto:sji@tamu.edu) if any other questions.
 

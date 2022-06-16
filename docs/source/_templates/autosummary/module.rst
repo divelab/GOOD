@@ -10,8 +10,14 @@
    {% for item in attributes %}
       {{ item }}
    {%- endfor %}
+
+   {% for item in attributes %}
+   .. autoattribute:: {{ item }}
+   {%- endfor %}
    {% endif %}
    {% endblock %}
+
+
 
    {% block functions %}
    {% if functions %}

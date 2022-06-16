@@ -11,6 +11,7 @@ from copy import deepcopy
 import gdown
 import numpy as np
 import torch
+from torch_geometric.data import Data
 from munch import Munch
 from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.data import InMemoryDataset, extract_zip
@@ -18,33 +19,34 @@ from torch_geometric.utils import degree, to_undirected
 from tqdm import tqdm
 
 
+
 class DomainGetter(object):
     def __init__(self):
         pass
 
-    def get_degree(self, graph):
+    def get_degree(self, graph: Data) -> str:
         """
         Args:
-            graph: The smile string in raw data.
+            graph (torch_geometric.data.data.Data): The PyG Data object.
         Returns:
-            The scaffold string of a smile.
+            The degrees of the given graph.
         """
         try:
             node_degree = degree(graph.edge_index[0], graph.num_nodes)
             return node_degree
-        except ValueError:
-            print('get scaffold error')
-            return 'C'
+        except ValueError as e:
+            print('#E#Get degree error.')
+            raise e
 
-    def get_time(self, graph):
+    def get_time(self, graph: Data) -> int:
         """
         Args:
-            graph: The smile string in raw data.
+            graph (torch_geometric.data.data.Data): The PyG Data object.
         Returns:
-            The number of atoms in a smile.
+            The year domain value of the graph.
         """
-        num_word = graph.node_year.squeeze()
-        return num_word
+        year = graph.node_year.squeeze()
+        return year
 
 
 class DataInfo(object):

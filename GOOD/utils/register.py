@@ -18,4 +18,4 @@ class Register(object):
         return ood_alg_class
 
 
-register = Register()
+register = Register()  #: The GOOD register object used for accessing models, datasets and OOD algorithms.

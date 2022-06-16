@@ -57,7 +57,17 @@ def merge_dicts(dict1: dict, dict2: dict):
     return return_dict, duplicates
 
 
-def load_config(path: str, previous_includes: list = []):
+def load_config(path: str, previous_includes: list = []) -> dict:
+    r"""
+
+    Args:
+        path (str): The path to your yaml configuration file.
+        previous_includes (list): Included configurations. It is for the :obj:`include` configs used for recursion.
+            Please leave it blank when call this function outside.
+
+    Returns:
+        config (dict): config dictionary loaded from the given yaml file.
+    """
     path = Path(path)
     if path in previous_includes:
         raise ValueError(

@@ -9,86 +9,86 @@ from GOOD.definitions import ROOT_DIR
 
 
 class TrainArgs(Tap):
-    tr_ctn: bool = None  # flag for training continue
-    ctn_epoch: int = None  # start Epoch for continue training
-    max_epoch: int = None  # Epochs to stop training
-    save_gap: int = None  # how long to save an epoch
+    tr_ctn: bool = None  #: flag for training continue
+    ctn_epoch: int = None  #: start Epoch for continue training
+    max_epoch: int = None  #: Epochs to stop training
+    save_gap: int = None  #: how long to save an epoch
 
-    train_bs: int = None  # batch size for training
-    val_bs: int = None  # batch size for validation
-    test_bs: int = None  # batch size for test
-    num_steps: int = None  # Number of steps in each epoch for node classification
+    train_bs: int = None  #: batch size for training
+    val_bs: int = None  #: batch size for validation
+    test_bs: int = None  #: batch size for test
+    num_steps: int = None  #: Number of steps in each epoch for node classification
 
-    lr: float = None  # learning rate
-    mile_stones: List[int] = None  # Milestones for a scheduler to decrease learning rate: 0.1
-    weight_decay: float = None  # weight decay
+    lr: float = None  #: learning rate
+    mile_stones: List[int] = None  #: Milestones for a scheduler to decrease learning rate: 0.1
+    weight_decay: float = None  #: weight decay
 
-    alpha = None  # parameter for DANN
+    alpha = None  #: parameter for DANN
 
 
 class DatasetArgs(Tap):
-    dataset_name: str = None  # dataset
-    shift_type: Literal['no_shift', 'covariate', 'concept'] = None  # shift type of the chosen dataset
-    domain: str = None  # domain selection
-    generate: bool = None  # The flag for generating GOOD datasets from scratch instead of downloading
-    dataset_root: str = None  # dataset storage root. Default: STORAGE_ROOT/datasets
-    dataset_type: str = None  # dataset type: molecule, real-world, synthetic, etc. For special usages.
+    dataset_name: str = None  #: dataset
+    shift_type: Literal['no_shift', 'covariate', 'concept'] = None  #: shift type of the chosen dataset
+    domain: str = None  #: domain selection
+    generate: bool = None  #: The flag for generating GOOD datasets from scratch instead of downloading
+    dataset_root: str = None  #: dataset storage root. Default: STORAGE_ROOT/datasets
+    dataset_type: str = None  #: dataset type: molecule, real-world, synthetic, etc. For special usages.
 
-    dim_node: int = None  # Dimension of node
-    dim_edge: int = None  # Dimension of edge
-    num_classes: int = None  # Label numbers for multi-label classification
-    num_envs: int = None  # Number of environments (domains) in training set.
+    dim_node: int = None  #: Dimension of node
+    dim_edge: int = None  #: Dimension of edge
+    num_classes: int = None  #: Label numbers for multi-label classification
+    num_envs: int = None  #: Number of environments (domains) in training set.
 
 
 class ModelArgs(Tap):
-    model_name: str = None  # specify model name
-    model_layer: int = None  # number of GNN layers.
-    model_level: Literal['node', 'line', 'graph'] = 'graph'  # model level
+    model_name: str = None  #: specify model name
+    model_layer: int = None  #: number of GNN layers.
+    model_level: Literal['node', 'line', 'graph'] = 'graph'  #: model level
 
-    dim_hidden: int = None  # node hidden feature's dimension
-    dim_ffn: int = None  # final linear layer dim
-    global_pool: str = None  # readout pooling layer
-    dropout_rate: float = None  # drop out rate
+    dim_hidden: int = None  #: node hidden feature's dimension
+    dim_ffn: int = None  #: final linear layer dim
+    global_pool: str = None  #: readout pooling layer
+    dropout_rate: float = None  #: drop out rate
 
 
 class OODArgs(Tap):
-    ood_alg: str = None  # OOD algorithms
-    ood_param: float = None  # OOD algorithms' hyperparameter
+    ood_alg: str = None  #: OOD algorithms
+    ood_param: float = None  #: OOD algorithms' hyperparameter
 
 
 class Auto(Tap):
-    allow_datasets: List[str] = None  # Allow dataset in list to run.
-    allow_devices: List[int] = None  # Devices allowed running
-    round: int = None  # Number of experiment round.
+    allow_datasets: List[str] = None  #: Allow dataset in list to run.
+    allow_devices: List[int] = None  #: Devices allowed running
+    round: int = None  #: Number of experiment round.
 
 
 class CommonArgs(Tap):
-    config_path: str = None  # The path for the config file
+    config_path: str = None  #: The path for the config file
 
-    task: Literal['train', 'test'] = None  # running mode
-    random_seed: int = 123  # fixed random seed for reproducibility
-    exp_round: int = None  # Number of experiment round.
+    task: Literal['train', 'test'] = None  #: running mode
+    random_seed: int = 123  #: fixed random seed for reproducibility
+    exp_round: int = None  #: Number of experiment round.
     pytest: bool = None
 
-    ckpt_root: str = None  # Checkpoint root for saving checkpoint files, where inner structure is automatically generated
-    ckpt_dir: str = None  # The direct directory for saving ckpt files
-    test_ckpt: str = None  # path of the model general test or out-of-domain test checkpoint
-    id_test_ckpt: str = None  # path of the model in-domain checkpoint
-    save_tag: str = None  # Special save tag for distinguishing special training checkpoints.
+    ckpt_root: str = None  #: Checkpoint root for saving checkpoint files, where inner structure is automatically generated
+    ckpt_dir: str = None  #: The direct directory for saving ckpt files
+    test_ckpt: str = None  #: path of the model general test or out-of-domain test checkpoint
+    id_test_ckpt: str = None  #: path of the model in-domain checkpoint
+    save_tag: str = None  #: Special save tag for distinguishing special training checkpoints.
 
-    gpu_idx: int = None  # GPU index.rst
-    device = None  # Automatically generated by choosing gpu_idx
+    gpu_idx: int = None  #: GPU index.rst
+    device = None  #: Automatically generated by choosing gpu_idx
 
-    log_file: str = None  # log file name
-    log_path: str = None  # log file path including log file name
+    log_file: str = None  #: log file name
+    log_path: str = None  #: log file path including log file name
 
     tensorboard_logdir: str = None
 
     # For code auto-complete
-    train: TrainArgs = None
-    model: ModelArgs = None
-    dataset: DatasetArgs = None
-    ood: OODArgs = None
+    train: TrainArgs = None  #: For code auto-complete
+    model: ModelArgs = None  #: For code auto-complete
+    dataset: DatasetArgs = None  #: For code auto-complete
+    ood: OODArgs = None  #: For code auto-complete
 
     def __init__(self, argv):
         super(CommonArgs, self).__init__()
