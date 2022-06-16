@@ -34,6 +34,7 @@ version = '0.1.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode'
@@ -62,6 +63,9 @@ html_static_path = ['_static']
 
 
 # -- Extension configuration -------------------------------------------------
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
+                       'torch': ('https://pytorch.org/docs/master/', None),
+                       'torch_geometric': ('https://pytorch-geometric.readthedocs.io/en/latest/', None)}
 # epub_show_urls = 'footnote'
 
 autosummary_generate = True

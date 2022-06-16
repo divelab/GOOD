@@ -2,6 +2,7 @@
 The GOOD-Arxiv dataset. Adapted from `OGB
 <https://proceedings.neurips.cc/paper/2020/hash/fb60d411a5c5b72b2e7d3527cfc84fd0-Abstract.html>`_ benchmark.
 """
+
 import itertools
 import os
 import os.path as osp
@@ -11,6 +12,7 @@ from copy import deepcopy
 import gdown
 import numpy as np
 import torch
+from torch_geometric.data import Data
 from munch import Munch
 from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.data import InMemoryDataset, extract_zip
@@ -18,33 +20,34 @@ from torch_geometric.utils import degree, to_undirected
 from tqdm import tqdm
 
 
+
 class DomainGetter(object):
     def __init__(self):
         pass
 
-    def get_degree(self, graph):
-        r"""
+    def get_degree(self, graph: Data) -> str:
+        """
         Args:
-            graph: The smile string in raw data.
+            graph (torch_geometric.data.data.Data): The PyG Data object.
         Returns:
-            The scaffold string of a smile.
+            The degrees of the given graph.
         """
         try:
             node_degree = degree(graph.edge_index[0], graph.num_nodes)
             return node_degree
-        except ValueError:
-            print('get scaffold error')
-            return 'C'
+        except ValueError as e:
+            print('#E#Get degree error.')
+            raise e
 
-    def get_time(self, graph):
-        r"""
-        Args:
-            graph: The smile string in raw data.
-        Returns:
-            The number of atoms in a smile.
+    def get_time(self, graph: Data) -> int:
         """
-        num_word = graph.node_year.squeeze()
-        return num_word
+        Args:
+            graph (torch_geometric.data.data.Data): The PyG Data object.
+        Returns:
+            The year domain value of the graph.
+        """
+        year = graph.node_year.squeeze()
+        return year
 
 
 class DataInfo(object):
