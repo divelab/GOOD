@@ -1,3 +1,7 @@
+"""
+The GOOD-HIV dataset. Adapted from `MoleculeNet
+<https://pubs.rsc.org/en/content/articlehtml/2018/sc/c7sc02664a>`_.
+"""
 import itertools
 import os
 import os.path as osp
@@ -53,17 +57,22 @@ from GOOD import register
 
 @register.dataset_register
 class GOODHIV(InMemoryDataset):
+    r"""
+    The GOOD-HIV dataset. Adapted from `MoleculeNet
+    <https://pubs.rsc.org/en/content/articlehtml/2018/sc/c7sc02664a>`_.
+
+    Args:
+        root:
+        domain:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+        generate:
+    """
 
     def __init__(self, root, domain: str, shift='no_shift', subset='train', transform=None, pre_transform=None, generate=False):
-        """
 
-        :param root:
-        :param name:
-        :param shift: covariate / concept
-        :param subset: train / id_val/ id_test/ val / test
-        :param transform:
-        :param pre_transform:
-        """
         self.name = self.__class__.__name__
         self.mol_name = 'HIV'
         self.domain = domain

@@ -1,3 +1,7 @@
+"""
+The GOOD-CBAS dataset. Modified from `BA-Shapes
+<https://proceedings.neurips.cc/paper/2019/hash/d80b7040b773199015de6d3b4293c8ff-Abstract.html>`_.
+"""
 import itertools
 import os
 import os.path as osp
@@ -37,18 +41,20 @@ from GOOD import register
 
 @register.dataset_register
 class GOODCBAS(InMemoryDataset):
+    r"""
+    The GOOD-CBAS dataset. Modified from `BA-Shapes
+    <https://proceedings.neurips.cc/paper/2019/hash/d80b7040b773199015de6d3b4293c8ff-Abstract.html>`_.
+
+    Args:
+        root:
+        name:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+    """
 
     def __init__(self, root, domain, shift='no_shift', transform=None, pre_transform=None, generate=False):
-        """
-
-        Args:
-            root:
-            name:
-            shift:
-            subset:
-            transform:
-            pre_transform:
-        """
         self.name = self.__class__.__name__
         self.domain = domain
         self.metric = 'Accuracy'

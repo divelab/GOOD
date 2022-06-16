@@ -1,3 +1,7 @@
+"""
+The GOOD-Motif dataset. Motivated by `Spurious-Motif
+<https://arxiv.org/abs/2201.12872>`_.
+"""
 import math
 import os
 import os.path as osp
@@ -16,17 +20,22 @@ from GOOD.utils.synthetic_data.BA3_loc import *
 
 @register.dataset_register
 class GOODMotif(InMemoryDataset):
+    r"""
+    The GOOD-Motif dataset motivated by `Spurious-Motif
+    <https://arxiv.org/abs/2201.12872>`_.
+
+    Args:
+        root:
+        domain:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+        generate:
+    """
 
     def __init__(self, root, domain, shift='no_shift', subset='train', transform=None, pre_transform=None, generate=False):
-        """
 
-        :param root:
-        :param name:
-        :param shift: covariate / concept
-        :param subset: train / val / test
-        :param transform:
-        :param pre_transform:
-        """
         self.name = self.__class__.__name__
         self.domain = domain
         self.metric = 'Accuracy'

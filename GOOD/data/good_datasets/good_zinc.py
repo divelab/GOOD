@@ -1,3 +1,7 @@
+"""
+The GOOD-ZINC dataset. Adapted from `ZINC database
+<https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00559>`_.
+"""
 import itertools
 import os
 import os.path as osp
@@ -54,17 +58,22 @@ from GOOD import register
 
 @register.dataset_register
 class GOODZINC(InMemoryDataset):
+    r"""
+    The GOOD-ZINC dataset. Adapted from `ZINC database
+    <https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00559>`_.
+
+    Args:
+        root:
+        domain:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+        generate:
+    """
 
     def __init__(self, root, domain, shift='no_shift', subset='train', transform=None, pre_transform=None, generate=False):
-        """
 
-        :param root:
-        :param name:
-        :param shift: covariate / concept
-        :param subset: train / val / test
-        :param transform:
-        :param pre_transform:
-        """
         self.name = self.__class__.__name__
         self.mol_name = 'ZINC'
         self.domain = domain
