@@ -1,3 +1,6 @@
+r"""Matplotlib utils for graph plots.
+"""
+
 import os
 
 import matplotlib.pyplot as plt
@@ -74,25 +77,3 @@ def plot_calculation_graph(calculation_graph, graph_idx=0, color_attr=None, k_ho
     vis_nx_G = to_networkx(data, node_attrs=[color_attr] if color_attr else None)
     plot_graph(vis_nx_G, color_attr=color_attr, **kwargs)
 
-
-def plot_explanation(simple_G, CBN):
-    nx_Gs = to_networkx(Data(edge_index=simple_G.edge_index, color=simple_G.color, CBN=CBN), node_attrs=['color'],
-                        edge_attrs=['CBN'])
-    # nx_Gs = nx_Gs.to_undirected()
-    # nx_Gs = simple_G
-
-    colors = list(nx.get_node_attributes(nx_Gs, 'color').values())
-    N_edge_tuple = [(u, v) for u, v, e in nx_Gs.edges(data=True) if e['CBN'] == 2]
-    B_edge_tuple = [(u, v) for u, v, e in nx_Gs.edges(data=True) if e['CBN'] == 1]
-    C_edge_tuple = [(u, v) for u, v, e in nx_Gs.edges(data=True) if e['CBN'] == 0]
-
-    pos = nx.kamada_kawai_layout(nx_Gs)
-    nx_Gs.nodes.data()
-    # nx.draw(nx_Gs, pos, with_labels=True, node_color=colors, cmap=plt.cm.jet)
-    nec = nx.draw_networkx_edges(nx_Gs, pos, edgelist=N_edge_tuple, style='--')
-    bec = nx.draw_networkx_edges(nx_Gs, pos, edgelist=B_edge_tuple, edge_color='cyan', width=1.5)
-    cec = nx.draw_networkx_edges(nx_Gs, pos, edgelist=C_edge_tuple, edge_color='red', width=1.5)
-    nc = nx.draw_networkx_nodes(nx_Gs, pos, nodelist=nx_Gs.nodes, node_color=colors, cmap=plt.cm.jet, vmin=0)
-    lc = nx.draw_networkx_labels(nx_Gs, pos, font_color="white")
-    plt.colorbar(nc)
-    plt.show()

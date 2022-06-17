@@ -1,7 +1,5 @@
-""" featgen.py
-Copied from [gnn-model-explainer](https://github.com/RexYing/gnn-model-explainer)
+"""
 Node feature generators.
-
 """
 import abc
 

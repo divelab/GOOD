@@ -1,6 +1,4 @@
-"""synthetic_structsim.py
-Copied from [gnn-model-explainer](https://github.com/RexYing/gnn-model-explainer)
-    Utilities for generating certain graph shapes.
+"""Utilities for generating certain graph shapes.
 """
 import math
 

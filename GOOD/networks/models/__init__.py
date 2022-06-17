@@ -1,3 +1,8 @@
+r"""
+This module includes GNNs used in our leaderboard. It includes: GINs, GINvirtualnodes, and GCNs, in which GCNs are only
+for node classifications.
+"""
+
 import glob
 from os.path import dirname, basename, isfile, join
 

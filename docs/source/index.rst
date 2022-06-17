@@ -18,16 +18,32 @@ This GOOD benchmark is a growing project and expects to expand in both quantity 
 Any contribution is welcomed!
 
 
+
 .. toctree::
    :maxdepth: 1
-   :caption: GOOD package reference
+   :caption: Notes
 
-   _autosummary/GOOD.data
-   _autosummary/GOOD.definitions
-   _autosummary/GOOD.kernel
-   _autosummary/GOOD.networks
-   _autosummary/GOOD.ood_algorithms
-   _autosummary/GOOD.utils
+   installation
+   tutorial
+   configs
+   custom_oodalgorithm
+   leaderboard
+
+
+Package reference
+-------------------
+
+.. autosummary::
+   :toctree: _autosummary
+   :caption: Package reference
+   :recursive:
+
+   GOOD.data
+   GOOD.definitions
+   GOOD.kernel
+   GOOD.networks
+   GOOD.ood_algorithms
+   GOOD.utils
 
 
 Indices and tables

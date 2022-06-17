@@ -1,3 +1,6 @@
+r"""Kernel pipeline: main pipeline, initialization, task loading, etc.
+"""
+
 import time
 
 from GOOD import config_summoner

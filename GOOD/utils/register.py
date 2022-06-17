@@ -1,3 +1,6 @@
+r"""A kernel module that contains a global register for unified model, dataset, and OOD algorithms access.
+"""
+
 class Register(object):
 
     def __init__(self):

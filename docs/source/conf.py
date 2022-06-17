@@ -34,6 +34,7 @@ version = '0.1.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
@@ -63,6 +64,7 @@ html_static_path = ['_static']
 
 
 # -- Extension configuration -------------------------------------------------
+autosectionlabel_prefix_document = True
 intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
                        'torch': ('https://pytorch.org/docs/master/', None),
                        'torch_geometric': ('https://pytorch-geometric.readthedocs.io/en/latest/', None)}

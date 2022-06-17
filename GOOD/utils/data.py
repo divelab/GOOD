@@ -1,3 +1,7 @@
+r"""
+Some data process utils including construction of molecule PyG graph from smile (for compatibility).
+"""
+
 import torch
 from torch_geometric.data import Batch
 from torch_geometric.utils.num_nodes import maybe_num_nodes

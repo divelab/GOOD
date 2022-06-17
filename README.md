@@ -82,29 +82,23 @@ pip install -e .
 ### Module usage
 
 #### GOOD datasets
-There are two ways to import 8 GOOD datasets with 14 domain selections and totally 42 splits:
+There are two ways to import 8 GOOD datasets with 14 domain selections and totally 42 splits, but for simplicity, we only show one of them.
+Please refer to [Tutorial](https://good.readthedocs.io/en/latest/tutorial.html) for more details.
 ```python
 # Directly import
 from GOOD.data.good_datasets.good_hiv import GOODHIV
 hiv_datasets, hiv_meta_info = GOODHIV.load(dataset_root, domain='scaffold', shift='covariate', generate=False)
-# Or use register
-from GOOD import register as good_reg
-hiv_datasets, hiv_meta_info = good_reg.datasets['GOODHIV'].load(dataset_root, domain='scaffold', shift='covariate', generate=False)
-cmnist_datasets, cmnist_meta_info = good_reg.datasets['GOODCMNIST'].load(dataset_root, domain='color', shift='concept', generate=False)
 ```
 
 #### GOOD GNNs
 The best and fair way to compare algorithms with the leaderboard is to use the same and similar graph encoder structure;
 therefore, we provide GOOD GNN apis to support. Here, we use an objectified dictionary `config` to pass parameters. More
-details about the config: [Document of config (pending)]()
+details about the config: [Document of config (pending)](https://good.readthedocs.io/en/latest/configs.html)
 
 *To use exact GNN*
 ```python
 from GOOD.networks.models.GCNs import GCN
 model = GCN(config)
-# Or
-from GOOD import register as good_reg
-model = good_reg.models['GCN'](config)
 ```
 *To only use parts of GNN*
 ```python
@@ -147,30 +141,13 @@ from GOOD.ood_algorithms.ood_manager import load_ood_alg
 model, loader = initialize_model_dataset(config)
 ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 ```
-*Or concretely,*
-```python
-from GOOD.data import load_dataset, create_dataloader
-from GOOD.networks.model_manager import load_model
-from GOOD.ood_algorithms.ood_manager import load_ood_alg
-dataset = load_dataset(config.dataset.dataset_name, config)
-loader = create_dataloader(dataset, config)
-model = load_model(config.model.model_name, config)
-ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
-```
 3. **Train/test pipeline**
 ```python
 from GOOD.kernel.pipeline import load_task
 load_task(config.task, model, loader, ood_algorithm, config)
 ```
-*Or concretely,*
-```python
-# Train
-from GOOD.kernel.train import train
-train(model, loader, ood_algorithm, config)
-# Test
-from GOOD.kernel.evaluation import evaluate
-test_stat = evaluate(model, loader, ood_algorithm, 'test', config)
-```
+
+Please refer to [Tutorial](https://good.readthedocs.io/en/latest/tutorial.html) for more details.
 
 ## Reproducibility
 
@@ -198,9 +175,11 @@ In order to keep the validity of our code all the time, we link our project with
 sampled tests to go through (because of the limitation of computational resources in CI platforms).
 
 
+## Discussion
+
+Please submit [new issues](/../../issues/new) or start [a new discussion](/../../discussions/new) for any technical or other questions.
+
 ## Contact
 
-Please submit new issues for any technical questions.
-
-Please contact [Shurui Gui](mailto:shurui.gui@tamu.edu) and [Shuiwang Ji](mailto:sji@tamu.edu) if any other questions.
+Please feel free to contact [Shurui Gui](mailto:shurui.gui@tamu.edu), [Xiner Li](mailto:lxe@tamu.edu), or [Shuiwang Ji](mailto:sji@tamu.edu)!
 

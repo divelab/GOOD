@@ -1,3 +1,6 @@
+r"""A metric function module that is consist of a Metric class which incorporate many score and loss functions.
+"""
+
 from math import sqrt
 
 import torch

@@ -1,8 +1,13 @@
+r"""
+Evaluation: model evaluation functions.
+"""
+
 import numpy as np
 import torch
 from torch_geometric.data.batch import Batch
 from tqdm import tqdm
 
+from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from GOOD.utils.logger import pbar_setting
 from GOOD.utils.train import nan2zero_get_mask
 
@@ -74,9 +79,6 @@ def eval_score(pred_all, target_all, train, config):
                 target_all = np.concatenate(target_all)
                 score = np.nanmean(config.metric.score_func(target_all, pred_all))
     return score
-
-
-from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 @torch.no_grad()

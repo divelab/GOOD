@@ -1,3 +1,7 @@
+r"""A project configuration module that reads config argument from a file; set automatic generated arguments; and
+overwrite configuration arguments by command arguments.
+"""
+
 import copy
 import warnings
 from os.path import join as opj

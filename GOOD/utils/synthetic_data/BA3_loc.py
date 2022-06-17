@@ -1,5 +1,4 @@
-"""synthetic_structsim.py
-Copied from [gnn-model-explainer](https://github.com/RexYing/gnn-model-explainer)
+"""BA3_loc.py
 """
 
 import networkx as nx

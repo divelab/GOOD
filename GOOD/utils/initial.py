@@ -1,3 +1,6 @@
+r"""Initial process for fixing all possible random seed.
+"""
+
 import random
 
 import numpy as np

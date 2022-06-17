@@ -1,3 +1,7 @@
+r"""
+This module is for OOD algorithms. It is a good idea to inherit the BaseOOD class for new OOD algorithm designs.
+"""
+
 import glob
 from os.path import dirname, basename, isfile, join
 

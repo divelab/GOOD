@@ -1,3 +1,6 @@
+r"""Training pipeline: training/evaluation structure, batch training.
+"""
+
 import numpy as np
 import torch
 from torch_geometric.data.batch import Batch
@@ -31,9 +34,6 @@ def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm, pbar, config
     config.train_helper.optimizer.step()
 
     return {'loss': loss.detach()}
-
-
-from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def train(model, loader, ood_algorithm, config: Union[CommonArgs, Munch]):

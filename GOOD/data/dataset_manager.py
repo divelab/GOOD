@@ -1,3 +1,6 @@
+r"""A module that is consist of a dataset loading function and a PyTorch dataloader loading function.
+"""
+
 from torch_geometric.loader import DataLoader, GraphSAINTRandomWalkSampler
 
 from GOOD import register
@@ -28,9 +31,6 @@ def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
     config.metric.set_loss_func(dataset['task'] if type(dataset) is dict else getattr(dataset, 'task'))
 
     return dataset
-
-
-from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def create_dataloader(dataset, config: Union[CommonArgs, Munch]):

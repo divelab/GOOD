@@ -1,3 +1,5 @@
+r"""A module that is consist of a GNN model loader and model configuration function.
+"""
 import os
 
 import numpy
