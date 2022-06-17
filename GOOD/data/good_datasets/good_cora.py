@@ -1,3 +1,7 @@
+"""
+The GOOD-Cora dataset. Adapted from the `full Cora dataset
+<https://arxiv.org/abs/1707.03815>`_.
+"""
 import itertools
 import os
 import os.path as osp
@@ -66,18 +70,21 @@ from GOOD import register
 
 @register.dataset_register
 class GOODCora(InMemoryDataset):
+    r"""
+    The GOOD-Cora dataset. Adapted from the `full Cora dataset
+    <https://arxiv.org/abs/1707.03815>`_.
+
+    Args:
+        root:
+        name:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+    """
 
     def __init__(self, root, domain, shift='no_shift', transform=None, pre_transform=None, generate=False):
-        """
 
-        Args:
-            root:
-            name:
-            shift:
-            subset:
-            transform:
-            pre_transform:
-        """
         self.name = self.__class__.__name__
         self.domain = domain
         self.metric = 'Accuracy'

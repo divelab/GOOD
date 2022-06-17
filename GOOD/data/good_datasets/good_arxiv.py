@@ -1,5 +1,6 @@
 """
-The GOOD-Arxiv dataset.
+The GOOD-Arxiv dataset. Adapted from `OGB
+<https://proceedings.neurips.cc/paper/2020/hash/fb60d411a5c5b72b2e7d3527cfc84fd0-Abstract.html>`_ benchmark.
 """
 
 import itertools
@@ -72,7 +73,9 @@ from GOOD import register
 
 @register.dataset_register
 class GOODArxiv(InMemoryDataset):
-    """
+    r"""
+    The GOOD-Arxiv dataset adapted from `OGB
+    <https://proceedings.neurips.cc/paper/2020/hash/fb60d411a5c5b72b2e7d3527cfc84fd0-Abstract.html>`_ benchmark.
 
     Args:
         root:

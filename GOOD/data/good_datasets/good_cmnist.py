@@ -1,3 +1,7 @@
+"""
+The GOOD-CMNIST dataset. Following `IRM
+<https://arxiv.org/abs/1907.02893>`_ paper.
+"""
 import itertools
 import os
 import os.path as osp
@@ -16,17 +20,22 @@ from GOOD import register
 
 @register.dataset_register
 class GOODCMNIST(InMemoryDataset):
+    r"""
+    The GOOD-CMNIST dataset following `IRM
+    <https://arxiv.org/abs/1907.02893>`_ paper.
+
+    Args:
+        root:
+        domain:
+        shift:
+        subset:
+        transform:
+        pre_transform:
+        generate:
+    """
 
     def __init__(self, root, domain, shift='no_shift', subset='train', transform=None, pre_transform=None, generate=False):
-        """
 
-        :param root:
-        :param name:
-        :param shift: covariate / concept
-        :param subset: train / val / test
-        :param transform:
-        :param pre_transform:
-        """
         self.name = self.__class__.__name__
         self.domain = domain
         self.metric = 'Accuracy'
