@@ -26,8 +26,7 @@ Any contribution is welcomed!
    installation
    tutorial
    configs
-   custom_oodalgorithm
-   leaderboard
+   custom
 
 
 Package reference

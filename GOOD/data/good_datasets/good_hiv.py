@@ -369,12 +369,18 @@ class GOODHIV(InMemoryDataset):
 
     @staticmethod
     def load(dataset_root, domain, shift='no_shift', generate=False):
+        r"""
+
+        Args:
+            dataset_root:
+            domain:
+            shift:
+            generate:
+
+        Returns:
+
+        """
         meta_info = Munch()
-        """
-        :param name: OODHIV_scaffold, OODHIV_nodesize, OODPCBA_scaffold, OODPCBA_nodesize
-        :param shift: no_shift, covariate, concept
-        :return:
-        """
         meta_info.dataset_type = 'mol'
         meta_info.model_level = 'graph'
 

@@ -67,8 +67,8 @@ class Auto(Tap):
 class CommonArgs(Tap):
     config_path: str = None  #: The path for the config file
 
-    task: Literal['train', 'test'] = None  #: running mode
-    random_seed: int = 123  #: fixed random seed for reproducibility
+    task: Literal['train', 'test'] = None  #: Running mode.
+    random_seed: int = None  #: Fixed random seed for reproducibility
     exp_round: int = None  #: Number of experiment round.
     pytest: bool = None
 
