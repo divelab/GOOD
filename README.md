@@ -93,7 +93,7 @@ hiv_datasets, hiv_meta_info = GOODHIV.load(dataset_root, domain='scaffold', shif
 #### GOOD GNNs
 The best and fair way to compare algorithms with the leaderboard is to use the same and similar graph encoder structure;
 therefore, we provide GOOD GNN apis to support. Here, we use an objectified dictionary `config` to pass parameters. More
-details about the config: [Document of config (pending)](https://good.readthedocs.io/en/latest/configs.html)
+details about the config: [Documents of config](https://good.readthedocs.io/en/latest/configs.html)
 
 *To use exact GNN*
 ```python
@@ -168,6 +168,9 @@ compares their results with saved ones. Test details can be found at [test_repro
 For a fast review, we also post our [full round1 reproduce report](https://drive.google.com/file/d/1kR4k0E0y6Rtcx4WbjevSxKviHrkx3G1y/view?usp=sharing).
 
 These reports are in `html` format. Please download them and open them in your browser.: )
+
+**Training plots**
+The training plots for all algorithms in round 1 can be found [HERE](https://drive.google.com/file/d/1-UsWstrF1cxk7MExRV-37emGi4spQtj0/view?usp=sharing).
 
 ### Sampled tests
 
