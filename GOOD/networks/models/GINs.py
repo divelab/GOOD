@@ -93,10 +93,11 @@ class GINFeatExtractor(GNNBasic):
 
 
 class GINEncoder(BasicEncoder):
-    r"""The GIN encoder for non-molecule data, using the :class:`~GINConv` operator for message passing.
+    r"""
+    The GIN encoder for non-molecule data, using the :class:`~GINConv` operator for message passing.
 
-        Args:
-            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
     """
 
     def __init__(self, config: Union[CommonArgs, Munch], *args):

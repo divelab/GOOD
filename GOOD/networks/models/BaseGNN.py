@@ -1,17 +1,37 @@
+"""
+Base classes for Graph Neural Networks
+"""
 import torch
 import torch.nn as nn
 from torch_geometric.data.batch import Batch
-
+from torch import Tensor
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .Pooling import GlobalMeanPool, GlobalMaxPool, IdenticalPool
 
 
 class GNNBasic(torch.nn.Module):
+    r"""
+    Base class for graph neural networks
+
+    Args:
+        *args (list): argument list for the use of :func:`~arguments_read`
+        **kwargs (dict): key word arguments for the use of :func:`~arguments_read`
+
+    """
     def __init__(self, config: Union[CommonArgs, Munch], *args, **kwargs):
         super(GNNBasic, self).__init__()
         self.config = config
 
     def arguments_read(self, *args, **kwargs):
+        r"""
+
+        Args:
+            *args:
+            **kwargs:
+
+        Returns:
+
+        """
 
         data: Batch = kwargs.get('data') or None
 
@@ -48,6 +68,23 @@ class GNNBasic(torch.nn.Module):
 
 
 class BasicEncoder(torch.nn.Module):
+    r"""
+        Base GNN feature encoder.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.model.model_level`, :obj:`config.model.global_pool`, :obj:`config.model.dropout_rate`)
+
+        .. code-block:: python
+
+            config = munchify({model: {dim_hidden: int(300),
+                               model_layer: int(5),
+                               model_level: str('node'),
+                               global_pool: str('mean'),
+                               dropout_rate: float(0.5),}
+                               })
+
+
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         if type(self).mro()[type(self).mro().index(__class__) + 1] is torch.nn.Module:
