@@ -1,5 +1,5 @@
 """
-The GOOD-Motif dataset. Motivated by `Spurious-Motif
+The GOOD-Motif dataset motivated by `Spurious-Motif
 <https://arxiv.org/abs/2201.12872>`_.
 """
 import math

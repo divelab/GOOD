@@ -1,3 +1,7 @@
+r"""
+The Graph Neural Network from the `"How Powerful are Graph Neural Networks?"
+<https://arxiv.org/abs/1810.00826>`_ paper.
+"""
 from typing import Callable, Optional
 
 import torch
@@ -18,17 +22,32 @@ from .MolEncoders import AtomEncoder, BondEncoder
 
 @register.model_register
 class GIN(GNNBasic):
+    r"""
+    The Graph Neural Network from the `"How Powerful are Graph Neural
+    Networks?" <https://arxiv.org/abs/1810.00826>`_ paper.
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
+
         super().__init__(config)
         self.feat_encoder = GINFeatExtractor(config)
         self.classifier = Classifier(config)
         self.graph_repr = None
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
-        """
-        :param Required[data]: Batch - input data
-        :return:
+        r"""
+        The GIN model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            label predictions
+
         """
         out_readout = self.feat_encoder(*args, **kwargs)
 
@@ -37,6 +56,12 @@ class GIN(GNNBasic):
 
 
 class GINFeatExtractor(GNNBasic):
+    r"""
+        GIN feature extractor using the :class:`~GINEncoder` or :class:`~GINMolEncoder`.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.dataset_type`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GINFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
@@ -48,6 +73,16 @@ class GINFeatExtractor(GNNBasic):
             self.edge_feat = False
 
     def forward(self, *args, **kwargs):
+        r"""
+        GIN feature extractor using the :class:`~GINEncoder` or :class:`~GINMolEncoder`.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            node feature representations
+        """
         if self.edge_feat:
             x, edge_index, edge_attr, batch = self.arguments_read(*args, **kwargs)
             out_readout = self.encoder(x, edge_index, edge_attr, batch)
@@ -58,8 +93,14 @@ class GINFeatExtractor(GNNBasic):
 
 
 class GINEncoder(BasicEncoder):
+    r"""The GIN encoder for non-molecule data, using the :class:`~GINConv` operator for message passing.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch], *args):
+
         super(GINEncoder, self).__init__(config, *args)
         num_layer = config.model.model_layer
 
@@ -79,6 +120,17 @@ class GINEncoder(BasicEncoder):
         )
 
     def forward(self, x, edge_index, batch):
+        r"""
+        The GIN encoder for non-molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            batch (Tensor): batch indicator
+
+        Returns (Tensor):
+            node feature representations
+        """
 
         post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
@@ -93,6 +145,11 @@ class GINEncoder(BasicEncoder):
 
 
 class GINMolEncoder(BasicEncoder):
+    r"""The GIN encoder for molecule data, using the :class:`~GINEConv` operator for message passing.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GINMolEncoder, self).__init__(config)
@@ -113,6 +170,18 @@ class GINMolEncoder(BasicEncoder):
         )
 
     def forward(self, x, edge_index, edge_attr, batch):
+        r"""
+        The GIN encoder for molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_attr (Tensor): edge attributes
+            batch (Tensor): batch indicator
+
+        Returns (Tensor):
+            node feature representations
+        """
         x = self.atom_encoder(x)
         post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
@@ -229,6 +298,42 @@ class GINEConv(gnn.MessagePassing):
 
 
 class GINConv(gnn.GINConv):
+    r"""The graph isomorphism operator from the `"How Powerful are
+    Graph Neural Networks?" <https://arxiv.org/abs/1810.00826>`_ paper
+
+    .. math::
+        \mathbf{x}^{\prime}_i = h_{\mathbf{\Theta}} \left( (1 + \epsilon) \cdot
+        \mathbf{x}_i + \sum_{j \in \mathcal{N}(i)} \mathbf{x}_j \right)
+
+    or
+
+    .. math::
+        \mathbf{X}^{\prime} = h_{\mathbf{\Theta}} \left( \left( \mathbf{A} +
+        (1 + \epsilon) \cdot \mathbf{I} \right) \cdot \mathbf{X} \right),
+
+    here :math:`h_{\mathbf{\Theta}}` denotes a neural network, *.i.e.* an MLP.
+
+    Args:
+        nn (torch.nn.Module): A neural network :math:`h_{\mathbf{\Theta}}` that
+            maps node features :obj:`x` of shape :obj:`[-1, in_channels]` to
+            shape :obj:`[-1, out_channels]`, *e.g.*, defined by
+            :class:`torch.nn.Sequential`.
+        eps (float, optional): (Initial) :math:`\epsilon`-value.
+            (default: :obj:`0.`)
+        train_eps (bool, optional): If set to :obj:`True`, :math:`\epsilon`
+            will be a trainable parameter. (default: :obj:`False`)
+        **kwargs (optional): Additional arguments of
+            :class:`torch_geometric.nn.conv.MessagePassing`.
+
+    Shapes:
+        - **input:**
+          node features :math:`(|\mathcal{V}|, F_{in})` or
+          :math:`((|\mathcal{V_s}|, F_{s}), (|\mathcal{V_t}|, F_{t}))`
+          if bipartite,
+          edge indices :math:`(2, |\mathcal{E}|)`
+        - **output:** node features :math:`(|\mathcal{V}|, F_{out})` or
+          :math:`(|\mathcal{V}_t|, F_{out})` if bipartite
+    """
 
     def __init__(self, nn: Callable, eps: float = 0., train_eps: bool = False,
                  **kwargs):

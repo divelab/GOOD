@@ -59,7 +59,7 @@ from GOOD import register
 @register.dataset_register
 class GOODZINC(InMemoryDataset):
     r"""
-    The GOOD-ZINC dataset. Adapted from `ZINC database
+    The GOOD-ZINC dataset adapted from `ZINC database
     <https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00559>`_.
 
     Args:

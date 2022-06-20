@@ -1,3 +1,7 @@
+r"""The Graph Neural Network from the `"Semi-supervised
+    Classification with Graph Convolutional Networks"
+    <https://arxiv.org/abs/1609.02907>`_ paper.
+"""
 import torch
 import torch.nn as nn
 import torch_geometric.nn as gnn

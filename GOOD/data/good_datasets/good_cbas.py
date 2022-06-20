@@ -1,5 +1,5 @@
 """
-The GOOD-CBAS dataset. Modified from `BA-Shapes
+The GOOD-CBAS dataset modified from `BA-Shapes
 <https://proceedings.neurips.cc/paper/2019/hash/d80b7040b773199015de6d3b4293c8ff-Abstract.html>`_.
 """
 import itertools

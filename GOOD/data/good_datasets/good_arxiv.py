@@ -1,5 +1,5 @@
 """
-The GOOD-Arxiv dataset. Adapted from `OGB
+The GOOD-Arxiv dataset adapted from `OGB
 <https://proceedings.neurips.cc/paper/2020/hash/fb60d411a5c5b72b2e7d3527cfc84fd0-Abstract.html>`_ benchmark.
 """
 

@@ -1,5 +1,5 @@
 """
-The GOOD-PCBA dataset. Adapted from `MoleculeNet
+The GOOD-PCBA dataset adapted from `MoleculeNet
 <https://pubs.rsc.org/en/content/articlehtml/2018/sc/c7sc02664a>`_.
 """
 import itertools

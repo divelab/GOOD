@@ -1,3 +1,7 @@
+r"""
+The Graph Neural Network from the `"Neural Message Passing for Quantum Chemistry"
+<https://proceedings.mlr.press/v70/gilmer17a.html>`_ paper.
+"""
 import torch
 import torch.nn as nn
 
@@ -11,6 +15,13 @@ from .Pooling import GlobalAddPool
 
 @register.model_register
 class vGIN(GNNBasic):
+    r"""
+        The Graph Neural Network from the `"Neural Message Passing for Quantum Chemistry"
+        <https://proceedings.mlr.press/v70/gilmer17a.html>`_ paper.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(vGIN, self).__init__(config)
@@ -51,6 +62,12 @@ class vGINFeatExtractor(GNNBasic):
 
 
 class VirtualNodeEncoder(torch.nn.Module):
+    r"""
+        The virtual node feature encoder for vGIN.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.dropout_rate`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch], *args, **kwargs):
         super(VirtualNodeEncoder, self).__init__()
         self.virtual_node_embedding = nn.Embedding(1, config.model.dim_hidden)

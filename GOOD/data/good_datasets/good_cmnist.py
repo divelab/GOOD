@@ -1,5 +1,5 @@
 """
-The GOOD-CMNIST dataset. Following `IRM
+The GOOD-CMNIST dataset following `IRM
 <https://arxiv.org/abs/1907.02893>`_ paper.
 """
 import itertools

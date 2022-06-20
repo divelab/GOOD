@@ -1,5 +1,5 @@
 """
-The GOOD-Cora dataset. Adapted from the `full Cora dataset
+The GOOD-Cora dataset adapted from the `full Cora dataset
 <https://arxiv.org/abs/1707.03815>`_.
 """
 import itertools
