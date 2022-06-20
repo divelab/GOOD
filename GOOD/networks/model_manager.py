@@ -9,7 +9,17 @@ from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
-def load_model(name, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
+def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
+    r"""
+    A model loader.
+    Args:
+        name (str): Name of the chosen GNN.
+        config (Union[CommonArgs, Munch]): Please refer to specific GNNs for required configs and formats.
+
+    Returns:
+        A instantiated GNN model.
+
+    """
     try:
         model = register.models[name](config)
     except KeyError as e:
@@ -22,6 +32,17 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Munch], load_param=False):
+    r"""
+    A model configuration utility. Responsible for transiting model from CPU -> GPU and loading checkpoints.
+    Args:
+        model (torch.nn.Module): The GNN object.
+        mode (str): 'train' or 'test'.
+        config (Union[CommonArgs, Munch]): Only for project use. Please resort to the source code for required arguments.
+        load_param: When True, loading test checkpoint will load parameters to the GNN model.
+
+    Returns:
+        Test score and loss if mode=='test'.
+    """
     model.to(config.device)
     model.train()
 

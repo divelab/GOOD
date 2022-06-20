@@ -17,6 +17,27 @@ def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
 
 
 def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
+    r"""
+    Load a dataset given the dataset name.
+
+    Args:
+        name (str): Dataset name.
+        config (Union[CommonArgs, Munch]): Required configs:
+            ``config.dataset.dataset_root``
+            ``config.dataset.domain``
+            ``config.dataset.shift_type``
+            ``config.dataset.generate``
+
+    Returns:
+        A dataset object and new configs
+            - config.dataset.dataset_type
+            - config.model.model_level
+            - config.dataset.dim_node
+            - config.dataset.dim_edge
+            - config.dataset.num_envs
+            - config.dataset.num_classes
+
+    """
     try:
         dataset, meta_info = register.datasets[name].load(dataset_root=config.dataset.dataset_root,
                                                           domain=config.dataset.domain,
@@ -34,6 +55,22 @@ def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
 
 
 def create_dataloader(dataset, config: Union[CommonArgs, Munch]):
+    r"""
+    Create a PyG data loader.
+
+    Args:
+        dataset: A GOOD dataset.
+        config: Required configs:
+            ``config.train.train_bs``
+            ``config.train.val_bs``
+            ``config.train.test_bs``
+            ``config.model.model_layer``
+            ``config.train.num_steps(for node prediction)``
+
+    Returns:
+        A PyG dataset loader.
+
+    """
     if config.model.model_level == 'node':
         graph = dataset[0]
         loader = GraphSAINTRandomWalkSampler(graph, batch_size=config.train.train_bs,
