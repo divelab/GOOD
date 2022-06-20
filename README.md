@@ -33,11 +33,7 @@ We provide performance results on 7 commonly used baseline methods (ERM, IRM, VR
 
 The GOOD dataset summaries are shown in the following figure.
 
-<object data="https://github.com/divelab/GOOD/blob/main/docs/source/imgs/Datasets.pdf" type="application/pdf" width="700px">
-    <embed src="https://github.com/divelab/GOOD/blob/main/docs/source/imgs/Datasets.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/divelab/GOOD/blob/main/docs/source/imgs/Datasets.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+![Dataset](/../../blob/main/docs/source/imgs/Datasets.png)
 
 ## Why GOOD?
 
