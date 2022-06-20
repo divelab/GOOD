@@ -18,6 +18,9 @@ from tqdm import tqdm
 
 
 class DataInfo(object):
+    r"""
+    The class for data point storage. This enables tackling node data point like graph data point, facilitating data splits.
+    """
     def __init__(self, idx, y, x):
         super(DataInfo, self).__init__()
         self.storage = []
@@ -46,15 +49,14 @@ class GOODCBAS(InMemoryDataset):
     <https://proceedings.neurips.cc/paper/2019/hash/d80b7040b773199015de6d3b4293c8ff-Abstract.html>`_.
 
     Args:
-        root:
-        name:
-        shift:
-        subset:
-        transform:
-        pre_transform:
+        root (str): The dataset saving root.
+        domain (str): The domain selection. Allowed: 'color'.
+        shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+        generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
 
-    def __init__(self, root, domain, shift='no_shift', transform=None, pre_transform=None, generate=False):
+    def __init__(self, root: str, domain: str, shift: str = 'no_shift', transform=None, pre_transform=None,
+                 generate: bool = False):
         self.name = self.__class__.__name__
         self.domain = domain
         self.metric = 'Accuracy'
@@ -342,7 +344,22 @@ class GOODCBAS(InMemoryDataset):
             torch.save((data, slices), self.processed_paths[i])
 
     @staticmethod
-    def load(dataset_root, domain, shift='no_shift', generate=False):
+    def load(dataset_root: str, domain: str, shift: str = 'no_shift', generate: bool = False):
+        r"""
+        A staticmethod for dataset loading. This method instantiates dataset class, constructing train, id_val, id_test,
+        ood_val (val), and ood_test (test) splits. Besides, it collected several dataset meta information for further
+        utilization.
+
+        Args:
+            root (str): The dataset saving root.
+            domain (str): The domain selection. Allowed: 'degree' and 'time'.
+            shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+            generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
+
+        Returns:
+            dataset or dataset splits.
+            dataset meta info.
+        """
         meta_info = Munch()
         meta_info.dataset_type = 'syn'
         meta_info.model_level = 'node'

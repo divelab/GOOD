@@ -60,7 +60,10 @@ Try to apply OOD algorithms to your own models?
 Project usage
 -----------------
 
-Please refer to :ref:`Project installation <installation:Project usage installation>`.
+Please refer to :ref:`Project installation <installation:Project usage installation>` for installation details.
+
+Quick intro
+^^^^^^^^^^^^^^^
 
 It is a good beginning to directly make it work. Here, we provide command line script `goodtg` (GOOD to go) to access the main function located at `GOOD.kernel.pipeline:main`.
 Choosing a config file in `configs/GOOD_configs`, we can start a task:
@@ -121,3 +124,27 @@ Specifically, the task is clearly divided into three steps:
    # Test
    from GOOD.kernel.evaluation import evaluate
    test_stat = evaluate(model, loader, ood_algorithm, 'test', config)
+
+
+How to use this project
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Customization**
+
+To make full use of the project, we can add or modify datasets, GNNs, and OOD algorithms in :mod:`GOOD.data.good_datasets`,
+:mod:`GOOD.networks.models`, and :mod:`GOOD.ood_algorithms.algorithms`, respectively. You may resort to :doc:`custom` for more details.
+
+**Understand configs**
+
+Except for customization, an important step is to understand how arguments are passed to where you need. The :doc:`configs`
+describes the GOOD way for configurations.
+
+**Run the project**
+
+With added config files (*e.g.*, my_configs/my_datasets/XXX/my_algorithm_config1.yaml), one can run the project on
+index 2 GPU.
+
+.. code-block:: shell
+
+   goodtg --config_path my_configs/my_datasets/XXX/my_algorithm_config1.yaml --gpu_idx 2
+

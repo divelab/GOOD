@@ -12,23 +12,26 @@ from copy import deepcopy
 import gdown
 import numpy as np
 import torch
-from torch_geometric.data import Data
 from munch import Munch
 from ogb.nodeproppred import PygNodePropPredDataset
+from torch_geometric.data import Data
 from torch_geometric.data import InMemoryDataset, extract_zip
 from torch_geometric.utils import degree, to_undirected
 from tqdm import tqdm
 
 
-
 class DomainGetter(object):
+    r"""
+    A class containing methods for data domain extraction.
+    """
+
     def __init__(self):
         pass
 
-    def get_degree(self, graph: Data) -> str:
+    def get_degree(self, graph: Data) -> int:
         """
         Args:
-            graph (torch_geometric.data.data.Data): The PyG Data object.
+            graph (Data): The PyG Data object.
         Returns:
             The degrees of the given graph.
         """
@@ -42,7 +45,7 @@ class DomainGetter(object):
     def get_time(self, graph: Data) -> int:
         """
         Args:
-            graph (torch_geometric.data.data.Data): The PyG Data object.
+            graph (Data): The PyG Data object.
         Returns:
             The year domain value of the graph.
         """
@@ -51,6 +54,10 @@ class DomainGetter(object):
 
 
 class DataInfo(object):
+    r"""
+    The class for data point storage. This enables tackling node data point like graph data point, facilitating data splits.
+    """
+
     def __init__(self, idx, y):
         super(DataInfo, self).__init__()
         self.storage = []
@@ -78,15 +85,14 @@ class GOODArxiv(InMemoryDataset):
     <https://proceedings.neurips.cc/paper/2020/hash/fb60d411a5c5b72b2e7d3527cfc84fd0-Abstract.html>`_ benchmark.
 
     Args:
-        root:
-        domain:
-        shift:
-        transform:
-        pre_transform:
-        generate:
+        root (str): The dataset saving root.
+        domain (str): The domain selection. Allowed: 'degree' and 'time'.
+        shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+        generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
 
-    def __init__(self, root, domain: str, shift='no_shift', transform=None, pre_transform=None, generate=False):
+    def __init__(self, root: str, domain: str, shift: str = 'no_shift', transform=None, pre_transform=None,
+                 generate: bool = False):
 
         self.name = self.__class__.__name__
         self.domain = domain
@@ -392,7 +398,6 @@ class GOODArxiv(InMemoryDataset):
 
         sorted_data_list = sorted(data_list, key=lambda data: getattr(data, domain))
 
-
         # Assign domain id
         cur_domain_id = -1
         cur_domain = None
@@ -432,7 +437,22 @@ class GOODArxiv(InMemoryDataset):
             torch.save((data, slices), self.processed_paths[i])
 
     @staticmethod
-    def load(dataset_root, domain, shift='no_shift', generate=False):
+    def load(dataset_root: str, domain: str, shift: str = 'no_shift', generate: bool = False):
+        r"""
+        A staticmethod for dataset loading. This method instantiates dataset class, constructing train, id_val, id_test,
+        ood_val (val), and ood_test (test) splits. Besides, it collected several dataset meta information for further
+        utilization.
+
+        Args:
+            root (str): The dataset saving root.
+            domain (str): The domain selection. Allowed: 'degree' and 'time'.
+            shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+            generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
+
+        Returns:
+            dataset or dataset splits.
+            dataset meta info.
+        """
         meta_info = Munch()
         meta_info.dataset_type = 'real'
         meta_info.model_level = 'node'
