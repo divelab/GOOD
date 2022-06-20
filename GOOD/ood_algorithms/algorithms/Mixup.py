@@ -6,13 +6,15 @@ import copy
 
 import numpy as np
 import torch
+from torch import Tensor
+from torch_geometric.data import Batch
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseOOD import BaseOODAlg
 
 
-def idNode(data, id_a2b, config: Union[CommonArgs, Munch]):
+def idNode(data: Batch, id_a2b: Tensor, config: Union[CommonArgs, Munch]) -> Batch:
     r"""
     Mixup node according to given index. Modified from `"MixupForGraph/mixup.py"
     <https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46>`_ code.
@@ -50,7 +52,7 @@ def idNode(data, id_a2b, config: Union[CommonArgs, Munch]):
     return data
 
 
-def shuffleData(data, config: Union[CommonArgs, Munch]):
+def shuffleData(data: Batch, config: Union[CommonArgs, Munch]) -> Tensor:
     r"""
     Prepare data and index for node mixup. Modified from `"MixupForGraph/mixup.py"
     <https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46>`_ code.
@@ -98,7 +100,7 @@ class Mixup(BaseOODAlg):
         self.data_perm = None
         self.id_a2b = None
 
-    def input_preprocess(self, data, targets, mask, node_norm, training, config: Union[CommonArgs, Munch], **kwargs):
+    def input_preprocess(self, data: Batch, targets: Tensor, mask: Tensor, node_norm: Tensor, training: bool, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
         Set input data and mask format to prepare for mixup
 
@@ -139,12 +141,12 @@ class Mixup(BaseOODAlg):
 
         return data, targets, mask, node_norm
 
-    def loss_calculate(self, raw_pred, targets, mask, node_norm, config: Union[CommonArgs, Munch]):
+    def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor, config: Union[CommonArgs, Munch]) -> Tensor:
         r"""
         Calculate loss based on Mixup algorithm
 
         Args:
-            raw_pred: model predictions
+            raw_pred (Tensor): model predictions
             targets (Tensor): input labels
             mask (Tensor): NAN masks for data formats
             node_norm (Tensor): node weights for normalization (for node prediction only)

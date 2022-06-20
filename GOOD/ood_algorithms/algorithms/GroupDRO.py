@@ -41,7 +41,7 @@ class GroupDRO(BaseOODAlg):
                                    })
 
 
-        Returns (float):
+        Returns (Tensor):
             loss based on GroupDRO algorithm
 
         """

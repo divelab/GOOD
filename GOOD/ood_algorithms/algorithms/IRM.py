@@ -4,7 +4,8 @@ Implementation of the IRM algorithm from `"Invariant Risk Minimization"
 """
 import torch
 from torch.autograd import grad
-
+from torch import Tensor
+from torch_geometric.data import Batch
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseOOD import BaseOODAlg
@@ -23,7 +24,7 @@ class IRM(BaseOODAlg):
         super(IRM, self).__init__(config)
         self.dummy_w = torch.nn.Parameter(torch.Tensor([1.0])).to(config.device)
 
-    def output_postprocess(self, model_output, **kwargs):
+    def output_postprocess(self, model_output: Tensor, **kwargs) -> Tensor:
         r"""
         Process the raw output of model; apply the linear classifier
 
@@ -37,7 +38,7 @@ class IRM(BaseOODAlg):
         raw_pred = self.dummy_w * model_output
         return raw_pred
 
-    def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+    def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
         Process loss based on IRM algorithm
 
@@ -55,7 +56,7 @@ class IRM(BaseOODAlg):
                                    })
 
 
-        Returns (float):
+        Returns (Tensor):
             loss with IRM penalty
 
         """

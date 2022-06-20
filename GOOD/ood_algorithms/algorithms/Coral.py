@@ -3,25 +3,26 @@ Implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignm
 <https://link.springer.com/chapter/10.1007/978-3-319-49409-8_35>`_ paper
 """
 import torch
-
+from torch import Tensor
+from torch_geometric.data import Batch
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseOOD import BaseOODAlg
 
 
-def compute_covariance(input_data, config: Union[CommonArgs, Munch]):
+def compute_covariance(input_data: Tensor, config: Union[CommonArgs, Munch]) -> Tensor:
     r"""
     Compute Covariance matrix of the input data
 
     Args:
-        input_data (Batch): feature of the input data
+        input_data (Tensor): feature of the input data
         config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`)
 
     .. code-block:: python
 
         config = munchify({device: torch.device('cuda')})
 
-    Returns (float):
+    Returns (Tensor):
         covariance value of the input features
 
     """
@@ -51,7 +52,7 @@ class Coral(BaseOODAlg):
         super(Coral, self).__init__(config)
         self.feat = None
 
-    def output_postprocess(self, model_output, **kwargs):
+    def output_postprocess(self, model_output: Tensor, **kwargs) -> Tensor:
         r"""
         Process the raw output of model; get feature representations
 
@@ -65,7 +66,7 @@ class Coral(BaseOODAlg):
         self.feat = model_output[1]
         return model_output[0]
 
-    def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+    def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
         Process loss based on Deep Coral algorithm
 
@@ -83,7 +84,7 @@ class Coral(BaseOODAlg):
                                    })
 
 
-        Returns (float):
+        Returns (Tensor):
             loss based on Deep Coral algorithm
 
         """
