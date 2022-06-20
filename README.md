@@ -33,7 +33,7 @@ We provide performance results on 7 commonly used baseline methods (ERM, IRM, VR
 
 The GOOD dataset summaries are shown in the following figure.
 
-![Dataset](/../../blob/main/docs/source/imgs/Datasets.pdf)
+![Dataset](/../../blob/main/docs/source/imgs/Datasets.png)
 
 ## Why GOOD?
 

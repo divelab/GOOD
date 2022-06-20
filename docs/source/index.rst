@@ -18,9 +18,8 @@ This GOOD benchmark is a growing project and expects to expand in both quantity 
 Any contribution is welcomed!
 
 
-.. image:: imgs/Datasets.pdf
+.. image:: imgs/Datasets.png
    :width: 680
-   :align: center
    :alt: GOOD datasets
 
 ----------------------------------------------
