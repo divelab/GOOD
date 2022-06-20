@@ -11,7 +11,7 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
-[Documentation](https://good.readthedocs.io)
+[Documentation](https://good.readthedocs.io) | [Paper](https://arxiv.org/abs/2206.08452)
 > We are actively building the document.
 
 * [Overview](#overview)
@@ -29,7 +29,11 @@ GOOD: A Graph Out-of-Distribution Benchmark
 to make develop and benchmark OOD algorithms easily.
 
 Currently, GOOD contains 8 datasets with 14 domain selections. When combined with covariate, concept, and no shifts, we obtain 42 different splits.
-We provide performance results on 7 commonly used baseline methods with 10 random runs.
+We provide performance results on 7 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, Mixup) with 10 random runs.
+
+The GOOD dataset summaries are shown in the following figure.
+
+![Dataset](/../../blob/main/docs/source/imgs/Datasets.pdf)
 
 ## Why GOOD?
 
@@ -169,7 +173,7 @@ For a fast review, we also post our [full round1 reproduce report](https://drive
 
 These reports are in `html` format. Please download them and open them in your browser.: )
 
-**Training plots**
+**Training plots:**
 The training plots for all algorithms in round 1 can be found [HERE](https://drive.google.com/file/d/1-UsWstrF1cxk7MExRV-37emGi4spQtj0/view?usp=sharing).
 
 ### Sampled tests
