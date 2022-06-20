@@ -38,8 +38,8 @@ class DANN_GCN(GNNBasic):
         The DANN-GCN model implementation.
 
         Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
             [label predictions, domain predictions]

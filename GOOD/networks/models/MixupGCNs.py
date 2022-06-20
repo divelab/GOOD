@@ -43,8 +43,8 @@ class Mixup_GCN(GNNBasic):
         The Mixup-GCN model implementation.
 
         Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
             label predictions
@@ -80,8 +80,8 @@ class MixupGCNFeatExtractor(BasicEncoder, GNNBasic):
         The Mixup-GCN model implementation.
 
         Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): (1) dictionary of OOD args (:obj:`kwargs.ood_algorithm`) (2) key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): (1) dictionary of OOD args (:obj:`kwargs.ood_algorithm`) (2) key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
             node feature representations
