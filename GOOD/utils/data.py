@@ -3,11 +3,23 @@ Some data process utils including construction of molecule PyG graph from smile 
 """
 
 import torch
-from torch_geometric.data import Batch
+from torch_geometric.data import Batch, Data
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
 
-def batch_input(G, batch_size, num_nodes=None, node_attrs=['color']):
+def batch_input(G: Data, batch_size: int, num_nodes: int = None, node_attrs: list =['color']):
+    r"""
+    Repeat a graph ``batch_size`` times and pack into a Batch.
+
+    Args:
+        G (Data): The given graph G.
+        batch_size (int): Batch size.
+        num_nodes (int): The number of node of the graph. If :obj:`None`, it will use maybe_numb_nodes.
+        node_attrs (list): The preserved node attributes.
+
+    Returns:
+        Repeated graph batch.
+    """
     x = G.x
     edge_index = G.edge_index
     device = edge_index.device
@@ -78,7 +90,7 @@ e_map = {
 
 def from_smiles(smiles: str, with_hydrogen: bool = False,
                 kekulize: bool = False):
-    r"""Converts a SMILES string to a :class:`torch_geometric.data.Data`
+    r"""Converts a SMILES string to a `torch_geometric.data.data.Data`
     instance.
 
     Args:

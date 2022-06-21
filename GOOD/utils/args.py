@@ -129,12 +129,14 @@ class CommonArgs(Tap):
         self.ood = OODArgs().parse_args(args=self.argv, known_only=True)
 
 
-def args_parser(argv=None):
+def args_parser(argv: list=None):
     r"""
-    Arguments parser
+    Arguments parser.
 
     Args:
-        argv: input arguments
+        argv: Input arguments. *e.g.*, ['--config_path', config_path,
+            '--ckpt_root', os.path.join(STORAGE_DIR, 'reproduce_ckpts'),
+            '--exp_round', '1']
 
     Returns:
         General arguments
