@@ -14,7 +14,7 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 def load_logger(config: Union[CommonArgs, Munch], sub_print=True):
     r"""
-    logger loader
+    Logger loader
 
     Args:
         config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.log_path`, :obj:`config.tensorboard_logdir`, :obj:`config.log_file`)

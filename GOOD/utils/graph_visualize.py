@@ -79,7 +79,7 @@ def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', node_siz
 
 def plot_calculation_graph(calculation_graph, graph_idx=0, color_attr=None, k_hop=None, **kwargs):
     r"""
-    processing of graphs before plot
+    Processing of graphs before plot
 
     Args:
         calculation_graph (Batch): graph data to be processed
