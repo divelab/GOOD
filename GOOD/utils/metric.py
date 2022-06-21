@@ -14,7 +14,7 @@ from torch.nn.functional import cross_entropy, l1_loss, binary_cross_entropy_wit
 
 class Metric(object):
     r"""
-    metric function module that is consist of a Metric class which incorporate many score and loss functions
+    Metric function module that is consist of a Metric class which incorporate many score and loss functions
     """
 
 
@@ -44,7 +44,7 @@ class Metric(object):
 
     def set_loss_func(self, task_name):
         r"""
-        set the loss function
+        Set the loss function
 
         Args:
             task_name (str): name of task
@@ -59,7 +59,7 @@ class Metric(object):
 
     def set_score_func(self, metric_name):
         r"""
-        set the metric function
+        Set the metric function
 
         Args:
             metric_name: name of metric
@@ -78,7 +78,7 @@ class Metric(object):
 
     def f1(self, y_true, y_pred):
         r"""
-        calculate F1 score
+        Calculate F1 score
 
         Args:
             y_true (torch.tensor): input labels
@@ -96,7 +96,7 @@ class Metric(object):
 
     def ap(self, y_true, y_pred):
         r"""
-        calculate AP score
+        Calculate AP score
 
         Args:
             y_true (torch.tensor): input labels
@@ -110,7 +110,7 @@ class Metric(object):
 
     def roc_auc_score(self, y_true, y_pred):
         r"""
-        calculate roc_auc score
+        Calculate roc_auc score
 
         Args:
             y_true (torch.tensor): input labels
@@ -124,7 +124,7 @@ class Metric(object):
 
     def reg_absolute_error(self, y_true, y_pred):
         r"""
-        calculate absolute regression error
+        Calculate absolute regression error
 
         Args:
             y_true (torch.tensor): input labels
@@ -138,7 +138,7 @@ class Metric(object):
 
     def acc(self, y_true, y_pred):
         r"""
-        calculate accuracy score
+        Calculate accuracy score
 
         Args:
             y_true (torch.tensor): input labels
@@ -156,7 +156,7 @@ class Metric(object):
 
     def rmse(self, y_true, y_pred):
         r"""
-        calculate RMSE
+        Calculate RMSE
 
         Args:
             y_true (torch.tensor): input labels
@@ -170,7 +170,7 @@ class Metric(object):
 
     def cross_entropy_with_logit(self, y_pred: torch.Tensor, y_true: torch.Tensor, **kwargs):
         r"""
-        calculate cross entropy loss
+        Calculate cross entropy loss
 
         Args:
             y_pred (torch.tensor): label predictions

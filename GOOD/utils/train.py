@@ -14,7 +14,7 @@ from GOOD.utils.args import CommonArgs
 
 class TrainHelper(object):
     r"""
-    training utils for optimizers, schedulers, checkpoint saving.
+    Training utils for optimizers, schedulers, checkpoint saving.
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class TrainHelper(object):
 
     def set_up(self, model, config: Union[CommonArgs, Munch]):
         r"""
-        training setup of optimizer and scheduler
+        Training setup of optimizer and scheduler
 
         Args:
             model (dict): model for setup
@@ -43,7 +43,7 @@ class TrainHelper(object):
     def save_epoch(self, epoch: int, train_stat: dir, id_val_stat: dir, id_test_stat: dir, val_stat: dir,
                    test_stat: dir, config: Union[CommonArgs, Munch]):
         r"""
-        training util for checkpoint saving.
+        Training util for checkpoint saving.
 
         Args:
             epoch (int): epoch number
@@ -133,7 +133,7 @@ class TrainHelper(object):
 
 def nan2zero_get_mask(data, task, config: Union[CommonArgs, Munch]):
     r"""
-    training data filter masks to process NAN.
+    Training data filter masks to process NAN.
 
     Args:
         data (Batch): input data
