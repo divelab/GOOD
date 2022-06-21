@@ -5,13 +5,17 @@ import os
 import shutil
 
 import torch
-
+from torch import Tensor
+from torch_geometric.data import Batch
 from typing import Union
 from munch import Munch
 from GOOD.utils.args import CommonArgs
 
 
 class TrainHelper(object):
+    r"""
+    training utils for optimizers, schedulers, checkpoint saving.
+    """
 
     def __init__(self):
         self.optimizer: torch.optim.Adam = None
@@ -19,6 +23,17 @@ class TrainHelper(object):
         self.model: torch.nn.Module = None
 
     def set_up(self, model, config: Union[CommonArgs, Munch]):
+        r"""
+        training setup of optimizer and scheduler
+
+        Args:
+            model (dict): model for setup
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.train.lr`, :obj:`config.metric`, :obj:`config.train.mile_stones`)
+
+        Returns:
+            None
+
+        """
         self.model: torch.nn.Module = model
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.train.lr,
                                           weight_decay=config.train.weight_decay)
@@ -27,6 +42,22 @@ class TrainHelper(object):
 
     def save_epoch(self, epoch: int, train_stat: dir, id_val_stat: dir, id_test_stat: dir, val_stat: dir,
                    test_stat: dir, config: Union[CommonArgs, Munch]):
+        r"""
+        training util for checkpoint saving.
+
+        Args:
+            epoch (int): epoch number
+            train_stat (dir): train statistics
+            id_val_stat (dir): in-domain validation statistics
+            id_test_stat (dir): in-domain test statistics
+            val_stat (dir): ood validation statistics
+            test_stat (dir): ood test statistics
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.ckpt_dir`, :obj:`config.dataset`, :obj:`config.train`, :obj:`config.model`, :obj:`config.metric`, :obj:`config.log_path`, :obj:`config.ood`)
+
+        Returns:
+            None
+
+        """
 
         ckpt = {
             'state_dict': self.model.state_dict(),
@@ -101,6 +132,18 @@ class TrainHelper(object):
 
 
 def nan2zero_get_mask(data, task, config: Union[CommonArgs, Munch]):
+    r"""
+    training data filter masks to process NAN.
+
+    Args:
+        data (Batch): input data
+        task (str): mask function type
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.model_level`)
+
+    Returns (Tensor):
+        [mask (Tensor) - NAN masks for data formats, targets (Tensor) - input labels]
+
+    """
     if config.model.model_level == 'node':
         if 'train' in task:
             mask = data.train_mask

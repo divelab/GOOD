@@ -13,6 +13,9 @@ from torch.nn.functional import cross_entropy, l1_loss, binary_cross_entropy_wit
 
 
 class Metric(object):
+    r"""
+    metric function module that is consist of a Metric class which incorporate many score and loss functions
+    """
 
 
     def __init__(self):
@@ -40,11 +43,31 @@ class Metric(object):
         self.id_best_stat = {'score': None, 'loss': float('inf')}
 
     def set_loss_func(self, task_name):
+        r"""
+        set the loss function
+
+        Args:
+            task_name (str): name of task
+
+        Returns:
+            None
+
+        """
         self.dataset_task = task_name
         self.loss_func = self.task2loss.get(task_name)
         assert self.loss_func is not None
 
     def set_score_func(self, metric_name):
+        r"""
+        set the metric function
+
+        Args:
+            metric_name: name of metric
+
+        Returns:
+            None
+
+        """
         self.score_func = self.score_name2score.get(metric_name)
         assert self.score_func is not None
         self.score_name = metric_name.upper()
@@ -54,6 +77,17 @@ class Metric(object):
             self.lower_better = -1
 
     def f1(self, y_true, y_pred):
+        r"""
+        calculate F1 score
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            F1 score
+
+        """
         true = torch.tensor(y_true)
         pred_label = torch.tensor(y_pred)
         pred_label = pred_label.round() if self.dataset_task == "Binary classification" else torch.argmax(pred_label,
@@ -61,15 +95,59 @@ class Metric(object):
         return f1_score(true, pred_label, average='micro')
 
     def ap(self, y_true, y_pred):
+        r"""
+        calculate AP score
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            AP score
+
+        """
         return average_precision_score(torch.tensor(y_true).long(), torch.tensor(y_pred))
 
     def roc_auc_score(self, y_true, y_pred):
+        r"""
+        calculate roc_auc score
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            roc_auc score
+
+        """
         return sk_roc_auc(torch.tensor(y_true).long(), torch.tensor(y_pred), multi_class='ovo')
 
     def reg_absolute_error(self, y_true, y_pred):
+        r"""
+        calculate absolute regression error
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            absolute regression error
+
+        """
         return mean_absolute_error(torch.tensor(y_true), torch.tensor(y_pred))
 
     def acc(self, y_true, y_pred):
+        r"""
+        calculate accuracy score
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            accuracy score
+
+        """
         true = torch.tensor(y_true)
         pred_label = torch.tensor(y_pred)
         pred_label = pred_label.round() if self.dataset_task == "Binary classification" else torch.argmax(pred_label,
@@ -77,8 +155,31 @@ class Metric(object):
         return accuracy_score(true, pred_label)
 
     def rmse(self, y_true, y_pred):
+        r"""
+        calculate RMSE
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            RMSE
+
+        """
         return sqrt(mean_squared_error(y_true, y_pred))
 
     def cross_entropy_with_logit(self, y_pred: torch.Tensor, y_true: torch.Tensor, **kwargs):
+        r"""
+        calculate cross entropy loss
+
+        Args:
+            y_pred (torch.tensor): label predictions
+            y_true (torch.tensor): input labels
+            **kwargs: key word arguments for the use of :func:`~torch.nn.functional.cross_entropy`
+
+        Returns:
+            cross entropy loss
+
+        """
         return cross_entropy(y_pred, y_true.long(), **kwargs)
 
