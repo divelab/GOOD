@@ -130,5 +130,15 @@ class CommonArgs(Tap):
 
 
 def args_parser(argv=None):
+    r"""
+    Arguments parser
+
+    Args:
+        argv: input arguments
+
+    Returns:
+        General arguments
+
+    """
     common_args = CommonArgs(argv=argv).parse_args(args=argv, known_only=True)
     return common_args
