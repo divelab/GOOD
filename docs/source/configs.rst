@@ -37,7 +37,7 @@ GOOD Configs and command line Arguments (CA)
 
 There are several advantages of using our configuration strategy.
 
-- Convenient: GOOD CA allows reading configs from yaml files with :ref:`include <configs:include>` support.
+- Convenient: GOOD CA allows reading configs from yaml files with :obj:`include` support.
 - Flexible: GOOD CA enables overwriting specific reading configs by passing command line arguments.
 - Diversified access & code-complete support: With the help of `Munch <https://github.com/Infinidat/munch>`_, we can
 access configs in both dictionary and objective ways. In GOOD, configs and command line arguments are coherent connected;

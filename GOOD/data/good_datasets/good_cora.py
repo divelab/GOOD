@@ -12,42 +12,48 @@ import gdown
 import numpy as np
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip
+from torch_geometric.data import InMemoryDataset, extract_zip, Data
 from torch_geometric.datasets import CitationFull
 from torch_geometric.utils import degree
 from tqdm import tqdm
 
 
 class DomainGetter(object):
+    r"""
+    A class containing methods for data domain extraction.
+    """
     def __init__(self):
         pass
 
-    def get_degree(self, graph):
+    def get_degree(self, graph: Data) -> int:
         """
         Args:
-            graph: The smile string in raw data.
+            graph (Data): The PyG Data object.
         Returns:
-            The scaffold string of a smile.
+            The degrees of the given graph.
         """
         try:
             node_degree = degree(graph.edge_index[0], graph.num_nodes)
             return node_degree
-        except ValueError:
-            print('get scaffold error')
-            return 'C'
+        except ValueError as e:
+            print('#E#Get degree error.')
+            raise e
 
-    def get_word(self, graph):
+    def get_word(self, graph: Data) -> int:
         """
         Args:
-            graph: The smile string in raw data.
+            graph (Data): The PyG Data object.
         Returns:
-            The number of atoms in a smile.
+            The word diversity value of the graph.
         """
         num_word = graph.x.sum(1)
         return num_word
 
 
 class DataInfo(object):
+    r"""
+    The class for data point storage. This enables tackling node data point like graph data point, facilitating data splits.
+    """
     def __init__(self, idx, y):
         super(DataInfo, self).__init__()
         self.storage = []
@@ -75,15 +81,14 @@ class GOODCora(InMemoryDataset):
     <https://arxiv.org/abs/1707.03815>`_.
 
     Args:
-        root:
-        name:
-        shift:
-        subset:
-        transform:
-        pre_transform:
+        root (str): The dataset saving root.
+        domain (str): The domain selection. Allowed: 'degree' and 'word'.
+        shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+        generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
 
-    def __init__(self, root, domain, shift='no_shift', transform=None, pre_transform=None, generate=False):
+    def __init__(self, root: str, domain: str, shift: str = 'no_shift', transform=None, pre_transform=None,
+                 generate: bool = False):
 
         self.name = self.__class__.__name__
         self.domain = domain
@@ -416,7 +421,22 @@ class GOODCora(InMemoryDataset):
             torch.save((data, slices), self.processed_paths[i])
 
     @staticmethod
-    def load(dataset_root, domain, shift='no_shift', generate=False):
+    def load(dataset_root: str, domain: str, shift: str = 'no_shift', generate: bool = False):
+        r"""
+        A staticmethod for dataset loading. This method instantiates dataset class, constructing train, id_val, id_test,
+        ood_val (val), and ood_test (test) splits. Besides, it collects several dataset meta information for further
+        utilization.
+
+        Args:
+            dataset_root (str): The dataset saving root.
+            domain (str): The domain selection. Allowed: 'degree' and 'time'.
+            shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+            generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
+
+        Returns:
+            dataset or dataset splits.
+            dataset meta info.
+        """
         meta_info = Munch()
         meta_info.dataset_type = 'real'
         meta_info.model_level = 'node'

@@ -1,13 +1,11 @@
-from GOOD import config_summoner, args_parser
-from GOOD.kernel.pipeline import initialize_model_dataset, load_ood_alg, load_task, load_logger, config_model, evaluate
-from torch_geometric.data import extract_zip
-from pathlib import Path
-from GOOD.definitions import ROOT_DIR, STORAGE_DIR
 import os
-import gdown
-import pytest
-from GOOD.kernel.pipeline import main
+from pathlib import Path
 
+import pytest
+
+from GOOD import config_summoner, args_parser
+from GOOD.definitions import ROOT_DIR, STORAGE_DIR
+from GOOD.kernel.pipeline import initialize_model_dataset, load_ood_alg, load_task, load_logger
 
 
 class Rerunner(object):

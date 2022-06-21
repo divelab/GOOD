@@ -4,7 +4,7 @@ The Graph Neural Network from the `"Neural Message Passing for Quantum Chemistry
 """
 import torch
 import torch.nn as nn
-
+from torch import Tensor
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
@@ -20,7 +20,7 @@ class vGIN(GNNBasic):
         <https://proceedings.mlr.press/v70/gilmer17a.html>`_ paper.
 
         Args:
-            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`)
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
     """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
@@ -30,9 +30,16 @@ class vGIN(GNNBasic):
         self.graph_repr = None
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
-        """
-        :param Required[data]: Batch - input data
-        :return:
+        r"""
+        The vGIN model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            label predictions
+
         """
         out_readout = self.feat_encoder(*args, **kwargs)
 
@@ -41,6 +48,12 @@ class vGIN(GNNBasic):
 
 
 class vGINFeatExtractor(GNNBasic):
+    r"""
+        vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(vGINFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
@@ -52,6 +65,16 @@ class vGINFeatExtractor(GNNBasic):
             self.edge_feat = False
 
     def forward(self, *args, **kwargs):
+        r"""
+        vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            node feature representations
+        """
         if self.edge_feat:
             x, edge_index, edge_attr, batch = self.arguments_read(*args, **kwargs)
             out_readout = self.encoder(x, edge_index, edge_attr, batch)
@@ -82,12 +105,29 @@ class VirtualNodeEncoder(torch.nn.Module):
 
 
 class vGINEncoder(GINEncoder, VirtualNodeEncoder):
+    r"""
+    The vGIN encoder for non-molecule data, using the :class:`~vGINConv` operator for message passing.
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.model.dropout_rate`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(vGINEncoder, self).__init__(config)
         self.config = config
 
     def forward(self, x, edge_index, batch):
+        r"""
+        The vGIN encoder for non-molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            batch (Tensor): batch indicator
+
+        Returns (Tensor):
+            node feature representations
+        """
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
 
@@ -109,12 +149,29 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
 
 
 class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
+    r"""The vGIN encoder for molecule data, using the :class:`~vGINEConv` operator for message passing.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.model.dropout_rate`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(vGINMolEncoder, self).__init__(config)
         self.config = config
 
     def forward(self, x, edge_index, edge_attr, batch):
+        r"""
+        The vGIN encoder for molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_attr (Tensor): edge attributes
+            batch (Tensor): batch indicator
+
+        Returns (Tensor):
+            node feature representations
+        """
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
 

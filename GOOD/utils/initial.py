@@ -10,6 +10,14 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def init(config: Union[CommonArgs, Munch]):
+    r"""
+    Initial process for fixing all possible random seed.
+
+    Args:
+       config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.random_seed`)
+
+
+    """
     # Fix Random seed
     random.seed(config.random_seed)
     np.random.seed(config.random_seed)

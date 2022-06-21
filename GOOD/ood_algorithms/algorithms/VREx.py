@@ -3,7 +3,8 @@ Implementation of the VREx algorithm from `"Out-of-Distribution Generalization v
 <http://proceedings.mlr.press/v139/krueger21a.html>`_ paper
 """
 import torch
-
+from torch import Tensor
+from torch_geometric.data import Batch
 from GOOD import register
 from GOOD.ood_algorithms.algorithms.BaseOOD import BaseOODAlg
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
@@ -21,7 +22,7 @@ class VREx(BaseOODAlg):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(VREx, self).__init__(config)
 
-    def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+    def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
         Process loss based on VREx algorithm
 
@@ -39,7 +40,7 @@ class VREx(BaseOODAlg):
                                    })
 
 
-        Returns (float):
+        Returns (Tensor):
             loss based on VREx algorithm
 
         """

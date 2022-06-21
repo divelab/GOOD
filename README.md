@@ -37,21 +37,21 @@ The GOOD dataset summaries are shown in the following figure.
 
 ## Why GOOD?
 
-Whether you are an experienced researcher for graph out-of-distribution problem or a first-time learner of graph deep learning, 
-here are several reasons for you to use GOOD as your Graph OOD research, study, and development toolkit.
+Whether you are an experienced researcher of graph out-of-distribution problems or a first-time learner of graph deep learning, 
+here are several reasons to use GOOD as your Graph OOD research, study, and development toolkit.
 
-* **Easy-to-use APIs:** GOOD provides simple apis for loading OOD algorithms, graph neural networks, and datasets, so that you can take only several lines of code to start.
+* **Easy-to-use APIs:** GOOD provides simple APIs for loading OOD algorithms, graph neural networks, and datasets so that you can take only several lines of code to start.
 * **Flexibility:** Full OOD split generalization code is provided for extensions and any new graph OOD dataset contributions.
-OOD algorithm base class can be easily overwrite to create new OOD methods.
-* **Easy-to-extend architecture:** In addition to play as a package, GOOD is also an integrated and well-organized project ready to be further developed.
+OOD algorithm base class can be easily overwritten to create new OOD methods.
+* **Easy-to-extend architecture:** In addition to playing as a package, GOOD is also an integrated and well-organized project ready to be further developed.
 All algorithms, models, and datasets can be easily registered by `register` and automatically embedded into the designed pipeline like a breeze!
-The only thing the user need to do is writing your own OOD algorithm class, your own model class, or your new dataset class.
+The only thing the user needs to do is write your own OOD algorithm class, your own model class, or your new dataset class.
 Then you can compare your results with the leaderboard.
-* **Easy comparisons with the leaderboard:** We provide insightful comparisons from multiple perspectives. Any researches and studies can use
-our leaderboard results for comparison. Note that, this is a growing project, so we will include new OOD algorithms gradually.
+* **Easy comparisons with the leaderboard:** We provide insightful comparisons from multiple perspectives. Any research and studies can use
+our leaderboard results for comparison. Note that this is a growing project, so we will include new OOD algorithms gradually.
 Besides, if you hope to include your algorithms in the leaderboard, please contact us or contribute to this project. A big welcome!
 * **Reproducibility:** 
-  * OOD Datasets: GOOD provides full OOD split generalization code for reproduction, and generation for new datasets.
+  * OOD Datasets: GOOD provides full OOD split generalization code to reproduce or generate new datasets.
   * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
 
 
@@ -86,7 +86,7 @@ pip install -e .
 ### Module usage
 
 #### GOOD datasets
-There are two ways to import 8 GOOD datasets with 14 domain selections and totally 42 splits, but for simplicity, we only show one of them.
+There are two ways to import 8 GOOD datasets with 14 domain selections and a total 42 splits, but for simplicity, we only show one of them.
 Please refer to [Tutorial](https://good.readthedocs.io/en/latest/tutorial.html) for more details.
 ```python
 # Directly import
@@ -96,7 +96,7 @@ hiv_datasets, hiv_meta_info = GOODHIV.load(dataset_root, domain='scaffold', shif
 
 #### GOOD GNNs
 The best and fair way to compare algorithms with the leaderboard is to use the same and similar graph encoder structure;
-therefore, we provide GOOD GNN apis to support. Here, we use an objectified dictionary `config` to pass parameters. More
+therefore, we provide GOOD GNN APIs to support. Here, we use an objectified dictionary `config` to pass parameters. More
 details about the config: [Documents of config](https://good.readthedocs.io/en/latest/configs.html)
 
 *To use exact GNN*
@@ -121,7 +121,7 @@ ood_algorithm = VREx(config)
 
 ### Project usage
 
-It is a good beginning to directly make it work. Here, we provide command line script `goodtg` (GOOD to go) to access the main function located at `GOOD.kernel.pipeline:main`.
+It is a good beginning to make it work directly. Here, we provide the command line script `goodtg` (GOOD to go) to access the main function located at `GOOD.kernel.pipeline:main`.
 Choosing a config file in `configs/GOOD_configs`, we can start a task:
 
 ```shell
@@ -161,7 +161,7 @@ We further provide two tests: dataset regeneration test and test result check.
 
 ### Dataset regeneration test
 
-This test regenerates all datasets again and compares them with the datasets using in original training process locates.
+This test regenerates all datasets again and compares them with the datasets used in the original training process locates.
 Test details can be found at [test_regenerate_datasets.py](/../../blob/main/test/test_reproduce_full/test_regenerate_datasets.py).
 For a quick review, we provide a [full regeneration test report](https://drive.google.com/file/d/1jIShh3eBXAQ_oQCFL9AVU3OpUlVprsbo/view?usp=sharing).
 
@@ -169,7 +169,7 @@ For a quick review, we provide a [full regeneration test report](https://drive.g
 
 This test loads [all checkpoints in round 1](https://drive.google.com/file/d/17FfHYCP0-wwUILPD-PczwjjrYQHKxU-l/view?usp=sharing) and
 compares their results with saved ones. Test details can be found at [test_reproduce_round1.py](/../../blob/main/test/test_reproduce_full/test_reproduce_round1.py).
-For a fast review, we also post our [full round1 reproduce report](https://drive.google.com/file/d/1kR4k0E0y6Rtcx4WbjevSxKviHrkx3G1y/view?usp=sharing).
+For a quick review, we also post our [full round1 reproduce report](https://drive.google.com/file/d/1kR4k0E0y6Rtcx4WbjevSxKviHrkx3G1y/view?usp=sharing).
 
 These reports are in `html` format. Please download them and open them in your browser.: )
 

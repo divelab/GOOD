@@ -42,8 +42,8 @@ class GIN(GNNBasic):
         The GIN model implementation.
 
         Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
             label predictions
@@ -77,8 +77,8 @@ class GINFeatExtractor(GNNBasic):
         GIN feature extractor using the :class:`~GINEncoder` or :class:`~GINMolEncoder`.
 
         Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.model.BaseGNN.GNNBasic.arguments_read>`
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
             node feature representations
@@ -93,10 +93,11 @@ class GINFeatExtractor(GNNBasic):
 
 
 class GINEncoder(BasicEncoder):
-    r"""The GIN encoder for non-molecule data, using the :class:`~GINConv` operator for message passing.
+    r"""
+    The GIN encoder for non-molecule data, using the :class:`~GINConv` operator for message passing.
 
-        Args:
-            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
     """
 
     def __init__(self, config: Union[CommonArgs, Munch], *args):
@@ -373,7 +374,7 @@ class GINConv(gnn.GINConv):
         r"""The initial call to start propagating messages.
 
         Args:
-            adj (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
+            edge_index (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
                 :obj:`torch_sparse.SparseTensor` that defines the underlying
                 graph connectivity/message passing flow.
                 :obj:`edge_index` holds the indices of a general (sparse)

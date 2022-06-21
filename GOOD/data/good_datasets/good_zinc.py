@@ -21,29 +21,33 @@ from .orig_zinc import ZINC
 
 
 class DomainGetter():
+    r"""
+    A class containing methods for data domain extraction.
+    """
+
     def __init__(self):
         pass
 
-    def get_scaffold(self, smile):
+    def get_scaffold(self, smile: str) -> str:
         """
         Args:
-            smile: The smile string in raw data.
+            smile (str): A smile string for a molecule.
         Returns:
-            The scaffold string of a smile.
+            The scaffold string of the smile.
         """
         try:
             scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=Chem.MolFromSmiles(smile), includeChirality=False)
             return scaffold
-        except ValueError:
-            print('get scaffold error')
-            return 'C'
+        except ValueError as e:
+            print('Get scaffold error.')
+            raise e
 
-    def get_nodesize(self, smile):
+    def get_nodesize(self, smile: str) -> int:
         """
         Args:
-            smile: The smile string in raw data.
+            smile (str): A smile string for a molecule.
         Returns:
-            The number of atoms in a smile.
+            The number of node in the molecule.
         """
         mol = Chem.MolFromSmiles(smile)
         if (mol is None):
@@ -63,16 +67,16 @@ class GOODZINC(InMemoryDataset):
     <https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00559>`_.
 
     Args:
-        root:
-        domain:
-        shift:
-        subset:
-        transform:
-        pre_transform:
-        generate:
+        root (str): The dataset saving root.
+        domain (str): The domain selection. Allowed: 'scaffold' and 'size'.
+        shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+        subset (str): The split set. Allowed: 'train', 'id_val', 'id_test', 'val', and 'test'. When shift='no_shift',
+            'id_val' and 'id_test' are not applicable.
+        generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
 
-    def __init__(self, root, domain, shift='no_shift', subset='train', transform=None, pre_transform=None, generate=False):
+    def __init__(self, root: str, domain: str, shift: str = 'no_shift', subset: str = 'train', transform=None,
+                 pre_transform=None, generate: bool = False):
 
         self.name = self.__class__.__name__
         self.mol_name = 'ZINC'
@@ -177,8 +181,8 @@ class GOODZINC(InMemoryDataset):
 
         num_id_test = int(num_data * test_ratio)
         random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
+                                                train_list[-2 * num_id_test: - num_id_test], \
                                                 train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
@@ -318,7 +322,6 @@ class GOODZINC(InMemoryDataset):
 
         return all_env_list
 
-
     def get_domain_sorted_list(self, data_list, domain='scaffold'):
         if domain == 'size':
             domain = 'nodesize'
@@ -371,22 +374,34 @@ class GOODZINC(InMemoryDataset):
             torch.save((data, slices), self.processed_paths[i])
 
     @staticmethod
-    def load(dataset_root, domain, shift='no_shift', generate=False):
+    def load(dataset_root: str, domain: str, shift: str = 'no_shift', generate: bool = False):
+        r"""
+        A staticmethod for dataset loading. This method instantiates dataset class, constructing train, id_val, id_test,
+        ood_val (val), and ood_test (test) splits. Besides, it collects several dataset meta information for further
+        utilization.
+
+        Args:
+            dataset_root (str): The dataset saving root.
+            domain (str): The domain selection. Allowed: 'degree' and 'time'.
+            shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
+            generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
+
+        Returns:
+            dataset or dataset splits.
+            dataset meta info.
+        """
         meta_info = Munch()
-        """
-        :param name: OODZINC_nodesize
-        :param shift: no_shift, covariate, concept
-        :return:
-        """
         meta_info.dataset_type = 'mol'
         meta_info.model_level = 'graph'
 
         train_dataset = GOODZINC(root=dataset_root,
                                  domain=domain, shift=shift, subset='train', generate=generate)
         id_val_dataset = GOODZINC(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
+                                  domain=domain, shift=shift, subset='id_val',
+                                  generate=generate) if shift != 'no_shift' else None
         id_test_dataset = GOODZINC(root=dataset_root,
-                                   domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
+                                   domain=domain, shift=shift, subset='id_test',
+                                   generate=generate) if shift != 'no_shift' else None
         val_dataset = GOODZINC(root=dataset_root,
                                domain=domain, shift=shift, subset='val', generate=generate)
         test_dataset = GOODZINC(root=dataset_root,
@@ -397,9 +412,7 @@ class GOODZINC(InMemoryDataset):
             id_test_dataset.data.y = id_test_dataset.data.y.reshape(-1, 1)
         val_dataset.data.y = val_dataset.data.y.reshape(-1, 1)
         test_dataset.data.y = test_dataset.data.y.reshape(-1, 1)
-        # --- dataset._data_list is the data buffer, you have to clear it after changing data ---
-        # --- the code above write dataset[0] to dataset._data_list automatically.
-        # Indeed, it can be considered as a kind of bug ---
+
         meta_info.dim_node = train_dataset.num_node_features
         meta_info.dim_edge = train_dataset.num_edge_features
 

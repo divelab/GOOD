@@ -13,6 +13,21 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def load_logger(config: Union[CommonArgs, Munch], sub_print=True):
+    r"""
+    Logger loader
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.log_path`, :obj:`config.tensorboard_logdir`, :obj:`config.log_file`)
+        sub_print (bool): Whether the logger substitutes general print function. If Ture, logger.info will be equal to
+            print(f'#IN#Message'), where #IN# represents info. Similarly, other level of log can be used by adding prefixes
+            (Not capital sensitive): Debug: #d#, #De#, #Debug#, etc. Info: #I#, #In#, #inf#, #INFO#, etc. Important: #IM#,
+            #important#, etc. Warning: #W#, #war#, etc. Error: #E#, #err#, etc. Critical: #C#, #Cri#, #critical#, etc. If
+            there is no prefix, the general print function will be used.
+
+    Returns:
+        [cilog Logger, tensorboard summary writer]
+
+    """
     if sub_print:
         print("This logger will substitute general print function")
     logger = create_logger(name='GNN_log',

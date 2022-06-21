@@ -7,6 +7,16 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 def load_ood_alg(name, config: Union[CommonArgs, Munch]):
+    r"""
+    OOD algorithm loader.
+    Args:
+        name: Name of the chosen OOD algorithm.
+        config: please refer to specific algorithms for required configs.
+
+    Returns:
+        An OOD algorithm object.
+
+    """
     try:
         ood_algorithm: BaseOODAlg = register.ood_algs[name](config)
     except KeyError as e:

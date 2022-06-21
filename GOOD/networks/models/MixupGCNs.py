@@ -1,3 +1,7 @@
+"""
+GCN implementation of the Mixup algorithm from `"Mixup for Node and Graph Classification"
+<https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper
+"""
 from typing import Optional, Tuple
 
 import torch
@@ -19,6 +23,14 @@ from .Classifiers import Classifier
 
 @register.model_register
 class Mixup_GCN(GNNBasic):
+    r"""
+    The Graph Neural Network modified from the `"Mixup for Node and Graph Classification"
+    <https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper and `"Semi-supervised Classification with Graph Convolutional Networks"
+    <https://arxiv.org/abs/1609.02907>`_ paper.
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super().__init__(config)
@@ -27,9 +39,16 @@ class Mixup_GCN(GNNBasic):
         self.graph_repr = None
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
-        """
-        :param Required[data]: Batch - input data
-        :return:
+        r"""
+        The Mixup-GCN model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            label predictions
+
         """
         out_readout = self.feat_encoder(*args, **kwargs)
 
@@ -38,6 +57,12 @@ class Mixup_GCN(GNNBasic):
 
 
 class MixupGCNFeatExtractor(BasicEncoder, GNNBasic):
+    r"""
+        Mixup-GCN feature extractor using the :class:`~MixUpGCNConv` operator.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(MixupGCNFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
@@ -51,6 +76,17 @@ class MixupGCNFeatExtractor(BasicEncoder, GNNBasic):
         self.edge_feat = False
 
     def forward(self, *args, **kwargs):
+        r"""
+        The Mixup-GCN model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): (1) dictionary of OOD args (:obj:`kwargs.ood_algorithm`) (2) key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            node feature representations
+
+        """
         ood_algorithm = kwargs.get('ood_algorithm')
         x, edge_index, edge_weight, batch = self.arguments_read(*args, **kwargs)
 
@@ -101,7 +137,8 @@ class MixupGCNFeatExtractor(BasicEncoder, GNNBasic):
 
 
 class MixUpGCNConv(gnn.MessagePassing):
-    r"""The graph convolutional operator from the `"Semi-supervised
+    r"""The graph convolutional operator from the `"Mixup for Node and Graph Classification"
+    <https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper and `"Semi-supervised
     Classification with Graph Convolutional Networks"
     <https://arxiv.org/abs/1609.02907>`_ paper
 

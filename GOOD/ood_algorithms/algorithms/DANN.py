@@ -3,7 +3,8 @@ Implementation of the DANN algorithm from `"Domain-Adversarial Training of Neura
 <https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper
 """
 import torch
-
+from torch import Tensor
+from torch_geometric.data import Batch
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseOOD import BaseOODAlg
@@ -22,7 +23,7 @@ class DANN(BaseOODAlg):
         super(DANN, self).__init__(config)
         self.dc_pred = None
 
-    def output_postprocess(self, model_output, **kwargs):
+    def output_postprocess(self, model_output: Tensor, **kwargs) -> Tensor:
         r"""
         Process the raw output of model; get domain classifier predictions
 
@@ -36,7 +37,7 @@ class DANN(BaseOODAlg):
         self.dc_pred = model_output[1]
         return model_output[0]
 
-    def loss_postprocess(self, loss, data, mask, config: Union[CommonArgs, Munch], **kwargs):
+    def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
         Process loss based on DANN algorithm
 
@@ -53,7 +54,7 @@ class DANN(BaseOODAlg):
                                    ood: {ood_param: float(0.1)}
                                    })
 
-        Returns (float):
+        Returns (Tensor):
             loss based on DANN algorithm
 
         """

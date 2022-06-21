@@ -1,19 +1,36 @@
 r"""Training pipeline: training/evaluation structure, batch training.
 """
 
+from typing import Dict
+
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from torch_geometric.data.batch import Batch
 from tqdm import tqdm
 
 from GOOD.kernel.evaluation import evaluate
 from GOOD.networks.model_manager import config_model
+from GOOD.ood_algorithms.algorithms.BaseOOD import BaseOODAlg
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from GOOD.utils.logger import pbar_setting
 from GOOD.utils.train import nan2zero_get_mask
 
 
-def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm, pbar, config: Union[CommonArgs, Munch]):
+def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm: BaseOODAlg, pbar,
+                config: Union[CommonArgs, Munch]) -> dict:
+    r"""
+    Train a batch. (Project use only)
+
+    Args:
+        model (torch.nn.Module): The GNN model.
+        data (Batch): Current batch of data.
+        ood_algorithm (BaseOODAlg: The OOD algorithm.
+        config (Union[CommonArgs, Munch]): Please refer to :ref:`configs:GOOD Configs and command line Arguments (CA)`.
+
+    Returns:
+        Calculated loss.
+    """
     data = data.to(config.device)
 
     config.train_helper.optimizer.zero_grad()
@@ -36,7 +53,18 @@ def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm, pbar, config
     return {'loss': loss.detach()}
 
 
-def train(model, loader, ood_algorithm, config: Union[CommonArgs, Munch]):
+def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader]], ood_algorithm: BaseOODAlg,
+          config: Union[CommonArgs, Munch]):
+    r"""
+    Training pipeline. (Project use only)
+
+    Args:
+        model (torch.nn.Module): The GNN model.
+        loader (Union[DataLoader, Dict[str, DataLoader]]): The data loader.
+        ood_algorithm (BaseOODAlg): The OOD algorithm.
+        config (Union[CommonArgs, Munch]): Please refer to :ref:`configs:GOOD Configs and command line Arguments (CA)`.
+
+    """
     # config model
     print('#D#Config model')
     config_model(model, 'train', config)

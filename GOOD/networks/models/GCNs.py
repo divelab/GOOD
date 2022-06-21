@@ -7,8 +7,6 @@ import torch.nn as nn
 import torch_geometric.nn as gnn
 from torch import Tensor
 from torch_geometric.typing import Adj, OptTensor, Size
-from torch_geometric.utils import add_remaining_self_loops
-from torch_geometric.utils.num_nodes import maybe_num_nodes
 from torch_sparse import SparseTensor
 
 from GOOD import register
@@ -19,6 +17,14 @@ from .Classifiers import Classifier
 
 @register.model_register
 class GCN(GNNBasic):
+    r"""
+    The Graph Neural Network from the `"Semi-supervised
+    Classification with Graph Convolutional Networks"
+    <https://arxiv.org/abs/1609.02907>`_ paper.
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_classes`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super().__init__(config)
@@ -27,9 +33,16 @@ class GCN(GNNBasic):
         self.graph_repr = None
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
-        """
-        :param Required[data]: Batch - input data
-        :return:
+        r"""
+        The GCN model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            label predictions
+
         """
         out_readout = self.feat_encoder(*args, **kwargs)
 
@@ -38,47 +51,69 @@ class GCN(GNNBasic):
 
 
 class GCNFeatExtractor(GNNBasic):
+    r"""
+        GCN feature extractor using the :class:`~GCNEncoder` .
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    """
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GCNFeatExtractor, self).__init__(config)
         self.encoder = GCNEncoder(config)
         self.edge_feat = False
 
     def forward(self, *args, **kwargs):
+        r"""
+        GCN feature extractor using the :class:`~GCNEncoder` .
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            node feature representations
+        """
         x, edge_index, edge_weight, batch = self.arguments_read(*args, **kwargs)
         out_readout = self.encoder(x, edge_index, edge_weight, batch)
         return out_readout
 
 
-class GCNEncoderNoBN(BasicEncoder):
-
-    def __init__(self, config: Union[CommonArgs, Munch]):
-        super(GCNEncoderNoBN, self).__init__(config)
-        num_layer = config.model.model_layer
-
-        self.conv1 = GCNConv(config.dataset.dim_node, config.model.dim_hidden)
-        self.convs = nn.ModuleList(
-            [
-                GCNConv(config.model.dim_hidden, config.model.dim_hidden)
-                for _ in range(num_layer - 1)
-            ]
-        )
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(config.model.dropout_rate)
-
-    def forward(self, x, edge_index, edge_weight, batch):
-        post_conv = self.conv1(x, edge_index, edge_weight)
-        post_conv = self.dropout1(self.relu1(post_conv))
-        for i, conv in enumerate(self.convs):
-            post_conv = conv(post_conv, edge_index, edge_weight)
-            if i < len(self.convs) - 1:
-                post_conv = self.relu(post_conv)
-            post_conv = self.dropout(post_conv)
-
-        out_readout = self.readout(post_conv, batch)
-        return out_readout
+# class GCNEncoderNoBN(BasicEncoder):
+#
+#     def __init__(self, config: Union[CommonArgs, Munch]):
+#         super(GCNEncoderNoBN, self).__init__(config)
+#         num_layer = config.model.model_layer
+#
+#         self.conv1 = GCNConv(config.dataset.dim_node, config.model.dim_hidden)
+#         self.convs = nn.ModuleList(
+#             [
+#                 GCNConv(config.model.dim_hidden, config.model.dim_hidden)
+#                 for _ in range(num_layer - 1)
+#             ]
+#         )
+#         self.relu = nn.ReLU()
+#         self.dropout = nn.Dropout(config.model.dropout_rate)
+#
+#     def forward(self, x, edge_index, edge_weight, batch):
+#         post_conv = self.conv1(x, edge_index, edge_weight)
+#         post_conv = self.dropout1(self.relu1(post_conv))
+#         for i, conv in enumerate(self.convs):
+#             post_conv = conv(post_conv, edge_index, edge_weight)
+#             if i < len(self.convs) - 1:
+#                 post_conv = self.relu(post_conv)
+#             post_conv = self.dropout(post_conv)
+#
+#         out_readout = self.readout(post_conv, batch)
+#         return out_readout
 
 
 class GCNEncoder(BasicEncoder):
+    r"""
+    The GCN encoder using the :class:`~GCNConv` operator for message passing.
+
+    Args:
+        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GCNEncoder, self).__init__(config)
@@ -93,6 +128,18 @@ class GCNEncoder(BasicEncoder):
         )
 
     def forward(self, x, edge_index, edge_weight, batch):
+        r"""
+        The GCN encoder.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_weight (Tensor): edge weights
+            batch (Tensor): batch indicator
+
+        Returns (Tensor):
+            node feature representations
+        """
         post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_weight))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
@@ -106,6 +153,21 @@ class GCNEncoder(BasicEncoder):
 
 
 class GCNConv(gnn.GCNConv):
+    r"""The graph convolutional operator from the `"Semi-supervised
+        Classification with Graph Convolutional Networks"
+        <https://arxiv.org/abs/1609.02907>`_ paper
+
+    Args:
+        *args (list): argument list for the use of arguments_read.
+        **kwargs (dict): Additional key word arguments for the use of arguments_read.
+
+    Shapes:
+        - **input:**
+          node features :math:`(|\mathcal{V}|, F_{in})`,
+          edge indices :math:`(2, |\mathcal{E}|)`,
+          edge weights :math:`(|\mathcal{E}|)` *(optional)*
+        - **output:** node features :math:`(|\mathcal{V}|, F_{out})`
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -117,7 +179,18 @@ class GCNConv(gnn.GCNConv):
 
     def forward(self, x: Tensor, edge_index: Adj,
                 edge_weight: OptTensor = None) -> Tensor:
-        """"""
+        r"""
+        The GCN graph convolutional operator.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_weight (Tensor): edge weights
+
+        Returns (Tensor):
+            node feature representations
+
+        """
 
         if self.normalize:
             if isinstance(edge_index, Tensor):
@@ -163,7 +236,7 @@ class GCNConv(gnn.GCNConv):
         r"""The initial call to start propagating messages.
 
         Args:
-            adj (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
+            edge_index (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
                 :obj:`torch_sparse.SparseTensor` that defines the underlying
                 graph connectivity/message passing flow.
                 :obj:`edge_index` holds the indices of a general (sparse)
@@ -241,60 +314,3 @@ class GCNConv(gnn.GCNConv):
             update_kwargs = self.inspector.distribute('update', coll_dict)
             return self.update(out, **update_kwargs)
 
-
-class GCNConv_LRP(gnn.GCNConv):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.edge_weight = None
-
-    def forward(self, x: Tensor, edge_index: Adj,
-                edge_weight: OptTensor = None) -> Tensor:
-        """"""
-
-        if self.normalize:
-            if isinstance(edge_index, Tensor):
-                cache = self._cached_edge_index
-                if cache is None:
-                    edge_index, edge_weight = self.gcn_norm(  # yapf: disable
-                        edge_index, edge_weight, x.size(self.node_dim),
-                        self.improved, self.add_self_loops, dtype=x.dtype)
-                    if self.cached:
-                        self._cached_edge_index = (edge_index, edge_weight)
-                else:
-                    edge_index, edge_weight = cache[0], cache[1]
-
-        # --- add require_grad ---
-        edge_weight.requires_grad_(True)
-
-        x = torch.matmul(x, self.weight)
-
-        # propagate_type: (x: Tensor, edge_weight: OptTensor)
-        out = self.propagate(edge_index, x=x, edge_weight=edge_weight,
-                             size=None)
-
-        if self.bias is not None:
-            out += -0.5 * torch.log(1 + torch.exp(-2 * self.bias))
-
-        # --- My: record edge_weight ---
-        self.edge_weight = edge_weight
-
-        return out
-
-    def gcn_norm(self, edge_index, edge_weight=None, num_nodes=None, improved=False,
-                 add_self_loops=True, dtype=None):
-        fill_value = 2. if improved else 1.
-
-        num_nodes = maybe_num_nodes(edge_index, num_nodes)
-
-        if edge_weight is None:
-            edge_weight = torch.ones((edge_index.size(1),), dtype=dtype,
-                                     device=edge_index.device)
-
-        if add_self_loops:
-            edge_index, tmp_edge_weight = add_remaining_self_loops(
-                edge_index, edge_weight, fill_value, num_nodes)
-            assert tmp_edge_weight is not None
-            edge_weight = tmp_edge_weight
-
-        return edge_index, edge_weight / 2

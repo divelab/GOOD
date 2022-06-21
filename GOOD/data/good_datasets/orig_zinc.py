@@ -1,5 +1,5 @@
 """
-The ZINC dataset from the `ZINC database
+The original 250k ZINC dataset from the `ZINC database
 <https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00559>`_ and the
 `"Automatic Chemical Design Using a Data-Driven Continuous Representation of Molecules"
 <https://arxiv.org/abs/1610.02415>`_ paper

@@ -16,7 +16,6 @@ from tap import Tap
 
 from GOOD.definitions import STORAGE_DIR
 from GOOD.utils.args import CommonArgs
-from GOOD.utils.args import args_parser
 from GOOD.utils.metric import Metric
 from GOOD.utils.train import TrainHelper
 
@@ -62,7 +61,8 @@ def merge_dicts(dict1: dict, dict2: dict):
 
 
 def load_config(path: str, previous_includes: list = []) -> dict:
-    r"""
+    r"""Config loader.
+    Loading configs from a config file.
 
     Args:
         path (str): The path to your yaml configuration file.
@@ -116,7 +116,17 @@ def load_config(path: str, previous_includes: list = []) -> dict:
     return config, duplicates_warning, duplicates_error
 
 
-def search_tap_args(args: CommonArgs, query):
+def search_tap_args(args: CommonArgs, query: str):
+    r"""
+    Search a key in command line arguments.
+
+    Args:
+        args (CommonArgs): Command line arguments.
+        query (str): The query for the target argument.
+
+    Returns:
+        A found or not flag and the target value if found.
+    """
     found = False
     value = None
     for key in args.class_variables.keys():
@@ -130,7 +140,19 @@ def search_tap_args(args: CommonArgs, query):
     return found, value
 
 
-def args2config(config: Union[CommonArgs, Munch], args):
+def args2config(config: Union[CommonArgs, Munch], args: CommonArgs):
+    r"""
+    Overwrite config by assigned arguments.
+    If an argument is not :obj:`None`, this argument has the highest priority; thus, it will overwrite the corresponding
+    config.
+
+    Args:
+        config (Union[CommonArgs, Munch]): Loaded configs.
+        args (CommonArgs): Command line arguments.
+
+    Returns:
+        Overwritten configs.
+    """
     for key in config.keys():
         if type(config[key]) is dict:
             args2config(config[key], args)
@@ -146,9 +168,23 @@ def args2config(config: Union[CommonArgs, Munch], args):
 
 
 def process_configs(config: Union[CommonArgs, Munch]):
+    r"""
+    Process loaded configs.
+    This process includes setting storage places for datasets, tensorboard logs, logs, and checkpoints. In addition,
+    we also set random seed for each experiment round, checkpoint saving gap, and gpu device. Finally, we connect the
+    config with two components :class:`GOOD.utils.metric.Metric` and :class:`GOOD.utils.train.TrainHelper` for easy and
+    unified accesses.
+
+    Args:
+        config (Union[CommonArgs, Munch]): Loaded configs.
+
+    Returns:
+        Configs after setting.
+    """
+    # --- Dataset setting ---
     if config.dataset.dataset_root is None:
         config.dataset.dataset_root = opj(STORAGE_DIR, 'datasets')
-    config.device = torch.device(f'cuda:{config.gpu_idx}' if torch.cuda.is_available() else 'cpu')
+
     # --- tensorboard directory setting ---
     config.tensorboard_logdir = opj(STORAGE_DIR, 'tensorboard', f'{config.dataset.dataset_name}')
     if config.dataset.shift_type:
@@ -159,6 +195,7 @@ def process_configs(config: Union[CommonArgs, Munch]):
     if config.exp_round:
         config.random_seed = config.exp_round * 97 + 13
 
+    # --- Log setting ---
     log_dir_root = opj(STORAGE_DIR, 'log', 'round' + str(config.exp_round))
     log_dirs = opj(log_dir_root, config.dataset.dataset_name, config.dataset.domain)
     if config.dataset.shift_type:
@@ -166,6 +203,7 @@ def process_configs(config: Union[CommonArgs, Munch]):
     log_dirs = opj(log_dirs, config.ood.ood_alg)
     config.log_path = opj(log_dirs, config.log_file + '.log')
 
+    # --- Checkpoint setting ---
     if config.ckpt_root is None:
         config.ckpt_root = opj(STORAGE_DIR, 'checkpoints')
     if config.ckpt_dir is None:
@@ -184,15 +222,26 @@ def process_configs(config: Union[CommonArgs, Munch]):
     config.test_ckpt = opj(config.ckpt_dir, f'best.ckpt')
     config.id_test_ckpt = opj(config.ckpt_dir, f'id_best.ckpt')
 
+    # --- Other settings ---
     if config.train.max_epoch > 100:
         config.train.save_gap = config.train.max_epoch // 10
+    config.device = torch.device(f'cuda:{config.gpu_idx}' if torch.cuda.is_available() else 'cpu')
 
-    # Attach train_helper and metric modules
+    # --- Attach train_helper and metric modules ---
     config.metric = Metric()
     config.train_helper = TrainHelper()
 
 
 def config_summoner(args: CommonArgs) -> Union[CommonArgs, Munch]:
+    r"""
+    A config loading and postprocessing function.
+
+    Args:
+        args (CommonArgs): Command line arguments.
+
+    Returns:
+        Processed configs.
+    """
     config, duplicate_warnings, duplicate_errors = load_config(args.config_path)
     args2config(config, args)
     config = munchify(config)
