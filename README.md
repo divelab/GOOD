@@ -68,13 +68,13 @@ GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-ver
 
 ### Pip (Beta)
 
-#### Only use modules independently (pending)
+#### Installation for only modules
 
 ```shell
 pip install graph-ood
 ```
 
-#### Take the advantages of whole project (recommended)
+#### Installation for Project usages (recommended)
 
 ```shell
 git clone https://github.com/divelab/GOOD.git && cd GOOD
@@ -97,7 +97,8 @@ hiv_datasets, hiv_meta_info = GOODHIV.load(dataset_root, domain='scaffold', shif
 #### GOOD GNNs
 The best and fair way to compare algorithms with the leaderboard is to use the same and similar graph encoder structure;
 therefore, we provide GOOD GNN APIs to support. Here, we use an objectified dictionary `config` to pass parameters. More
-details about the config: [Documents of config](https://good.readthedocs.io/en/latest/configs.html)
+details about the config: [Documents of config](https://good.readthedocs.io/en/latest/configs.html) In this case, we 
+recommend using this package for project usages.
 
 *To use exact GNN*
 ```python
