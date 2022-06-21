@@ -16,7 +16,6 @@ from tap import Tap
 
 from GOOD.definitions import STORAGE_DIR
 from GOOD.utils.args import CommonArgs
-from GOOD.utils.args import args_parser
 from GOOD.utils.metric import Metric
 from GOOD.utils.train import TrainHelper
 

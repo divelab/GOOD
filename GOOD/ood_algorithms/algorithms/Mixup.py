@@ -3,6 +3,7 @@ Implementation of the Mixup algorithm from `"Mixup for Node and Graph Classifica
 <https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper
 """
 import copy
+from typing import Tuple
 
 import numpy as np
 import torch
@@ -52,7 +53,7 @@ def idNode(data: Batch, id_a2b: Tensor, config: Union[CommonArgs, Munch]) -> Bat
     return data
 
 
-def shuffleData(data: Batch, config: Union[CommonArgs, Munch]) -> Tensor:
+def shuffleData(data: Batch, config: Union[CommonArgs, Munch]) -> Tuple[Batch, Tensor]:
     r"""
     Prepare data and index for node mixup. Modified from `"MixupForGraph/mixup.py"
     <https://github.com/vanoracai/MixupForGraph/blob/76c2f8b7138b597bdd95a33b0bb32376e3f55227/mixup.py#L46>`_ code.
@@ -94,13 +95,22 @@ class Mixup(BaseOODAlg):
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.model.model_level`, :obj:`config.metric.loss_func()`, :obj:`config.ood.ood_param`)
     """
+
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(Mixup, self).__init__(config)
         self.lam = None
         self.data_perm = None
         self.id_a2b = None
 
-    def input_preprocess(self, data: Batch, targets: Tensor, mask: Tensor, node_norm: Tensor, training: bool, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
+    def input_preprocess(self,
+                         data: Batch,
+                         targets: Tensor,
+                         mask: Tensor,
+                         node_norm: Tensor,
+                         training: bool,
+                         config: Union[CommonArgs, Munch],
+                         **kwargs
+                         ) -> Tuple[Batch, Tensor, Tensor, Tensor]:
         r"""
         Set input data and mask format to prepare for mixup
 
@@ -141,7 +151,8 @@ class Mixup(BaseOODAlg):
 
         return data, targets, mask, node_norm
 
-    def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor, config: Union[CommonArgs, Munch]) -> Tensor:
+    def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor,
+                       config: Union[CommonArgs, Munch]) -> Tensor:
         r"""
         Calculate loss based on Mixup algorithm
 

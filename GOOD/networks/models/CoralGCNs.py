@@ -2,8 +2,10 @@
 GCN implementation of the Deep Coral algorithm from `"Deep CORAL: Correlation Alignment for Deep Domain Adaptation"
 <https://link.springer.com/chapter/10.1007/978-3-319-49409-8_35>`_ paper
 """
+from typing import Tuple
+
 import torch
-from torch import Tensor
+
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
@@ -28,7 +30,7 @@ class Coral_GCN(GNNBasic):
         self.classifier = Classifier(config)
         self.graph_repr = None
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
         The Deep Coral-GCN model implementation.
 

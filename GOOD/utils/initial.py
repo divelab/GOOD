@@ -16,8 +16,6 @@ def init(config: Union[CommonArgs, Munch]):
     Args:
        config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.random_seed`)
 
-    Returns:
-        None
 
     """
     # Fix Random seed

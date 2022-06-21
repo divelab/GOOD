@@ -5,6 +5,7 @@ from abc import ABC
 from torch import Tensor
 from torch_geometric.data import Batch
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from typing import Tuple
 
 
 class BaseOODAlg(ABC):
@@ -19,7 +20,15 @@ class BaseOODAlg(ABC):
         self.mean_loss = None
         self.spec_loss = None
 
-    def input_preprocess(self, data: Batch, targets: Tensor, mask: Tensor, node_norm: Tensor, training: bool, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
+    def input_preprocess(self,
+                         data: Batch,
+                         targets: Tensor,
+                         mask: Tensor,
+                         node_norm: Tensor,
+                         training: bool,
+                         config: Union[CommonArgs, Munch],
+                         **kwargs
+                         ) -> Tuple[Batch, Tensor, Tensor, Tensor]:
         r"""
         Set input data format and preparations
 

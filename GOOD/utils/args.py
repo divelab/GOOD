@@ -67,7 +67,7 @@ class OODArgs(Tap):
     Correspond to ``ood`` configs in config files.
     """
     ood_alg: str = None  #: Name of the chosen OOD algorithm.
-    ood_param: Union[float, list, dict] = None  #: OOD algorithms' hyperparameter(s). Currently, most of algorithms use it as a float value.
+    ood_param: float = None  #: OOD algorithms' hyperparameter(s). Currently, most of algorithms use it as a float value.
 
 
 class Auto(Tap):

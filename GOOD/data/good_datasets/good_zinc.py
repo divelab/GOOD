@@ -24,6 +24,7 @@ class DomainGetter():
     r"""
     A class containing methods for data domain extraction.
     """
+
     def __init__(self):
         pass
 
@@ -180,8 +181,8 @@ class GOODZINC(InMemoryDataset):
 
         num_id_test = int(num_data * test_ratio)
         random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
+                                                train_list[-2 * num_id_test: - num_id_test], \
                                                 train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
@@ -321,7 +322,6 @@ class GOODZINC(InMemoryDataset):
 
         return all_env_list
 
-
     def get_domain_sorted_list(self, data_list, domain='scaffold'):
         if domain == 'size':
             domain = 'nodesize'
@@ -381,7 +381,7 @@ class GOODZINC(InMemoryDataset):
         utilization.
 
         Args:
-            root (str): The dataset saving root.
+            dataset_root (str): The dataset saving root.
             domain (str): The domain selection. Allowed: 'degree' and 'time'.
             shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
             generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
@@ -397,9 +397,11 @@ class GOODZINC(InMemoryDataset):
         train_dataset = GOODZINC(root=dataset_root,
                                  domain=domain, shift=shift, subset='train', generate=generate)
         id_val_dataset = GOODZINC(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
+                                  domain=domain, shift=shift, subset='id_val',
+                                  generate=generate) if shift != 'no_shift' else None
         id_test_dataset = GOODZINC(root=dataset_root,
-                                   domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
+                                   domain=domain, shift=shift, subset='id_test',
+                                   generate=generate) if shift != 'no_shift' else None
         val_dataset = GOODZINC(root=dataset_root,
                                domain=domain, shift=shift, subset='val', generate=generate)
         test_dataset = GOODZINC(root=dataset_root,

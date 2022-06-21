@@ -2,7 +2,6 @@ r"""A module that is consist of a GNN model loader and model configuration funct
 """
 import os
 
-import numpy
 import torch
 
 from GOOD import register

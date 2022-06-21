@@ -1,14 +1,15 @@
-from GOOD import config_summoner, args_parser
-from GOOD.kernel.pipeline import initialize_model_dataset, load_ood_alg, \
-    load_task, load_logger, config_model, evaluate, load_dataset, init
-from torch_geometric.data import extract_zip
-from pathlib import Path
-from GOOD.definitions import ROOT_DIR, STORAGE_DIR
 import os
-import gdown
 import shutil
-import torch
+from pathlib import Path
+
 import pytest
+import torch
+
+from GOOD import config_summoner, args_parser
+from GOOD.definitions import ROOT_DIR, STORAGE_DIR
+from GOOD.kernel.pipeline import load_dataset, init
+from GOOD.kernel.evaluation import evaluate
+
 
 class Regenerator(object):
     def __init__(self, config_path):
@@ -20,7 +21,8 @@ class Regenerator(object):
         download_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
         self.config.dataset.generate = True
-        self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets', self.config.dataset.dataset_name)
+        self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets',
+                                                        self.config.dataset.dataset_name)
         init(self.config)
         generate_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 

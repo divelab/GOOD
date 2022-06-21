@@ -293,7 +293,7 @@ class GOODCMNIST(InMemoryDataset):
         utilization.
 
         Args:
-            root (str): The dataset saving root.
+            dataset_root (str): The dataset saving root.
             domain (str): The domain selection. Allowed: 'degree' and 'time'.
             shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
             generate (bool): The flag for regenerating dataset. True: regenerate. False: download.

@@ -3,12 +3,12 @@ r"""An important training utils file for optimizers, schedulers, checkpoint savi
 import datetime
 import os
 import shutil
+from typing import Union
 
 import torch
-from torch import Tensor
-from torch_geometric.data import Batch
-from typing import Union
 from munch import Munch
+from torch_geometric.data import Batch
+
 from GOOD.utils.args import CommonArgs
 
 

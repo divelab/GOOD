@@ -12,6 +12,7 @@ from .BaseGNN import GNNBasic
 from .Classifiers import Classifier
 from .GINs import GINFeatExtractor
 from .GINvirtualnode import vGINFeatExtractor
+from typing import Tuple
 
 
 @register.model_register
@@ -36,7 +37,7 @@ class DANN_vGIN(GNNBasic):
         self.graph_repr = None
         self.config = config
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
         The DANN-vGIN model implementation.
 
@@ -80,7 +81,7 @@ class DANN_GIN(GNNBasic):
         self.graph_repr = None
         self.config = config
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
         The DANN-GIN model implementation.
 

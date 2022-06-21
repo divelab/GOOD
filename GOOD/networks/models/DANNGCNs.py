@@ -2,10 +2,13 @@
 GCN implementation of the DANN algorithm from `"Domain-Adversarial Training of Neural Networks"
 <https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper
 """
+from typing import Tuple
+
 import torch
 import torch.nn as nn
-from torch.autograd import Function
 from torch import Tensor
+from torch.autograd import Function
+
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
@@ -33,7 +36,7 @@ class DANN_GCN(GNNBasic):
         self.dc = nn.Linear(config.model.dim_hidden, config.dataset.num_envs)
         self.config = config
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
         The DANN-GCN model implementation.
 
@@ -58,6 +61,7 @@ class GradientReverseLayerF(Function):
     r"""
     Gradient reverse layer for DANN algorithm.
     """
+
     @staticmethod
     def forward(ctx, x, alpha):
         r"""

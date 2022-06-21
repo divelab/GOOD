@@ -25,10 +25,10 @@ class GNNBasic(torch.nn.Module):
     def arguments_read(self, *args, **kwargs):
         r"""
         It is an argument reading function for diverse model input formats.
-        Support formats are listed below:
-        - model(x, edge_index)
-        - model(x, edge_index, batch)
-        - model(data=data)
+        Support formats are:
+        ``model(x, edge_index)``
+        ``model(x, edge_index, batch)``
+        ``model(data=data)``.
 
         Notes:
             edge_weight is optional for node prediction tasks.

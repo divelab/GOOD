@@ -3,7 +3,7 @@ GIN and GIN-virtual implementation of the Mixup algorithm from `"Mixup for Node 
 <https://dl.acm.org/doi/abs/10.1145/3442381.3449796>`_ paper
 """
 import torch
-from torch import Tensor
+
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
