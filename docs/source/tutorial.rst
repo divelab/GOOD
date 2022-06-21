@@ -25,8 +25,8 @@ There are two ways to import 8 GOOD datasets with 14 domain selections and total
 GOOD GNNs
 ^^^^^^^^^^^^^
 The best and fair way to compare algorithms with the leaderboard is to use the same and similar graph encoder structure;
-therefore, we provide GOOD GNN apis to support. Here, we use an objectified dictionary `config` to pass parameters. More
-details about the config: [Document of config (pending)]()
+therefore, we provide GOOD GNN APIs to support. Here, we use an objectified dictionary `config` to pass parameters. More
+details about the config: :doc:`configs`
 
 *To use exact GNN*
 
@@ -57,7 +57,7 @@ Try to apply OOD algorithms to your own models?
    # Then you can provide it to your model for necessary ood parameters,
    # and use its hook-like function to process your input, output, and loss.
 
-Project usage
+Project usage (Recommended)
 -----------------
 
 Please refer to :ref:`Project installation <installation:Project usage installation>` for installation details.
@@ -65,7 +65,7 @@ Please refer to :ref:`Project installation <installation:Project usage installat
 Quick intro
 ^^^^^^^^^^^^^^^
 
-It is a good beginning to directly make it work. Here, we provide command line script `goodtg` (GOOD to go) to access the main function located at `GOOD.kernel.pipeline:main`.
+It is a good beginning to directly make it work. Here, we provide the command line script `goodtg` (GOOD to go) to access the main function located at `GOOD.kernel.pipeline:main`.
 Choosing a config file in `configs/GOOD_configs`, we can start a task:
 
 .. code-block:: shell
@@ -136,13 +136,13 @@ To make full use of the project, we can add or modify datasets, GNNs, and OOD al
 
 **Understand configs**
 
-Except for customization, an important step is to understand how arguments are passed to where you need. The :doc:`configs`
+Except for customization, an important step is to understand how arguments are passed to where you need them. The :doc:`configs`
 describes the GOOD way for configurations.
 
 **Run the project**
 
-With added config files (*e.g.*, my_configs/my_datasets/XXX/my_algorithm_config1.yaml), one can run the project on
-index 2 GPU.
+With added config files (*e.g.*, my_configs/my_datasets/XXX/my_algorithm_config1.yaml), we can run the project on
+the index 2 GPU by:
 
 .. code-block:: shell
 

@@ -6,7 +6,7 @@ GOOD documentation
 **GOOD** (Graph OOD) is a graph out-of-distribution (OOD) algorithm benchmarking library depending on PyTorch and PyG
 to make develop and benchmark OOD algorithms easily.
 
-GOOD provides a suite of dataset, GNN, OOD algorithm APIs and construct an easy-to-use OOD algorithm training and testing bed.
+GOOD provides a suite of dataset, GNN, OOD algorithm APIs and constructs an easy-to-use OOD algorithm training and testing bed.
 All :mod:`algorithms <GOOD.ood_algorithms.algorithms>`, :mod:`GNNs <GOOD.networks.models>`, and :mod:`datasets <GOOD.data.good_datasets>`
 can be easily registered by :obj:`register <GOOD.utils.register>` and automatically embedded into the designed pipeline like a breeze! Using this register
 and overwriting classes, you can custom your methods and embed them into the test bed conveniently.
@@ -14,7 +14,7 @@ and overwriting classes, you can custom your methods and embed them into the tes
 Currently, GOOD contains 8 datasets with 14 domain selections. When combined with covariate, concept, and no shifts, we obtain 42 different splits.
 We provide performance results on 7 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, Mixup) with 10 random runs.
 This results in 294 dataset-model combinations in total. Our results show significant performance gaps between in-distribution and OOD settings.
-This GOOD benchmark is a growing project and expects to expand in both quantity and variety of resources as the area develops.
+This GOOD benchmark is a growing project and expects to expand in quantity and variety of resources as the area develops.
 Any contribution is welcomed!
 
 

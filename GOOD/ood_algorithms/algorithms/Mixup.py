@@ -120,10 +120,10 @@ class Mixup(BaseOODAlg):
 
 
         Returns:
-            [data (Batch) - processed input data,
-            targets (Tensor) - processed input labels,
-            mask (Tensor) - processed NAN masks for data formats,
-            node_norm (Tensor) - processed node weights for normalization]
+            - data (Batch) - Processed input data.
+            - targets (Tensor) - Processed input labels.
+            - mask (Tensor) - Processed NAN masks for data formats.
+            - node_norm (Tensor) - Processed node weights for normalization.
 
         """
         if training:
