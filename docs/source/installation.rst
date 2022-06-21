@@ -19,8 +19,6 @@ Install through Pip
 Package usage installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-(pending)
-
 .. code-block:: shell
 
    pip install graph-ood
