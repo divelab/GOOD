@@ -1,14 +1,16 @@
 import os
 import shutil
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
 import torch
+from torch_geometric.datasets import MoleculeNet
+from GOOD.data.good_datasets.orig_zinc import ZINC
 
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
 from GOOD.kernel.pipeline import load_dataset, init
-from GOOD.kernel.evaluation import evaluate
 
 
 class Regenerator(object):
@@ -20,9 +22,36 @@ class Regenerator(object):
         init(self.config)
         download_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
+        # --- regenerate ---
         self.config.dataset.generate = True
         self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets',
                                                         self.config.dataset.dataset_name)
+
+        if self.config.dataset.dataset_name in ['GOODPCBA', 'GOODZINC']:
+            dataset_instance = download_dataset['train']
+            raw_dataset = MoleculeNet(root=self.config.dataset.dataset_root, name=dataset_instance.mol_name) \
+                if self.config.dataset.dataset_name == 'GOODPCBA' \
+                else ZINC(root=self.config.dataset.dataset_root, name=dataset_instance.mol_name, subset=True)
+            data_list = []
+            for i, data in enumerate(raw_dataset):
+                data.idx = i
+                data_list.append(data)
+                if i >= 1000:
+                    break
+            dataset_instance.num_data = data_list.__len__()
+
+            no_shift_list = dataset_instance.get_no_shift_list(deepcopy(data_list))
+            sorted_data_list, sorted_domain_split_data_list = dataset_instance.get_domain_sorted_list(data_list, domain=dataset_instance.domain)
+            covariate_shift_list = dataset_instance.get_covariate_shift_list(deepcopy(sorted_data_list))
+            concept_shift_list = dataset_instance.get_concept_shift_list(deepcopy(sorted_domain_split_data_list))
+
+            # --- The validity of these function is verified in GOODHIV ---
+            assert no_shift_list is not None
+            assert covariate_shift_list is not None
+            assert concept_shift_list is not None
+
+            return download_dataset, None, self.config.model.model_level
+
         init(self.config)
         generate_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
@@ -33,8 +62,6 @@ config_paths = []
 config_root = Path(ROOT_DIR, 'configs', 'GOOD_configs')
 for dataset_path in config_root.iterdir():
     if not dataset_path.is_dir():
-        continue
-    if dataset_path.name in ['GOODPCBA', 'GOODZINC']:
         continue
     single_dataset_paths = []
     for domain_path in dataset_path.iterdir():
@@ -54,6 +81,8 @@ def test_regenerate(dataset_paths):
     def regenerate_dataset(config_path):
         regenerator = Regenerator(config_path)
         download_dataset, generate_dataset, graph_node = regenerator()
+        if generate_dataset is None and regenerator.config.dataset.dataset_name in ['GOODPCBA', 'GOODZINC']:
+            return regenerator.config.dataset.dataset_name
         if graph_node == 'graph':
             if regenerator.config.dataset.dataset_name in ['GOODMotif', 'GOODCMNIST']:
                 assert torch.equal(download_dataset['train'].data.y, generate_dataset['train'].data.y)

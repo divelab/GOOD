@@ -52,8 +52,9 @@ class ZINC(InMemoryDataset):
     url = 'https://raw.githubusercontent.com/aspuru-guzik-group/chemical_vae/master/models/zinc_properties/250k_rndm_zinc_drugs_clean_3.csv'
 
     def __init__(self, root, name, transform=None,
-                 pre_transform=None, pre_filter=None):
+                 pre_transform=None, pre_filter=None, subset=False):
         self.name = 'zinc'
+        self.subset = subset
         super().__init__(root, transform, pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
@@ -103,5 +104,8 @@ class ZINC(InMemoryDataset):
                     data = self.pre_transform(data)
 
                 data_list.append(data)
+
+                if self.subset and i >= 1000:
+                    break
 
         torch.save(self.collate(data_list), self.processed_paths[0])
