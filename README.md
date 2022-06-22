@@ -1,5 +1,4 @@
-# GOOD
-GOOD: A Graph Out-of-Distribution Benchmark
+# :sparkles: GOOD: A Graph Out-of-Distribution Benchmark :sparkles:
 
 [license-url]: https://github.com/divelab/GOOD/blob/main/LICENSE
 [license-image]:https://img.shields.io/badge/license-GPL3.0-green.svg
@@ -11,11 +10,11 @@ GOOD: A Graph Out-of-Distribution Benchmark
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
-[Documentation](https://good.readthedocs.io) | [Paper](https://arxiv.org/abs/2206.08452)
+[Documentation](https://good.readthedocs.io) | [Preprint and Leaderboard](https://arxiv.org/pdf/2206.08452.pdf)
 > We are actively building the document.
 
 * [Overview](#overview)
-* [Why GOOD?](#why-good-)
+* [Why GOOD?](#why-good)
 * [Installation](#installation)
 * [Quick tutorial](#quick-tutorial)
   * [Module usage (recommended: use only GOOD datasets)](#module-usage)
