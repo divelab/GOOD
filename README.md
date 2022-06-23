@@ -65,7 +65,7 @@ GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-ver
 >
 > Attention! Due to a known issue, please install PyG through Pip to avoid incompatibility.
 
-### Pip (Beta)
+### Pip
 
 #### Installation for only modules
 
