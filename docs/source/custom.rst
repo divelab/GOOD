@@ -4,14 +4,14 @@ Customize Datasets, GNNs, OOD Algorithms
 Custom datasets
 ----------------
 
-To customize a new dataset that can be directly embedded into the GOOD pipeline, one has to implement a static method
+To customize a new dataset that can be directly embedded into the GOOD pipeline, one must implement a static method
 load with necessary meta information and register the dataset. For the ``load`` function, nothing is easier than directly
 refer :func:`the code as an example <GOOD.data.good_datasets.good_hiv.GOODHIV.load>`.
 
 *Register your dataset:*
 
 .. warning::
-   For a successful register, please always remember locating your class at a place that will be automatically imported
+   For a successful register, please always remember to locate your class at a place that will be automatically imported
    once the program starts.
 
 .. code-block:: python

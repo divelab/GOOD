@@ -1,23 +1,23 @@
-Configs and command line arguments
+Configs and command-line arguments
 ============================================
 
 There are always many configuration dilemmas in managing code running configurations.
 
-Traditional command line arguments
+Traditional command-line arguments
 ------------------------------------
 
-When we only use command line arguments as running configs, it is always annoying to run code like this:
+When we only use command-line arguments as running configs, it is always annoying to run code like this:
 
 .. code-block:: shell
 
    python run_my_code.py --model GCN --layers 5 --dim_hidden 300 --save_dir xx/xx ......
 
-These running commands bring difficulties running batches of experiments and achieving easily reproducibility.
+These running commands bring difficulties running batches of experiments and achieving easy reproducibility.
 
-Traditional yaml-file-based configs
+Traditional YAML-file-based configs
 -------------------------------------------
 
-It is a better idea for data scientists to adopt reading dictionaries from yaml files as their parameters storage strategy. However,
+It is a better idea for data scientists to adopt reading dictionaries from YAML files as their parameters storage strategy. However,
 when the configuration scale becomes large, we will face a hard time remembering all the names of configs, so
 that we can access the config like this:
 
@@ -28,31 +28,31 @@ that we can access the config like this:
    model_name: str = config['model']['model_name']
    ...
 
-It is fine if we can remember all details of these parameters, such as their names, their types, and the attributes of them.
+It is okay if we can remember all details of these parameters, such as their names, types, and attributes.
 
-If we can't, here is the strategy we design.
+If we cannot, here is the strategy we design.
 
 GOOD Configs and command line Arguments (CA)
 -----------------------------------------------
 
 There are several advantages of using our configuration strategy.
 
-- Convenient: GOOD CA allows reading configs from yaml files with :obj:`include` support.
-- Flexible: GOOD CA enables overwriting specific reading configs by passing command line arguments.
+- Convenient: GOOD CA allows reading configs from YAML files with :obj:`include` support.
+- Flexible: GOOD CA enables overwriting specific reading configs by passing command-line arguments.
 - Diversified access & code-complete support: With the help of `Munch <https://github.com/Infinidat/munch>`_, we can
-access configs in both dictionary and objective ways. In GOOD, configs and command line arguments are coherent connected;
+access configs in both dictionary and objective ways. In GOOD, configs and command-line arguments are coherently connected;
 therefore, by defining command line arguments, the names, types, and attributes of configs can be easily found. Hence,
-many plugins and IDEs (*e.g.*, PyCharm) can make use of this connection and provide code complete supports.
+many plugins and IDEs (*e.g.*, PyCharm) can use this connection and provide code-completion support.
 
 Config file
 ^^^^^^^^^^^^^^
 
-Yaml format is supported to define arguments in config files (*e.g.*, `Coral config <https://github.com/divelab/GOOD/blob/docs/configs/GOOD_configs/GOODCMNIST/color/covariate/Coral.yaml>`_).
+The YAML format is supported to define arguments in config files (*e.g.*, `Coral config <https://github.com/divelab/GOOD/blob/docs/configs/GOOD_configs/GOODCMNIST/color/covariate/Coral.yaml>`_).
 There is a special keyword :obj:`include` that LIST all other necessary config file paths. This keyword works like
 :obj:`import` command in python.
 
 .. note::
-   Local file configs will overwrite imported configs when face key name duplications.
+   Local file configs will overwrite imported configs when facing key name duplications.
 
 **Config structure**
 
@@ -82,7 +82,7 @@ There is a special keyword :obj:`include` that LIST all other necessary config f
 
 **Access**
 
-Given the config structure shown above, there are two ways to access:
+Given the config structure shown above, there are two ways to access it:
 
 .. code-block:: python
 
@@ -91,14 +91,14 @@ Given the config structure shown above, there are two ways to access:
    # object
    model_name = config.model.model_name
 
-Command line arguments
+Command-line arguments
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Command line arguments play a totally different role compared to config files. It provides config file choosing,
+Command-line arguments play a totally different role compared to config files. It provides config file choosing,
 arguments overwriting, and code hints for code-complete. In GOOD, we adopt `typed-argument-parser <https://github.com/swansonk14/typed-argument-parser#loading-from-configuration-files>`_
-to organize and parse command line arguments.
+to organize and parse command-line arguments.
 
-Arguments passed as command line arguments will overwrite arguments in config files. For example:
+Arguments passed as command-line arguments will overwrite arguments in config files. For example:
 
 .. code-block:: shell
 
@@ -108,7 +108,7 @@ This command will overwrite the config's :obj:`gpu_idx` argument to 1, which imp
 
 **Command line argument structure**
 
-As config code hints, command line argument structure has a one-to-one corresponding relationship with config structure.
+As config code hints, the command-line argument structure has a corresponding one-to-one relationship with the config structure.
 
 .. code-block:: python
 
@@ -146,11 +146,11 @@ As config code hints, command line argument structure has a one-to-one correspon
        ...
 
 .. note::
-   There shouldn't be any arguments with the same name, even in different argument classes.
+   There should not be any arguments with the same name, even in different argument classes.
 
 **Code completion & new arguments**
 
-When we connect our configs with the command line arguments, many IDEs will provide code-completion for our configs.
+When we connect our configs with the command line arguments, many IDEs will provide code completion for our configs.
 
 .. code-block:: python
 
@@ -159,8 +159,8 @@ When we connect our configs with the command line arguments, many IDEs will prov
    config.model.  # It will prompt: model_name, model_layer, dim_hidden, etc.
 
 .. warning::
-   When you add a **new custom argument** into your config file, you will be warned to add corresponding arguments into
-   command line argument class. For example, when you add a argument as :obj:`config.dataset.author`, you should add
+   When adding a **new custom argument** into a config file, we will be warned to add corresponding arguments into
+   the command line argument class. For example, when we add an argument as :obj:`config.dataset.author`, we should also add
    argument :obj:`author` to class :class:`GOOD.utils.args.DatasetArgs`.
 
 How to pass configs to an object (Module usage)
