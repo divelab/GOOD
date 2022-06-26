@@ -12,6 +12,7 @@
 
 [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji.
 > For more details, please refer to our paper.
+
 [Documentation](https://good.readthedocs.io) | [Preprint and Leaderboard](https://arxiv.org/pdf/2206.08452.pdf)
 > We are actively building the document.
 
