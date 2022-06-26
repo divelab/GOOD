@@ -11,7 +11,7 @@
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
 [**Documentation**](https://good.readthedocs.io) | [**Paper (and Leaderboard)**](https://arxiv.org/pdf/2206.08452.pdf)
-> We are actively building the document.
+<!-- > We are actively building the document. -->
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
 
