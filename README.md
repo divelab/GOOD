@@ -10,11 +10,12 @@
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
-[**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji.
-> For more details, please refer to our paper.
-
-[Documentation](https://good.readthedocs.io) | [Preprint and Leaderboard](https://arxiv.org/pdf/2206.08452.pdf)
+[**Documentation**](https://good.readthedocs.io) | [**Paper (and Leaderboard)**](https://arxiv.org/pdf/2206.08452.pdf)
 > We are actively building the document.
+
+<!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
+
+## Table of contents
 
 * [Overview](#overview)
 * [Why GOOD?](#why-good)
@@ -23,7 +24,7 @@
   * [Module usage (recommended: use only GOOD datasets)](#module-usage)
   * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
 * [Reproducibility](#reproducibility)
-* [Citing GOOD](#Citing-GOOD)
+* [Citing GOOD](#citing-good)
 * [Contact](#contact)
 
 ## Overview
@@ -186,7 +187,7 @@ In order to keep the validity of our code all the time, we link our project with
 sampled tests to go through (because of the limitation of computational resources in CI platforms).
 
 ## Citing GOOD
-If you find this repository helpful for your work, please kindly cite our paper.
+If you find this repository helpful, please cite our [paper](https://arxiv.org/abs/2206.08452).
 ```
 @article{gui2022good,
   title={{GOOD}: A Graph Out-of-Distribution Benchmark},
