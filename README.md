@@ -20,6 +20,7 @@
   * [Module usage (recommended: use only GOOD datasets)](#module-usage)
   * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
 * [Reproducibility](#reproducibility)
+* [Citing GOOD](#Citing-GOOD)
 * [Contact](#contact)
 
 ## Overview
@@ -181,6 +182,16 @@ The training plots for all algorithms in round 1 can be found [HERE](https://dri
 In order to keep the validity of our code all the time, we link our project with circleci service and provide several 
 sampled tests to go through (because of the limitation of computational resources in CI platforms).
 
+## Citing GOOD
+If you find this repository helpful for your work, please kindly cite our paper.
+```
+@article{gui2022good,
+  title={{GOOD}: A Graph Out-of-Distribution Benchmark},
+  author={Gui, Shurui and Li, Xiner and Wang, Limei and Ji, Shuiwang},
+  journal={arXiv preprint arXiv:2206.08452},
+  year={2022}
+}
+```
 
 ## Discussion
 
