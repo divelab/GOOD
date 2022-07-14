@@ -1,12 +1,12 @@
-Configs and command-line arguments
+Configs and Command-line interface (CLI)
 ============================================
 
 There are always many configuration dilemmas in managing code running configurations.
 
-Traditional command-line arguments
+Traditional CLI arguments
 ------------------------------------
 
-When we only use command-line arguments as running configs, it is always annoying to run code like this:
+When we only use CLI arguments as running configs, it is always annoying to run code like this:
 
 .. code-block:: shell
 
@@ -38,9 +38,9 @@ GOOD Configs and command line Arguments (CA)
 There are several advantages of using our configuration strategy.
 
 - Convenient: GOOD CA allows reading configs from YAML files with :obj:`include` support.
-- Flexible: GOOD CA enables overwriting specific reading configs by passing command-line arguments.
+- Flexible: GOOD CA enables overwriting specific reading configs by passing CLI arguments.
 - Diversified access & code-complete support: With the help of `Munch <https://github.com/Infinidat/munch>`_, we can
-access configs in both dictionary and objective ways. In GOOD, configs and command-line arguments are coherently connected;
+access configs in both dictionary and objective ways. In GOOD, configs and CLI arguments are coherently connected;
 therefore, by defining command line arguments, the names, types, and attributes of configs can be easily found. Hence,
 many plugins and IDEs (*e.g.*, PyCharm) can use this connection and provide code-completion support.
 
@@ -91,14 +91,14 @@ Given the config structure shown above, there are two ways to access it:
    # object
    model_name = config.model.model_name
 
-Command-line arguments
+CLI arguments
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Command-line arguments play a totally different role compared to config files. It provides config file choosing,
+CLI arguments play a totally different role compared to config files. It provides config file choosing,
 arguments overwriting, and code hints for code-complete. In GOOD, we adopt `typed-argument-parser <https://github.com/swansonk14/typed-argument-parser#loading-from-configuration-files>`_
-to organize and parse command-line arguments.
+to organize and parse CLI arguments.
 
-Arguments passed as command-line arguments will overwrite arguments in config files. For example:
+Arguments passed as CLI arguments will overwrite arguments in config files. For example:
 
 .. code-block:: shell
 
@@ -108,7 +108,7 @@ This command will overwrite the config's :obj:`gpu_idx` argument to 1, which imp
 
 **Command line argument structure**
 
-As config code hints, the command-line argument structure has a corresponding one-to-one relationship with the config structure.
+As config code hints, the CLI argument structure has a corresponding one-to-one relationship with the config structure.
 
 .. code-block:: python
 
