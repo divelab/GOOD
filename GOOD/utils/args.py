@@ -119,7 +119,7 @@ class CommonArgs(Tap):
     def process_args(self) -> None:
         super().process_args()
         if self.config_path is None:
-            raise AttributeError('Please provide command argument --config_path.')
+            raise AttributeError('Please provide CLI argument --config_path.')
         if not os.path.isabs(self.config_path):
             self.config_path = opj(ROOT_DIR, 'configs', self.config_path)
 
