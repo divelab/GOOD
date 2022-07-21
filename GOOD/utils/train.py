@@ -125,6 +125,7 @@ class TrainHelper(object):
                 return
         if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better * \
                 config.metric.best_stat['score']:
+        # if config.metric.best_stat['score'] is None or val_stat['loss'] < config.metric.best_stat['loss']:
             config.metric.best_stat['score'] = val_stat['score']
             config.metric.best_stat['loss'] = val_stat['loss']
             shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'best.ckpt'))
