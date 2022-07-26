@@ -2,10 +2,9 @@ includes:
   - base.yaml
 model:
   model_name: GIN
-  global_pool: max
 ood:
-  ood_alg: ERM
-  ood_param: -1.
+  ood_alg: GraphMix
+  ood_param: 0.1
 train:
   max_epoch: 200
   lr: 1e-3

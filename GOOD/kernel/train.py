@@ -94,7 +94,7 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
             train_stat = train_batch(model, data, ood_algorithm, pbar, config)
             mean_loss = (mean_loss * index + ood_algorithm.mean_loss) / (index + 1)
 
-            if config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup']:
+            if config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup', 'GraphMix', 'feat_aug']:
                 spec_loss = (spec_loss * index + ood_algorithm.spec_loss) / (index + 1)
                 pbar.set_description(f'M/S Loss: {mean_loss:.4f}/{spec_loss:.4f}')
             else:
@@ -104,7 +104,7 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
 
         # Epoch val
         print('#IN#\nEvaluating...')
-        if config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup']:
+        if config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup', 'GraphMix', 'feat_aug']:
             print(f'#IN#Approximated average M/S Loss {mean_loss:.4f}/{spec_loss:.4f}')
         else:
             print(f'#IN#Approximated average training loss {mean_loss.cpu().item():.4f}')
