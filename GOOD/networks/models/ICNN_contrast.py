@@ -7,13 +7,13 @@ from torch import Tensor
 from torch.nn.functional import gumbel_softmax
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
-from .ICBaseGNN import GNNBasic
+from .BaseGNN import GNNBasic
 from .ICGINs import GINFeatExtractor
 from .ICGINvirtualnode import vGINFeatExtractor
 from typing import Tuple
 
 @register.model_register
-class ICNN_vGIN(GNNBasic):
+class ICNN_vGIN_contrast(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super().__init__(config)
@@ -26,9 +26,8 @@ class ICNN_vGIN(GNNBasic):
         #      for _ in range(2)]))
         #      + [nn.Linear(2 * config.model.dim_hidden, config.dataset.num_classes)]
         # ))
-        num_feat = 2 * config.model.dim_hidden
         self.classifier = nn.Sequential(*(
-            [nn.Linear(num_feat, config.dataset.num_classes)]
+            [nn.Linear(config.model.dim_hidden, config.dataset.num_classes)]
         ))
 
         self.dropout = nn.Dropout(config.model.dropout_rate)
@@ -38,10 +37,10 @@ class ICNN_vGIN(GNNBasic):
         layer_feat, out_readout, virtual_node_feat = self.feature_extractor(*args, **kwargs)
 
         out = self.classifier(out_readout)
-        return out, layer_feat, out_readout, virtual_node_feat
+        return out, layer_feat, out_readout, None, virtual_node_feat
 
 @register.model_register
-class ICNN_GIN(GNNBasic):
+class ICNN_GIN_contrast(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super().__init__(config)
@@ -54,7 +53,12 @@ class ICNN_GIN(GNNBasic):
         #      for _ in range(2)]))
         #      + [nn.Linear(2 * config.model.dim_hidden, config.dataset.num_classes)]
         # ))
-        num_feat = 1 * config.model.dim_hidden
+        num_feat = 2 * config.model.dim_hidden
+        self.contrast_selection_logits = nn.Parameter(torch.Tensor(config.dataset.num_classes, num_feat))
+        nn.init.constant_(self.contrast_selection_logits, val=3.)
+        self.contrast_selection_mask = None
+        self.contrast_out = None
+
         self.feature_selection_logits = nn.Parameter(torch.Tensor(num_feat))
         nn.init.constant_(self.feature_selection_logits, val=3.)
         self.feature_selection_mask = None
@@ -68,6 +72,14 @@ class ICNN_GIN(GNNBasic):
 
     def forward(self, *args, **kwargs) -> Tuple:
         layer_feat, out_readout = self.feature_extractor(*args, **kwargs)
+
+        self.contrast_selection_mask = gumbel_softmax(torch.stack([self.contrast_selection_logits.view(-1),
+                                                                  - self.contrast_selection_logits.view(-1)]), dim=0)[0]
+        self.contrast_selection_mask = self.contrast_selection_mask.reshape(3, -1)
+        self.contrast_out = []
+        for m in self.contrast_selection_mask:
+            self.contrast_out.append(self.classifier(m * out_readout))
+
 
         if self.config.train.epoch >= self.config.train.stage_stones[0]:
             # Gumbel-sigmoid trick

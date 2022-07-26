@@ -30,7 +30,7 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
-def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Munch], load_param=False):
+def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Munch], load_param=True):
     r"""
     A model configuration utility. Responsible for transiting model from CPU -> GPU and loading checkpoints.
     Args:
@@ -47,7 +47,10 @@ def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Mu
 
     # load checkpoint
     if mode == 'train' and config.train.tr_ctn:
-        ckpt = torch.load(os.path.join(config.ckpt_dir, f'last.ckpt'))
+        if config.train.ctn_epoch is not None:
+            ckpt = torch.load(os.path.join(config.ckpt_dir, f'{config.train.ctn_epoch}.ckpt'))
+        else:
+            ckpt = torch.load(os.path.join(config.ckpt_dir, f'last.ckpt'))
         model.load_state_dict(ckpt['state_dict'])
         best_ckpt = torch.load(os.path.join(config.ckpt_dir, f'best.ckpt'))
         config.metric.best_stat['score'] = best_ckpt['val_score']

@@ -31,7 +31,7 @@ def compute_covariance(input_data: Tensor, config: Union[CommonArgs, Munch]) -> 
     id_row = torch.ones((1, n), device=config.device)
     sum_column = torch.mm(id_row, input_data)
     mean_column = torch.div(sum_column, n)
-    term_mul_2 = torch.mm(mean_column.t(), mean_column)
+    term_mul_2 = torch.mm(mean_column.t(), sum_column)
     d_t_d = torch.mm(input_data.t(), input_data)
     c = torch.add(d_t_d, (-1 * term_mul_2)) * 1 / (n - 1)
 

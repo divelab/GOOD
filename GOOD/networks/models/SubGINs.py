@@ -19,6 +19,7 @@ from .ICBaseGNN import GNNBasic, BasicEncoder
 from .Classifiers import Classifier
 from .MolEncoders import AtomEncoder, BondEncoder
 from .Pooling import GlobalMeanPool, GlobalMaxPool, GlobalAddPool
+from GOOD.utils.train import gumbel_sigmoid, at_stage
 
 
 class GINFeatExtractor(GNNBasic):
@@ -88,6 +89,12 @@ class GINEncoder(BasicEncoder):
             ]
         )
 
+        # --- Subnetwork choosing masks, part 1---
+
+        self.subnetwork_logits = nn.Parameter(torch.Tensor(config.model.model_layer, config.model.dim_hidden))
+        nn.init.normal_(self.subnetwork_logits, mean=1, std=1)
+        self.subnetwork_masks = None
+
     def forward(self, x, edge_index, batch):
         r"""
         The GIN encoder for non-molecule data.
@@ -100,6 +107,9 @@ class GINEncoder(BasicEncoder):
         Returns (Tensor):
             node feature representations
         """
+        # --- Subnetwork part 2 ---
+        if at_stage(2, self.config):
+            self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
 
         layer_feat = [x]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
@@ -107,10 +117,13 @@ class GINEncoder(BasicEncoder):
             post_conv = batch_norm(conv(layer_feat[-1], edge_index))
             if i != len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            layer_feat.append(dropout(post_conv))
 
-        # out_readout = torch.cat([GlobalMeanPool()(layer_feat[-1], batch),
-        #                          GlobalMaxPool()(layer_feat[-1], batch)], dim=1)
+            # --- Subnetwork part 3 ---
+            if at_stage(2, self.config):
+                layer_feat.append(dropout(post_conv) * self.subnetwork_masks[i].unsqueeze(0))
+            else:
+                layer_feat.append(dropout(post_conv))
+
         out_readout = self.readout(layer_feat[-1], batch)
         return layer_feat, out_readout
 

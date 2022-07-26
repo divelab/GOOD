@@ -74,6 +74,26 @@ class GNNBasic(torch.nn.Module):
         # nodes x classes
         return self(*args, **kwargs).softmax(dim=1)
 
+    def at_stage(self, i):
+        r"""
+        Test if the current training stage at stage i.
+
+        Args:
+            i: Stage that is possibly 1, 2, 3, ...
+
+        Returns: At stage i.
+
+        """
+        if i - 1 < 0:
+            raise ValueError(f"Stage i must be equal or larger than 0, but got {i}.")
+        if i > len(self.config.train.stage_stones):
+            raise ValueError(f"Stage i should be smaller than the largest stage {len(self.config.train.stage_stones)},"
+                             f"but got {i}.")
+        if i - 2 < 0:
+            return self.config.train.epoch < self.config.train.stage_stones[i - 1]
+        else:
+            return self.config.train.stage_stones[i - 2] <= self.config.train.epoch < self.config.train.stage_stones[i - 1]
+
 
 class BasicEncoder(torch.nn.Module):
     r"""
@@ -101,22 +121,19 @@ class BasicEncoder(torch.nn.Module):
             super(BasicEncoder, self).__init__(config)
         num_layer = config.model.model_layer
 
-        self.relu1 = nn.ReLU()
         self.relus = nn.ModuleList(
             [
                 nn.ReLU()
-                for _ in range(num_layer - 1)
+                for _ in range(num_layer)
             ]
         )
-        self.batch_norm1 = nn.BatchNorm1d(config.model.dim_hidden)
         self.batch_norms = nn.ModuleList([
             nn.BatchNorm1d(config.model.dim_hidden)
-            for _ in range(num_layer - 1)
+            for _ in range(num_layer)
         ])
-        self.dropout1 = nn.Dropout(config.model.dropout_rate)
         self.dropouts = nn.ModuleList([
             nn.Dropout(config.model.dropout_rate)
-            for _ in range(num_layer - 1)
+            for _ in range(num_layer)
         ])
         if config.model.model_level == 'node':
             self.readout = IdenticalPool()
@@ -124,3 +141,6 @@ class BasicEncoder(torch.nn.Module):
             self.readout = GlobalMeanPool()
         else:
             self.readout = GlobalMaxPool()
+
+        self.config = config
+

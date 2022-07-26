@@ -7,6 +7,8 @@ from typing import Union
 
 import torch
 from munch import Munch
+from torch import Tensor
+from torch.nn.functional import gumbel_softmax
 from torch_geometric.data import Batch
 
 from GOOD.utils.args import CommonArgs
@@ -95,7 +97,8 @@ class TrainHelper(object):
             'epoch': epoch,
             'max epoch': config.train.max_epoch
         }
-        if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better *
+        if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
+            'score'] < config.metric.lower_better *
                 config.metric.best_stat['score']
                 or (id_val_stat.get('score') and (
                         config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
@@ -112,7 +115,8 @@ class TrainHelper(object):
         shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'last.ckpt'))
 
         # --- In-Domain checkpoint ---
-        if id_val_stat.get('score') and (config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
+        if id_val_stat.get('score') and (
+                config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
             'score'] < config.metric.lower_better * config.metric.id_best_stat['score']):
             config.metric.id_best_stat['score'] = id_val_stat['score']
             config.metric.id_best_stat['loss'] = id_val_stat['loss']
@@ -120,10 +124,11 @@ class TrainHelper(object):
             print('#IM#Saved a new best In-Domain checkpoint.')
 
         # --- Out-Of-Domain checkpoint ---
-        if id_val_stat.get('score'):
-            if not (config.metric.lower_better * id_val_stat['score'] < config.metric.lower_better * val_stat['score']):
-                return
-        if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better * \
+        # if id_val_stat.get('score'):
+        #     if not (config.metric.lower_better * id_val_stat['score'] < config.metric.lower_better * val_stat['score']):
+        #         return
+        if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
+            'score'] < config.metric.lower_better * \
                 config.metric.best_stat['score']:
             config.metric.best_stat['score'] = val_stat['score']
             config.metric.best_stat['loss'] = val_stat['loss']
@@ -165,3 +170,40 @@ def nan2zero_get_mask(data, task, config: Union[CommonArgs, Munch]):
     targets[~mask] = 0
 
     return mask, targets
+
+
+def gumbel_sigmoid(logits: Tensor, tau: float = 1) -> Tensor:
+    r"""
+    Gumbel sigmoid trick.
+
+    Implemented by using gumbel_softmax from PyTorch.
+    Args:
+        logits (Tensor): The logits input before sigmoid function.
+        tau (float): The temperature of gumbel-sigmoid. Default 1.
+
+    Returns: Gumbel softly sampled mask.
+
+    """
+    return gumbel_softmax(torch.stack([logits, torch.zeros_like(logits)], dim=0), dim=0, tau=tau)[0]
+
+
+def at_stage(i, config):
+    r"""
+    Test if the current training stage at stage i.
+
+    Args:
+        i: Stage that is possibly 1, 2, 3, ...
+        config: config object.
+
+    Returns: At stage i.
+
+    """
+    if i - 1 < 0:
+        raise ValueError(f"Stage i must be equal or larger than 0, but got {i}.")
+    if i > len(config.train.stage_stones):
+        raise ValueError(f"Stage i should be smaller than the largest stage {len(config.train.stage_stones)},"
+                         f"but got {i}.")
+    if i - 2 < 0:
+        return config.train.epoch < config.train.stage_stones[i - 1]
+    else:
+        return config.train.stage_stones[i - 2] <= config.train.epoch < config.train.stage_stones[i - 1]

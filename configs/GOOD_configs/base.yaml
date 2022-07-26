@@ -11,8 +11,10 @@ train:
   weight_decay: 0.
   save_gap: 10
   tr_ctn: False
+  epoch: 0
   ctn_epoch: 0
   alpha: 0.2  # parameter for DANN
+  stage_stones: []
 model:
   dim_hidden: 300
   dim_ffn: 300

@@ -33,13 +33,13 @@ def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm: BaseOODAlg, 
     """
     data = data.to(config.device)
 
-    config.train_helper.optimizer.zero_grad()
-
     mask, targets = nan2zero_get_mask(data, 'train', config)
     node_norm = data.node_norm if config.model.model_level == 'node' else None
     data, targets, mask, node_norm = ood_algorithm.input_preprocess(data, targets, mask, node_norm, model.training,
                                                                     config)
     edge_weight = data.edge_norm if config.model.model_level == 'node' else None
+
+    config.train_helper.optimizer.zero_grad()
 
     model_output = model(data=data, edge_weight=edge_weight, ood_algorithm=ood_algorithm)
     raw_pred = ood_algorithm.output_postprocess(model_output)
@@ -75,7 +75,7 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
 
     # train the model
     for epoch in range(config.train.ctn_epoch, config.train.max_epoch):
-
+        config.train.epoch = epoch
         print(f'#IN#Epoch {epoch}:')
 
         mean_loss = 0
