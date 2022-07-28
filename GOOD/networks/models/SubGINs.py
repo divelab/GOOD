@@ -109,7 +109,12 @@ class GINEncoder(BasicEncoder):
         """
         # --- Subnetwork part 2 ---
         if at_stage(2, self.config):
-            self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
+            if self.training:
+                self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
+            else:
+                self.subnetwork_masks = self.subnetwork_logits > 0
+        elif at_stage(3, self.config):
+            self.subnetwork_masks = self.subnetwork_logits > 0
 
         layer_feat = [x]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
@@ -119,7 +124,7 @@ class GINEncoder(BasicEncoder):
                 post_conv = relu(post_conv)
 
             # --- Subnetwork part 3 ---
-            if at_stage(2, self.config):
+            if at_stage(2, self.config) or at_stage(3, self.config):
                 layer_feat.append(dropout(post_conv) * self.subnetwork_masks[i].unsqueeze(0))
             else:
                 layer_feat.append(dropout(post_conv))

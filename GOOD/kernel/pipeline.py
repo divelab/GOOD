@@ -15,7 +15,7 @@ from GOOD.ood_algorithms.algorithms.BaseOOD import BaseOODAlg
 from GOOD.ood_algorithms.ood_manager import load_ood_alg
 from GOOD.utils.args import args_parser
 from GOOD.utils.config_reader import CommonArgs, Munch
-from GOOD.utils.initial import init
+from GOOD.utils.initial import reset_random_seed
 from GOOD.utils.logger import load_logger
 
 
@@ -27,7 +27,7 @@ def initialize_model_dataset(config: Union[CommonArgs, Munch]) -> Tuple[torch.nn
         A GNN and a data loader.
     """
     # Initial
-    init(config)
+    reset_random_seed(config)
 
     print(f'#IN#\n-----------------------------------\n    Task: {config.task}\n'
           f'{time.asctime(time.localtime(time.time()))}')

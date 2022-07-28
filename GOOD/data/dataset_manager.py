@@ -5,6 +5,7 @@ from torch_geometric.loader import DataLoader, GraphSAINTRandomWalkSampler
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from GOOD.utils.initial import reset_random_seed
 
 
 def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
@@ -38,6 +39,7 @@ def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
             - config.dataset.num_classes
 
     """
+    reset_random_seed(config)
     try:
         dataset, meta_info = register.datasets[name].load(dataset_root=config.dataset.dataset_root,
                                                           domain=config.dataset.domain,
@@ -71,6 +73,7 @@ def create_dataloader(dataset, config: Union[CommonArgs, Munch]):
         A PyG dataset loader.
 
     """
+    reset_random_seed(config)
     if config.model.model_level == 'node':
         graph = dataset[0]
         loader = GraphSAINTRandomWalkSampler(graph, batch_size=config.train.train_bs,
@@ -110,6 +113,7 @@ def domain_pair_dataloader(dataset, config: Union[CommonArgs, Munch]):
         A PyG domain_pair dataset loader.
 
     """
+    reset_random_seed(config)
     if config.model.model_level == 'node':
         graph = dataset[0]
         loader = GraphSAINTRandomWalkSampler(graph, batch_size=config.train.train_bs,

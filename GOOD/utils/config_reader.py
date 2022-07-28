@@ -223,8 +223,8 @@ def process_configs(config: Union[CommonArgs, Munch]):
     config.id_test_ckpt = opj(config.ckpt_dir, f'id_best.ckpt')
 
     # --- Other settings ---
-    if config.train.max_epoch > 100:
-        config.train.save_gap = config.train.max_epoch // 10
+    if config.train.max_epoch > 1000:
+        config.train.save_gap = config.train.max_epoch // 100
     config.device = torch.device(f'cuda:{config.gpu_idx}' if torch.cuda.is_available() else 'cpu')
     config.train.stage_stones.append(100000)
 

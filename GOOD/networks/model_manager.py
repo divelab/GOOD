@@ -6,6 +6,7 @@ import torch
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from GOOD.utils.initial import reset_random_seed
 
 
 def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
@@ -19,6 +20,7 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
         A instantiated GNN model.
 
     """
+    reset_random_seed(config)
     try:
         model = register.models[name](config)
     except KeyError as e:
@@ -47,12 +49,12 @@ def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Mu
 
     # load checkpoint
     if mode == 'train' and config.train.tr_ctn:
-        if config.train.ctn_epoch is not None:
-            ckpt = torch.load(os.path.join(config.ckpt_dir, f'{config.train.ctn_epoch}.ckpt'))
+        if config.train.ctn_epoch != 0:
+            ckpt = torch.load(os.path.join(config.ckpt_dir, f'{config.train.ctn_epoch}.ckpt'), map_location=config.device)
         else:
-            ckpt = torch.load(os.path.join(config.ckpt_dir, f'last.ckpt'))
+            ckpt = torch.load(os.path.join(config.ckpt_dir, f'last.ckpt'), map_location=config.device)
         model.load_state_dict(ckpt['state_dict'])
-        best_ckpt = torch.load(os.path.join(config.ckpt_dir, f'best.ckpt'))
+        best_ckpt = torch.load(os.path.join(config.ckpt_dir, f'best.ckpt'), map_location=config.device)
         config.metric.best_stat['score'] = best_ckpt['val_score']
         config.metric.best_stat['loss'] = best_ckpt['val_loss']
         config.train.ctn_epoch = ckpt['epoch'] + 1
@@ -111,4 +113,6 @@ def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Mu
                 f'#IN#ChartInfo {ckpt["test_score"]:.4f} {ckpt["val_score"]:.4f}', end='')
         if load_param:
             model.load_state_dict(ckpt['state_dict'])
+        config.train.epoch = ckpt['epoch']
+        config.other_saved = ckpt.get('others')
         return ckpt["test_score"], ckpt["test_loss"]

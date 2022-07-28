@@ -9,7 +9,10 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseOOD import BaseOODAlg
 from typing import Tuple
 from torch.nn.functional import cross_entropy
+from copy import deepcopy
 from GOOD.utils.train import at_stage
+from GOOD.utils.initial import reset_random_seed
+from GOOD.networks.model_manager import load_model
 
 
 def compute_covariance(input_data: Tensor) -> Tensor:
@@ -62,51 +65,36 @@ class Subnetwork(BaseOODAlg):
         self.layer_feat = None
         self.graph_feat = None
         self.virtual_node_feat = None
-        self.stage = 1
         self.subnetwork_logits = None
+        self.model_w0 = None
 
-    def input_preprocess(self,
-                         data: Batch,
-                         targets: Tensor,
-                         mask: Tensor,
-                         node_norm: Tensor,
-                         training: bool,
-                         config: Union[CommonArgs, Munch],
-                         **kwargs
-                         ) -> Tuple[Batch, Tensor, Tensor, Tensor]:
-        r"""
-        Set optimizer.
-
-        Args:
-            data (Batch): input data
-            targets (Tensor): input labels
-            mask (Tensor): NAN masks for data formats
-            node_norm (Tensor): node weights for normalization (for node prediction only)
-            training (bool): whether the task is training
-            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.ood.ood_param`)
-
-        .. code-block:: python
-
-            config = munchify({device: torch.device('cuda'),
-                                   ood: {ood_param: float(0.1)}
-                                   })
-
-
-        Returns:
-            - data (Batch) - Processed input data.
-            - targets (Tensor) - Processed input labels.
-            - mask (Tensor) - Processed NAN masks for data formats.
-            - node_norm (Tensor) - Processed node weights for normalization.
-
-        """
+    def stage_control(self, config: Union[Munch, CommonArgs]):
         self.subnetwork_logits = config.train_helper.model.feature_extractor.encoder.subnetwork_logits
+        config.other_saved = {'subnetwork_logits': self.subnetwork_logits}
+
+        if self.stage == 0 and at_stage(1, config):
+            # self.model_w0 = deepcopy(config.train_helper.model.state_dict())
+            reset_random_seed(config)
+            self.stage = 1
         if self.stage == 1 and at_stage(2, config):
             config.train_helper.optimizer = torch.optim.Adam([self.subnetwork_logits],
-                                                             lr=1e-2)
+                                                             lr=1e-1)
             print(f"#IM#\n--------------------- Start stage II ------------------------")
             self.stage = 2
+        if self.stage < 3 and at_stage(3, config):
 
-        return data, targets, mask, node_norm
+            # model.load_state_dict(self.model_w0)
+            model = load_model(config.model.model_name, config)
+            config.train_helper.set_up(model, config)
+
+            trained_subnetwork_logits = config.other_saved['subnetwork_logits'].data.clone().detach()
+            self.subnetwork_logits = config.train_helper.model.feature_extractor.encoder.subnetwork_logits
+            self.subnetwork_logits.data = trained_subnetwork_logits
+
+            reset_random_seed(config)
+            print(f"#IM#\n--------------------- Start stage III ------------------------")
+            print(f'Mask size: {(self.subnetwork_logits > 0).sum()}')
+            self.stage = 3
 
     def output_postprocess(self, model_output: Tensor, **kwargs) -> Tensor:
         r"""

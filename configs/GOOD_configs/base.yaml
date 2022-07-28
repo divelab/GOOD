@@ -6,6 +6,7 @@ gpu_idx: 0
 ckpt_root: null
 ckpt_dir: null
 save_tag: null
+other_saved: null
 pytest: False
 train:
   weight_decay: 0.

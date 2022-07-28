@@ -95,7 +95,8 @@ class TrainHelper(object):
             },
             'log file': config.log_path,
             'epoch': epoch,
-            'max epoch': config.train.max_epoch
+            'max epoch': config.train.max_epoch,
+            'others': config.other_saved
         }
         if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
             'score'] < config.metric.lower_better *
