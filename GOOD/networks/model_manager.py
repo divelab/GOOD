@@ -58,6 +58,7 @@ def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Mu
         config.metric.best_stat['score'] = best_ckpt['val_score']
         config.metric.best_stat['loss'] = best_ckpt['val_loss']
         config.train.ctn_epoch = ckpt['epoch'] + 1
+        config.other_saved = ckpt.get('others')
         print(f'#IN#Continue training from Epoch {ckpt["epoch"]}...')
 
     if mode == 'test':

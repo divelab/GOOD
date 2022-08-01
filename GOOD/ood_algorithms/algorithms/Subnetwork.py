@@ -69,27 +69,30 @@ class Subnetwork(BaseOODAlg):
         self.model_w0 = None
 
     def stage_control(self, config: Union[Munch, CommonArgs]):
-        self.subnetwork_logits = config.train_helper.model.feature_extractor.encoder.subnetwork_logits
-        config.other_saved = {'subnetwork_logits': self.subnetwork_logits}
+        model = config.train_helper.model
+        self.subnetwork_logits = model.feature_extractor.encoder.subnetwork_logits
 
-        if self.stage == 0 and at_stage(1, config):
+        if self.stage < 1 and at_stage(1, config):
             # self.model_w0 = deepcopy(config.train_helper.model.state_dict())
             reset_random_seed(config)
             self.stage = 1
-        if self.stage == 1 and at_stage(2, config):
+        if self.stage < 2 and at_stage(2, config):
             config.train_helper.optimizer = torch.optim.Adam([self.subnetwork_logits],
                                                              lr=1e-1)
+            config.other_saved = {'subnetwork_logits': self.subnetwork_logits}
             print(f"#IM#\n--------------------- Start stage II ------------------------")
             self.stage = 2
         if self.stage < 3 and at_stage(3, config):
-
+            trained_subnetwork_logits = config.other_saved['subnetwork_logits'].data.clone().detach()
             # model.load_state_dict(self.model_w0)
-            model = load_model(config.model.model_name, config)
+            model.load_state_dict(load_model(config.model.model_name, config).state_dict())
             config.train_helper.set_up(model, config)
 
-            trained_subnetwork_logits = config.other_saved['subnetwork_logits'].data.clone().detach()
-            self.subnetwork_logits = config.train_helper.model.feature_extractor.encoder.subnetwork_logits
             self.subnetwork_logits.data = trained_subnetwork_logits
+            config.other_saved = {'subnetwork_logits': self.subnetwork_logits}
+
+            config.metric.best_stat = {'score': None, 'loss': float('inf')}
+            config.metric.id_best_stat = {'score': None, 'loss': float('inf')}
 
             reset_random_seed(config)
             print(f"#IM#\n--------------------- Start stage III ------------------------")

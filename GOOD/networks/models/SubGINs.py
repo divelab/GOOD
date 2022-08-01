@@ -159,6 +159,12 @@ class GINMolEncoder(BasicEncoder):
             ]
         )
 
+        # --- Subnetwork choosing masks, part 1---
+
+        self.subnetwork_logits = nn.Parameter(torch.Tensor(config.model.model_layer, config.model.dim_hidden))
+        nn.init.normal_(self.subnetwork_logits, mean=1, std=1)
+        self.subnetwork_masks = None
+
     def forward(self, x, edge_index, edge_attr, batch):
         r"""
         The GIN encoder for molecule data.
@@ -172,13 +178,27 @@ class GINMolEncoder(BasicEncoder):
         Returns (Tensor):
             node feature representations
         """
+        # --- Subnetwork part 2 ---
+        if at_stage(2, self.config):
+            if self.training:
+                self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
+            else:
+                self.subnetwork_masks = self.subnetwork_logits > 0
+        elif at_stage(3, self.config):
+            self.subnetwork_masks = self.subnetwork_logits > 0
+
         layer_feat = [self.atom_encoder(x)]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             post_conv = batch_norm(conv(layer_feat[-1], edge_index, edge_attr))
             if i < len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            layer_feat.append(dropout(post_conv))
+
+            # --- Subnetwork part 3 ---
+            if at_stage(2, self.config) or at_stage(3, self.config):
+                layer_feat.append(dropout(post_conv) * self.subnetwork_masks[i].unsqueeze(0))
+            else:
+                layer_feat.append(dropout(post_conv))
 
         out_readout = self.readout(layer_feat[-1], batch)
         return layer_feat, out_readout

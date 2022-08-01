@@ -9,8 +9,9 @@ from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .ICBaseGNN import GNNBasic
 from .Pooling import GlobalMeanPool, GlobalMaxPool
-from .ICGINs import GINEncoder, GINMolEncoder
+from .SubGINs import GINEncoder, GINMolEncoder
 from .Pooling import GlobalAddPool
+from GOOD.utils.train import gumbel_sigmoid, at_stage
 
 
 
@@ -94,6 +95,15 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         Returns (Tensor):
             node feature representations
         """
+        # --- Subnetwork part 2 ---
+        if at_stage(2, self.config):
+            if self.training:
+                self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
+            else:
+                self.subnetwork_masks = self.subnetwork_logits > 0
+        elif at_stage(3, self.config):
+            self.subnetwork_masks = self.subnetwork_logits > 0
+
 
         virtual_node_feat = [self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
@@ -109,7 +119,12 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             post_conv = batch_norm(conv(post_conv, edge_index))
             if i < len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            layer_feat.append(dropout(post_conv))
+
+            # --- Subnetwork part 3 ---
+            if at_stage(2, self.config) or at_stage(3, self.config):
+                layer_feat.append(dropout(post_conv) * self.subnetwork_masks[i].unsqueeze(0))
+            else:
+                layer_feat.append(dropout(post_conv))
             # --- update global info ---
             if 0 < i < len(self.convs) - 1:
                 virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
@@ -145,6 +160,16 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
         Returns (Tensor):
             node feature representations
         """
+        # --- Subnetwork part 2 ---
+        if at_stage(2, self.config):
+            if self.training:
+                self.subnetwork_masks = gumbel_sigmoid(self.subnetwork_logits)
+            else:
+                self.subnetwork_masks = self.subnetwork_logits > 0
+        elif at_stage(3, self.config):
+            self.subnetwork_masks = self.subnetwork_logits > 0
+
+
         virtual_node_feat = [self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
 
@@ -156,7 +181,12 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             post_conv = batch_norm(conv(post_conv, edge_index, edge_attr))
             if i < len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            layer_feat.append(dropout(post_conv))
+
+            # --- Subnetwork part 3 ---
+            if at_stage(2, self.config) or at_stage(3, self.config):
+                layer_feat.append(dropout(post_conv) * self.subnetwork_masks[i].unsqueeze(0))
+            else:
+                layer_feat.append(dropout(post_conv))
             # --- update global info ---
             if i < len(self.convs) - 1:
                 virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
