@@ -165,3 +165,25 @@ def nan2zero_get_mask(data, task, config: Union[CommonArgs, Munch]):
     targets[~mask] = 0
 
     return mask, targets
+
+
+def at_stage(i, config):
+    r"""
+    Test if the current training stage at stage i.
+
+    Args:
+        i: Stage that is possibly 1, 2, 3, ...
+        config: config object.
+
+    Returns: At stage i.
+
+    """
+    if i - 1 < 0:
+        raise ValueError(f"Stage i must be equal or larger than 0, but got {i}.")
+    if i > len(config.train.stage_stones):
+        raise ValueError(f"Stage i should be smaller than the largest stage {len(config.train.stage_stones)},"
+                         f"but got {i}.")
+    if i - 2 < 0:
+        return config.train.epoch < config.train.stage_stones[i - 1]
+    else:
+        return config.train.stage_stones[i - 2] <= config.train.epoch < config.train.stage_stones[i - 1]

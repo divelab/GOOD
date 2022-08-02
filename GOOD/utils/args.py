@@ -25,6 +25,8 @@ class TrainArgs(Tap):
     num_steps: int = None  #: Number of steps in each epoch for node classifications.
 
     lr: float = None  #: Learning rate.
+    epoch: int = None  #: Current training epoch. This value should not be set manually.
+    stage_stones: List[int] = None  #: The epoch for starting the next training stage.
     mile_stones: List[int] = None  #: Milestones for a scheduler to decrease learning rate: 0.1
     weight_decay: float = None  #: Weight decay.
 

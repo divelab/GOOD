@@ -6,6 +6,8 @@ from torch import Tensor
 from torch_geometric.data import Batch
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from typing import Tuple
+from GOOD.utils.initial import reset_random_seed
+from GOOD.utils.train import at_stage
 
 
 class BaseOODAlg(ABC):
@@ -19,6 +21,12 @@ class BaseOODAlg(ABC):
         super(BaseOODAlg, self).__init__()
         self.mean_loss = None
         self.spec_loss = None
+        self.stage = 0
+
+    def stage_control(self, config):
+        if self.stage == 0 and at_stage(1, config):
+            reset_random_seed(config)
+            self.stage = 1
 
     def input_preprocess(self,
                          data: Batch,

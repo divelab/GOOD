@@ -7,7 +7,7 @@ import torch
 
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
-from GOOD.kernel.pipeline import load_dataset, init
+from GOOD.kernel.pipeline import load_dataset, reset_random_seed
 
 
 class Regenerator(object):
@@ -16,13 +16,13 @@ class Regenerator(object):
         self.config = config_summoner(self.args)
 
     def __call__(self, *args, **kwargs):
-        init(self.config)
+        reset_random_seed(self.config)
         download_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
         self.config.dataset.generate = True
         self.config.dataset.dataset_root = os.path.join(STORAGE_DIR, 'regenerate_datasets',
                                                         self.config.dataset.dataset_name)
-        init(self.config)
+        reset_random_seed(self.config)
         generate_dataset = load_dataset(self.config.dataset.dataset_name, config=self.config)
 
         return download_dataset, generate_dataset, self.config.model.model_level

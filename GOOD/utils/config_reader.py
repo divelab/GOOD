@@ -226,6 +226,7 @@ def process_configs(config: Union[CommonArgs, Munch]):
     if config.train.max_epoch > 100:
         config.train.save_gap = config.train.max_epoch // 10
     config.device = torch.device(f'cuda:{config.gpu_idx}' if torch.cuda.is_available() else 'cpu')
+    config.train.stage_stones.append(100000)
 
     # --- Attach train_helper and metric modules ---
     config.metric = Metric()

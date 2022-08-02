@@ -75,11 +75,13 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
 
     # train the model
     for epoch in range(config.train.ctn_epoch, config.train.max_epoch):
-
+        config.train.epoch = epoch
         print(f'#IN#Epoch {epoch}:')
 
         mean_loss = 0
         spec_loss = 0
+
+        ood_algorithm.stage_control(config)
 
         pbar = tqdm(enumerate(loader['train']), total=len(loader['train']), **pbar_setting)
         for index, data in pbar:
