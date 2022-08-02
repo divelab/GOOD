@@ -27,6 +27,7 @@
   * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
 * [Reproducibility](#reproducibility)
 * [Citing GOOD](#citing-good)
+* [License](#license)
 * [Contact](#contact)
 
 ## Overview
@@ -198,6 +199,11 @@ If you find this repository helpful, please cite our [paper](https://arxiv.org/a
   year={2022}
 }
 ```
+
+## License
+
+The GOOD datasets are under [MIT license](https://drive.google.com/file/d/1xA-5q3YHXLGLz7xV2tT69a9dcVmiJmiV/view?usp=sharing).
+The GOOD code are under [GPLv3 license](https://github.com/divelab/GOOD/blob/main/LICENSE).
 
 ## Discussion
 
