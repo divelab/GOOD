@@ -17,6 +17,8 @@
 
 :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!**
 
+:eye:**Note that we split the licences of our code and datasets, please refer to different licenses for different usages.**
+
 ## Table of contents
 
 * [Overview](#overview)
