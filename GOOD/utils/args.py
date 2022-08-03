@@ -31,6 +31,7 @@ class TrainArgs(Tap):
     weight_decay: float = None  #: Weight decay.
 
     alpha = None  #: A parameter for DANN.
+    causal_ratio = 0.8  #: A parameter for DIR
 
 
 class DatasetArgs(Tap):
