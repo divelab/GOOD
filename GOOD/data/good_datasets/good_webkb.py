@@ -81,7 +81,7 @@ class GOODWebKB(InMemoryDataset):
         assert domain in ['university']
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1IAWl7lMOP2WtvZKsE0wIVZ0vH55UNuDO/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1F1v4OSZ2_Uo3zhDcbTgt7RR2KX5sQyBB/view?usp=sharing'
 
         self.generate = generate
 

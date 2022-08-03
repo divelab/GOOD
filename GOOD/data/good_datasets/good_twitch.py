@@ -13,7 +13,7 @@ import gdown
 import numpy as np
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip, Data
+from torch_geometric.data import InMemoryDataset, extract_zip, Data, Batch
 from torch_geometric.datasets import Twitch
 from torch_geometric.utils import degree
 from tqdm import tqdm
@@ -26,29 +26,14 @@ class DomainGetter(object):
     def __init__(self):
         pass
 
-    def get_degree(self, graph: Data) -> int:
+    def get_language(self, graph: Data) -> int:
         """
         Args:
             graph (Data): The PyG Data object.
         Returns:
-            The degrees of the given graph.
+            The languages that the users use.
         """
-        try:
-            node_degree = degree(graph.edge_index[0], graph.num_nodes)
-            return node_degree
-        except ValueError as e:
-            print('#E#Get degree error.')
-            raise e
-
-    def get_word(self, graph: Data) -> int:
-        """
-        Args:
-            graph (Data): The PyG Data object.
-        Returns:
-            The word diversity value of the graph.
-        """
-        num_word = graph.x.sum(1)
-        return num_word
+        return graph.language
 
 
 class DataInfo(object):
@@ -84,7 +69,7 @@ class GOODTwitch(InMemoryDataset):
 
     Args:
         root (str): The dataset saving root.
-        domain (str): The domain selection. Allowed: 'degree' and 'word'.
+        domain (str): The domain selection. Allowed: 'language'.
         shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
         generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
@@ -94,9 +79,10 @@ class GOODTwitch(InMemoryDataset):
 
         self.name = self.__class__.__name__
         self.domain = domain
+        assert domain in ['language']
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1VD1nGDvLBn2xpYAp12irBLkTRRZ282Qm/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1gd2zkLflabY1dPGRzK5ufX-m7BF3t3fW/view?usp=sharing'
 
         self.generate = generate
 
@@ -209,16 +195,10 @@ class GOODTwitch(InMemoryDataset):
     def get_covariate_shift_graph(self, sorted_data_list, graph):
 
         num_data = self.num_data
-        if self.domain == 'degree':
-            sorted_data_list = sorted_data_list[::-1]
-            train_ratio = 0.6
-            val_ratio = 0.2
-            id_test_ratio = 0.1
-        else:
-            sorted_data_list = sorted_data_list[::-1]
-            train_ratio = 0.6
-            val_ratio = 0.2
-            id_test_ratio = 0.1
+        # sorted_data_list = sorted_data_list[::-1]
+        train_ratio = 0.6
+        val_ratio = 0.2
+        id_test_ratio = 0.1
 
         train_split = int(num_data * train_ratio)
         val_split = int(num_data * (train_ratio + val_ratio))
@@ -401,11 +381,14 @@ class GOODTwitch(InMemoryDataset):
         return sorted_data_list, sorted_domain_split_data_list
 
     def process(self):
+        data_list = []
         language = []
-        for language in ['DE', 'EN', 'ES', 'FR', 'PT', 'RU']:
-            domain_graph = Twitch(root=self.root, name=language).data
-            language += [language for _ in range(domain_graph.x.shape[0])]
-        graph = dataset[0]
+        for domain_name in ['DE', 'EN', 'ES', 'FR', 'PT', 'RU']:
+            domain_graph = Twitch(root=self.root, name=domain_name).data
+            language += [domain_name for _ in range(domain_graph.x.shape[0])]
+            data_list.append(domain_graph)
+        pseudo_batch = Batch.from_data_list(data_list)
+        graph = Data(x=pseudo_batch.x, edge_index=pseudo_batch.edge_index, y=pseudo_batch.y.unsqueeze(1).float(), language=language)
         print('Load data done!')
         self.num_data = graph.x.shape[0]
         print('Extract data done!')
