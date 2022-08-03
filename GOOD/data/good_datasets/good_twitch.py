@@ -1,6 +1,7 @@
 """
-The GOOD-SST2 dataset. Adapted from `DIG
-    <https://github.com/divelab/DIG>`_.
+The GOOD-Twitch dataset. Adapted from the `Characteristic Functions on Graphs:
+Birds of a Feather, from Statistical Descriptors to Parametric Models
+<https://arxiv.org/pdf/2005.07959>`_.
 """
 import itertools
 import os
@@ -12,79 +13,100 @@ import gdown
 import numpy as np
 import torch
 from munch import Munch
-from rdkit import Chem
-from rdkit.Chem.Scaffolds import MurckoScaffold
 from torch_geometric.data import InMemoryDataset, extract_zip, Data
-from torch_geometric.datasets import MoleculeNet
+from torch_geometric.datasets import Twitch
+from torch_geometric.utils import degree
 from tqdm import tqdm
-from dig.xgraph.dataset import SentiGraphDataset
 
 
-class DomainGetter():
+class DomainGetter(object):
     r"""
     A class containing methods for data domain extraction.
     """
     def __init__(self):
         pass
 
-    def get_length(self, data: Data) -> int:
+    def get_degree(self, graph: Data) -> int:
         """
         Args:
-            data (str): A PyG graph data object.
+            graph (Data): The PyG Data object.
         Returns:
-            The length of the sentence.
+            The degrees of the given graph.
         """
-        return data.x.shape[0]
+        try:
+            node_degree = degree(graph.edge_index[0], graph.num_nodes)
+            return node_degree
+        except ValueError as e:
+            print('#E#Get degree error.')
+            raise e
+
+    def get_word(self, graph: Data) -> int:
+        """
+        Args:
+            graph (Data): The PyG Data object.
+        Returns:
+            The word diversity value of the graph.
+        """
+        num_word = graph.x.sum(1)
+        return num_word
+
+
+class DataInfo(object):
+    r"""
+    The class for data point storage. This enables tackling node data point like graph data point, facilitating data splits.
+    """
+    def __init__(self, idx, y):
+        super(DataInfo, self).__init__()
+        self.storage = []
+        self.idx = idx
+        self.y = y
+
+    def __repr__(self):
+        s = [f'{key}={self.__getattribute__(key)}' for key in self.storage]
+        s = ', '.join(s)
+        return f"DataInfo({s})"
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        if key != 'storage':
+            self.storage.append(key)
 
 
 from GOOD import register
 
 
 @register.dataset_register
-class GOODSST2(InMemoryDataset):
+class GOODTwitch(InMemoryDataset):
     r"""
-    The GOOD-SST2 dataset. Adapted from `DIG
-    <https://github.com/divelab/DIG>`_.
+    The GOOD-Twitch dataset. Adapted from the `Characteristic Functions on Graphs:
+    Birds of a Feather, from Statistical Descriptors to Parametric Models
+    <https://arxiv.org/pdf/2005.07959>`_.
 
     Args:
         root (str): The dataset saving root.
-        domain (str): The domain selection. Allowed: 'length'
+        domain (str): The domain selection. Allowed: 'degree' and 'word'.
         shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
-        subset (str): The split set. Allowed: 'train', 'id_val', 'id_test', 'val', and 'test'. When shift='no_shift',
-            'id_val' and 'id_test' are not applicable.
         generate (bool): The flag for regenerating dataset. True: regenerate. False: download.
     """
 
-    def __init__(self, root: str, domain: str, shift: str = 'no_shift', subset: str = 'train', transform=None,
-                 pre_transform=None, generate: bool = False):
+    def __init__(self, root: str, domain: str, shift: str = 'no_shift', transform=None, pre_transform=None,
+                 generate: bool = False):
 
         self.name = self.__class__.__name__
         self.domain = domain
-        self.metric = 'Accuracy'
+        self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1pUc-Kmh245uKljZTZezSMFGjl4E-diSD/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1VD1nGDvLBn2xpYAp12irBLkTRRZ282Qm/view?usp=sharing'
 
         self.generate = generate
 
         super().__init__(root, transform, pre_transform)
         if shift == 'covariate':
-            subset_pt = 3
+            subset_pt = 1
         elif shift == 'concept':
-            subset_pt = 8
-        elif shift == 'no_shift':
+            subset_pt = 2
+        else:
             subset_pt = 0
-        else:
-            raise ValueError(f'Unknown shift: {shift}.')
-        if subset == 'train':
-            subset_pt += 0
-        elif subset == 'val':
-            subset_pt += 1
-        elif subset == 'test':
-            subset_pt += 2
-        elif subset == 'id_val':
-            subset_pt += 3
-        else:
-            subset_pt += 4
 
         self.data, self.slices = torch.load(self.processed_paths[subset_pt])
 
@@ -110,37 +132,94 @@ class GOODSST2(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return ['no_shift_train.pt', 'no_shift_val.pt', 'no_shift_test.pt',
-                'covariate_train.pt', 'covariate_val.pt', 'covariate_test.pt', 'covariate_id_val.pt',
-                'covariate_id_test.pt',
-                'concept_train.pt', 'concept_val.pt', 'concept_test.pt', 'concept_id_val.pt', 'concept_id_test.pt']
+        return ['no_shift.pt', 'covariate.pt', 'concept.pt']
 
-    def get_no_shift_list(self, data_list):
-        random.shuffle(data_list)
+    def assign_masks(self, train_list, val_list, test_list, id_val_list, id_test_list, graph):
+        num_data = self.num_data
+        train_mask, val_mask, test_mask, id_val_mask, id_test_mask = (torch.zeros((num_data,), dtype=torch.bool) for _
+                                                                      in range(5))
+        env_id = - torch.ones((num_data,), dtype=torch.long)
+        domain = [None for _ in range(num_data)]
+        domain_id = - torch.ones((num_data,), dtype=torch.long)
+        for data in train_list:
+            train_mask[data.idx] = True
+            env_id[data.idx] = data.env_id
+            domain[data.idx] = data.__getattribute__(self.domain)
+            domain_id[data.idx] = data.domain_id
 
-        num_data = data_list.__len__()
+        for data in val_list:
+            val_mask[data.idx] = True
+            domain[data.idx] = data.__getattribute__(self.domain)
+            domain_id[data.idx] = data.domain_id
+
+        for data in test_list:
+            test_mask[data.idx] = True
+            domain[data.idx] = data.__getattribute__(self.domain)
+            domain_id[data.idx] = data.domain_id
+
+        for data in id_val_list:
+            id_val_mask[data.idx] = True
+            domain[data.idx] = data.__getattribute__(self.domain)
+            domain_id[data.idx] = data.domain_id
+
+        for data in id_test_list:
+            id_test_mask[data.idx] = True
+            domain[data.idx] = data.__getattribute__(self.domain)
+            domain_id[data.idx] = data.domain_id
+
+        graph.train_mask = train_mask
+        graph.val_mask = val_mask
+        graph.test_mask = test_mask
+        graph.id_val_mask = id_val_mask
+        graph.id_test_mask = id_test_mask
+        graph.env_id = env_id
+        graph.domain = self.domain
+        # graph.__setattr__(self.domain, domain)
+        graph.domain_id = domain_id
+        return graph
+
+    def get_no_shift_graph(self, graph):
+        num_data = self.num_data
+        node_indices = torch.randperm(num_data)
+
         train_ratio = 0.6
         val_ratio = 0.2
         test_ratio = 0.2
+
         train_split = int(num_data * train_ratio)
         val_split = int(num_data * (train_ratio + val_ratio))
-        train_list, val_list, test_list = data_list[: train_split], data_list[train_split: val_split], data_list[
-                                                                                                       val_split:]
-        for data in train_list:
-            data.env_id = random.randint(0, 9)
+        train_indices, val_indices, test_indices = node_indices[: train_split], node_indices[
+                                                                                train_split: val_split], node_indices[
+                                                                                                         val_split:]
+        train_mask, val_mask, test_mask = (torch.zeros((num_data,), dtype=torch.bool) for _ in range(3))
+        env_id = - torch.ones((num_data,), dtype=torch.long)
+        train_mask[train_indices] = True
+        val_mask[val_indices] = True
+        test_mask[test_indices] = True
+        env_id[train_indices] = torch.randint(0, 9, (train_indices.shape[0],))
 
-        all_env_list = [train_list, val_list, test_list]
+        graph.train_mask = train_mask
+        graph.val_mask = val_mask
+        graph.test_mask = test_mask
+        graph.env_id = env_id
+        graph.domain = self.domain
 
-        return all_env_list
+        return graph
 
-    def get_covariate_shift_list(self, sorted_data_list):
+    def get_covariate_shift_graph(self, sorted_data_list, graph):
 
-        # #############debug
-        # sorted_data_list = sorted_data_list[::-1]
-        num_data = sorted_data_list.__len__()
-        train_ratio = 0.5
-        val_ratio = 0.25
-        test_ratio = 0.25
+        num_data = self.num_data
+        if self.domain == 'degree':
+            sorted_data_list = sorted_data_list[::-1]
+            train_ratio = 0.6
+            val_ratio = 0.2
+            id_test_ratio = 0.1
+        else:
+            sorted_data_list = sorted_data_list[::-1]
+            train_ratio = 0.6
+            val_ratio = 0.2
+            id_test_ratio = 0.1
+
         train_split = int(num_data * train_ratio)
         val_split = int(num_data * (train_ratio + val_ratio))
 
@@ -157,8 +236,7 @@ class GOODSST2(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        id_test_ratio = 0.15
-        num_id_test = int(len(train_list) * id_test_ratio)
+        num_id_test = int(num_data * id_test_ratio)
         random.shuffle(train_list)
         train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
                                                                                 -2 * num_id_test: - num_id_test], \
@@ -174,11 +252,10 @@ class GOODSST2(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
-        all_env_list = [train_list, ood_val_list, ood_test_list, id_val_list, id_test_list]
 
-        return all_env_list
+        return self.assign_masks(train_list, ood_val_list, ood_test_list, id_val_list, id_test_list, graph)
 
-    def get_concept_shift_list(self, sorted_domain_split_data_list):
+    def get_concept_shift_graph(self, sorted_domain_split_data_list, graph):
 
         # Calculate concept probability for each domain
         global_pyx = []
@@ -203,7 +280,7 @@ class GOODSST2(InMemoryDataset):
         is_val_split = [False if i < len(is_train_split) - 1 else True for i in range(len(is_train_split))]
         is_test_split = [not (tr_sp or val_sp) for tr_sp, val_sp in zip(is_train_split, is_val_split)]
 
-        split_picking_ratio = [0.3, 0.5, 0.6, 1, 1]
+        split_picking_ratio = [0.4, 0.6, 0.5, 1, 1]
 
         order_connect = [[] for _ in range(len(bias_connect))]
         cur_num = 0
@@ -281,8 +358,6 @@ class GOODSST2(InMemoryDataset):
             num_test = sum([len(env) for i, env in enumerate(env_list) if is_test_split[i]])
             print("#D#train: %d, val: %d, test: %d" % (num_train, num_val, num_test))
 
-        # all_env_list = [env_list[0], env_list[1], env_list[2]]    # Use test set as validation
-        # all_env_list = [env_list[0], env_list[2], env_list[1]]   # True split
         train_list, ood_val_list, ood_test_list = list(
             itertools.chain(*[env for i, env in enumerate(env_list) if is_train_split[i]])), \
                                                   list(itertools.chain(
@@ -297,13 +372,17 @@ class GOODSST2(InMemoryDataset):
                                                 train_list[- num_id_test:]
         all_env_list = [train_list, ood_val_list, ood_test_list, id_val_list, id_test_list]
 
-        return all_env_list
+        return self.assign_masks(train_list, ood_val_list, ood_test_list, id_val_list, id_test_list, graph)
 
-    def get_domain_sorted_list(self, data_list, domain='length'):
-
+    def get_domain_sorted_indices(self, graph, domain='degree'):
         domain_getter = DomainGetter()
-        for data in tqdm(data_list):
-            data.__setattr__(domain, getattr(domain_getter, f'get_{domain}')(data))
+        graph.__setattr__(domain, getattr(domain_getter, f'get_{domain}')(graph))
+
+        data_list = []
+        for i in range(self.num_data):
+            data_info = DataInfo(idx=i, y=graph.y[i])
+            data_info.__setattr__(domain, graph.__getattr__(domain)[i])
+            data_list.append(data_info)
 
         sorted_data_list = sorted(data_list, key=lambda data: getattr(data, domain))
 
@@ -322,30 +401,28 @@ class GOODSST2(InMemoryDataset):
         return sorted_data_list, sorted_domain_split_data_list
 
     def process(self):
-        dataset = SentiGraphDataset(root=self.root, name='Graph-SST2')
+        language = []
+        for language in ['DE', 'EN', 'ES', 'FR', 'PT', 'RU']:
+            domain_graph = Twitch(root=self.root, name=language).data
+            language += [language for _ in range(domain_graph.x.shape[0])]
+        graph = dataset[0]
         print('Load data done!')
-        dataset.data.y = dataset.data.y.unsqueeze(1).float()
-
-        data_list = []
-        for i, data in enumerate(dataset):
-            data.idx = i
-            data_list.append(data)
-        self.num_data = data_list.__len__()
+        self.num_data = graph.x.shape[0]
         print('Extract data done!')
 
-        no_shift_list = self.get_no_shift_list(deepcopy(data_list))
+        no_shift_graph = self.get_no_shift_graph(deepcopy(graph))
         print('#IN#No shift dataset done!')
-        sorted_data_list, sorted_domain_split_data_list = self.get_domain_sorted_list(data_list, domain=self.domain)
-        covariate_shift_list = self.get_covariate_shift_list(deepcopy(sorted_data_list))
+        sorted_data_list, sorted_domain_split_data_list = self.get_domain_sorted_indices(graph, domain=self.domain)
+        covariate_shift_graph = self.get_covariate_shift_graph(deepcopy(sorted_data_list), deepcopy(graph))
         print()
         print('#IN#Covariate shift dataset done!')
-        concept_shift_list = self.get_concept_shift_list(deepcopy(sorted_domain_split_data_list))
+        concept_shift_graph = self.get_concept_shift_graph(deepcopy(sorted_domain_split_data_list), deepcopy(graph))
         print()
         print('#IN#Concept shift dataset done!')
 
-        all_data_list = no_shift_list + covariate_shift_list + concept_shift_list
-        for i, final_data_list in enumerate(all_data_list):
-            data, slices = self.collate(final_data_list)
+        all_split_graph = [no_shift_graph, covariate_shift_graph, concept_shift_graph]
+        for i, final_graph in enumerate(all_split_graph):
+            data, slices = self.collate([final_graph])
             torch.save((data, slices), self.processed_paths[i])
 
     @staticmethod
@@ -366,41 +443,25 @@ class GOODSST2(InMemoryDataset):
             dataset meta info.
         """
         meta_info = Munch()
-        meta_info.dataset_type = 'nlp'
-        meta_info.model_level = 'graph'
+        meta_info.dataset_type = 'real'
+        meta_info.model_level = 'node'
 
-        train_dataset = GOODSST2(root=dataset_root,
-                                domain=domain, shift=shift, subset='train', generate=generate)
-        id_val_dataset = GOODSST2(root=dataset_root,
-                                 domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
-        id_test_dataset = GOODSST2(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
-        val_dataset = GOODSST2(root=dataset_root,
-                              domain=domain, shift=shift, subset='val', generate=generate)
-        test_dataset = GOODSST2(root=dataset_root,
-                               domain=domain, shift=shift, subset='test', generate=generate)
+        dataset = GOODTwitch(root=dataset_root, domain=domain, shift=shift, generate=generate)
+        dataset.data.x = dataset.data.x.to(torch.float32)
+        meta_info.dim_node = dataset.num_node_features
+        meta_info.dim_edge = dataset.num_edge_features
 
-        meta_info.dim_node = train_dataset.num_node_features
-        meta_info.dim_edge = train_dataset.num_edge_features
-
-        meta_info.num_envs = torch.unique(train_dataset.data.env_id).shape[0]
+        meta_info.num_envs = (torch.unique(dataset.data.env_id) >= 0).sum()
 
         # Define networks' output shape.
-        if train_dataset.task == 'Binary classification':
-            meta_info.num_classes = train_dataset.data.y.shape[1]
-        elif train_dataset.task == 'Regression':
+        if dataset.task == 'Binary classification':
+            meta_info.num_classes = dataset.data.y.shape[1]
+        elif dataset.task == 'Regression':
             meta_info.num_classes = 1
-        elif train_dataset.task == 'Multi-label classification':
-            meta_info.num_classes = torch.unique(train_dataset.data.y).shape[0]
+        elif dataset.task == 'Multi-label classification':
+            meta_info.num_classes = torch.unique(dataset.data.y).shape[0]
 
         # --- clear buffer dataset._data_list ---
-        train_dataset._data_list = None
-        if id_val_dataset:
-            id_val_dataset._data_list = None
-            id_test_dataset._data_list = None
-        val_dataset._data_list = None
-        test_dataset._data_list = None
+        dataset._data_list = None
 
-        return {'train': train_dataset, 'id_val': id_val_dataset, 'id_test': id_test_dataset,
-                'val': val_dataset, 'test': test_dataset, 'task': train_dataset.task,
-                'metric': train_dataset.metric}, meta_info
+        return dataset, meta_info

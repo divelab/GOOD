@@ -6,6 +6,7 @@ import torch
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from GOOD.utils.initial import reset_random_seed
 
 
 def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
@@ -20,6 +21,7 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
 
     """
     try:
+        reset_random_seed(config)
         model = register.models[name](config)
     except KeyError as e:
         print(f'#E#Model {name} dose not exist.')
