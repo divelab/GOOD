@@ -73,10 +73,10 @@ class OODArgs(Tap):
     extra_param: List = None  #: OOD algorithms' extra hyperparameter(s).
 
 
-class Auto(Tap):
+class AutoArgs(Tap):
     allow_datasets: List[str] = None  #: Allow dataset in list to run.
     allow_devices: List[int] = None  #: Devices allowed to run.
-    round: int = None  #: Number of experiment rounds.
+    round: int = None # The number of experiment round.
 
 
 class CommonArgs(Tap):

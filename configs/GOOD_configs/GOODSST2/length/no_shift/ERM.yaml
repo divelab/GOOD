@@ -8,6 +8,6 @@ ood:
 train:
   max_epoch: 250
   lr: 1e-3
-  mile_stones: [190]
+  mile_stones: [200]
 
 
