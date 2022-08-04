@@ -53,15 +53,16 @@ class vGINFeatExtractor(GNNBasic):
 
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
+            **kwargs: `without_readout` will output node features instead of graph features.
     """
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(vGINFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
         if config.dataset.dataset_type == 'mol':
-            self.encoder = vGINMolEncoder(config)
+            self.encoder = vGINMolEncoder(config, **kwargs)
             self.edge_feat = True
         else:
-            self.encoder = vGINEncoder(config)
+            self.encoder = vGINEncoder(config, **kwargs)
             self.edge_feat = False
 
     def forward(self, *args, **kwargs):
@@ -112,9 +113,10 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.model.dropout_rate`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(vGINEncoder, self).__init__(config)
         self.config = config
+        self.without_readout = kwargs.get('without_readout')
 
     def forward(self, x, edge_index, batch):
         r"""
@@ -131,7 +133,10 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
 
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
+        if x.dtype != torch.long and x.shape[1] == self.config.model.dim_hidden:
+            post_conv = x
+        else:
+            post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---
@@ -144,6 +149,8 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             if i < len(self.convs) - 1:
                 virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch) + virtual_node_feat)
 
+        if self.without_readout:
+            return post_conv
         out_readout = self.readout(post_conv, batch)
         return out_readout
 
@@ -155,9 +162,10 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.model.dropout_rate`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(vGINMolEncoder, self).__init__(config)
-        self.config = config
+        self.config: Union[CommonArgs, Munch] = config
+        self.without_readout = kwargs.get('without_readout')
 
     def forward(self, x, edge_index, edge_attr, batch):
         r"""
@@ -174,9 +182,11 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
         """
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
-
-        x = self.atom_encoder(x)
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
+        if x.dtype != torch.long and x.shape[1] == self.config.model.dim_hidden:
+            post_conv = x
+        else:
+            x = self.atom_encoder(x)
+            post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---
@@ -189,5 +199,7 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             if i < len(self.convs) - 1:
                 virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch) + virtual_node_feat)
 
+        if self.without_readout:
+            return post_conv
         out_readout = self.readout(post_conv, batch)
         return out_readout

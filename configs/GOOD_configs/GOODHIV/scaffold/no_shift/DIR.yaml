@@ -1,0 +1,16 @@
+includes:
+  - base.yaml
+model:
+  model_name: DIRvGIN
+  model_layer: 4
+ood:
+  ood_alg: DIR
+  ood_param: 1e-4
+  extra_param:
+    - 0.8
+train:
+  max_epoch: 300
+  train_bs: 32
+  lr: 1e-3
+
+

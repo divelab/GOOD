@@ -91,8 +91,7 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
             # Parameter for DANN & DIR
             p = (index / len(loader['train']) + epoch) / config.train.max_epoch
             config.train.alpha = 2. / (1. + np.exp(-10 * p)) - 1
-            if config.ood.ood_alg == 'DIR':
-                config.train.alpha = config.ood.ood_param * (epoch ** 1.6)
+
 
             # train a batch
             train_stat = train_batch(model, data, ood_algorithm, pbar, config)
