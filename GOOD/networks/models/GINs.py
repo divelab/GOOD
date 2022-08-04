@@ -62,14 +62,14 @@ class GINFeatExtractor(GNNBasic):
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.dataset_type`)
     """
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(GINFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
         if config.dataset.dataset_type == 'mol':
-            self.encoder = GINMolEncoder(config)
+            self.encoder = GINMolEncoder(config, **kwargs)
             self.edge_feat = True
         else:
-            self.encoder = GINEncoder(config)
+            self.encoder = GINEncoder(config, **kwargs)
             self.edge_feat = False
 
     def forward(self, *args, **kwargs):
@@ -104,6 +104,7 @@ class GINEncoder(BasicEncoder):
 
         super(GINEncoder, self).__init__(config, *args)
         num_layer = config.model.model_layer
+        self.without_readout = kwargs.get('without_readout')
 
         # self.atom_encoder = AtomEncoder(config.model.dim_hidden)
 
@@ -161,6 +162,7 @@ class GINMolEncoder(BasicEncoder):
 
     def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(GINMolEncoder, self).__init__(config)
+        self.without_readout = kwargs.get('without_readout')
         num_layer = config.model.model_layer
         if kwargs.get('without_embed'):
             self.atom_encoder = lambda x: x

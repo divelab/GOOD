@@ -11,6 +11,8 @@ from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
 from .GINvirtualnode import vGINFeatExtractor
+from .GINs import GINFeatExtractor
+from torch_geometric.utils.loop import add_self_loops, remove_self_loops
 
 
 @register.model_register
@@ -18,7 +20,7 @@ class DIRvGIN(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRvGIN, self).__init__(config)
-        self.att_net = CausalAttNet(config.ood.ood_param, config)
+        self.att_net = CausalAttNet(config.ood.ood_param, config, virtual_node=True)
         self.feat_encoder = vGINFeatExtractor(config, without_embed=True)
 
         self.num_tasks = config.dataset.num_classes
@@ -56,6 +58,7 @@ class DIRvGIN(GNNBasic):
             conf_rep = self.get_graph_rep(
                 data=Data(x=conf_x, edge_index=conf_edge_index,
                           edge_attr=conf_edge_attr, batch=conf_batch)).detach()
+            clear_masks(self)
             conf_out = self.get_conf_pred(conf_rep)
 
             # --- combine to causal phase (detach the conf phase) ---
@@ -94,20 +97,105 @@ class DIRvGIN(GNNBasic):
         conf_pred = self.conf_lin(conf_graph_x).detach()
         return torch.sigmoid(conf_pred) * causal_pred
 
+@register.model_register
+class DIRGIN(GNNBasic):
+
+    def __init__(self, config: Union[CommonArgs, Munch]):
+        super(DIRGIN, self).__init__(config)
+        self.att_net = CausalAttNet(config.ood.ood_param, config)
+        self.feat_encoder = GINFeatExtractor(config, without_embed=True)
+
+        self.num_tasks = config.dataset.num_classes
+        self.causal_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
+        self.conf_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
+
+    def forward(self, *args, **kwargs):
+        r"""
+        The DIR model implementation.
+
+        Args:
+            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
+
+        Returns (Tensor):
+            label predictions
+
+        """
+        if self.training:
+
+            (causal_x, causal_edge_index, causal_edge_attr, causal_edge_weight, causal_batch), \
+            (conf_x, conf_edge_index, conf_edge_attr, conf_edge_weight, conf_batch), \
+            pred_edge_weight = self.att_net(*args, **kwargs)
+
+            # --- Causal repr ---
+            set_masks(causal_edge_weight, self)
+            causal_rep = self.get_graph_rep(
+                data=Data(x=causal_x, edge_index=causal_edge_index,
+                          edge_attr=causal_edge_attr, batch=causal_batch))
+            causal_out = self.get_causal_pred(causal_rep)
+            clear_masks(self)
+
+            # --- Conf repr ---
+            set_masks(conf_edge_weight, self)
+            conf_rep = self.get_graph_rep(
+                data=Data(x=conf_x, edge_index=conf_edge_index,
+                          edge_attr=conf_edge_attr, batch=conf_batch)).detach()
+            clear_masks(self)
+            conf_out = self.get_conf_pred(conf_rep)
+
+            # --- combine to causal phase (detach the conf phase) ---
+            rep_out = []
+            for conf in conf_rep:
+                rep_out.append(self.get_comb_pred(causal_rep, conf))
+            rep_out = torch.stack(rep_out, dim=0)
+
+            return rep_out, causal_out, conf_out
+        else:
+            (causal_x, causal_edge_index, causal_edge_attr, causal_edge_weight, causal_batch), \
+            (conf_x, conf_edge_index, conf_edge_attr, conf_edge_weight, conf_batch), \
+            pred_edge_weight = self.att_net(*args, **kwargs)
+
+            # --- Causal repr ---
+            set_masks(causal_edge_weight, self)
+            causal_rep = self.get_graph_rep(
+                data=Data(x=causal_x, edge_index=causal_edge_index,
+                          edge_attr=causal_edge_attr, batch=causal_batch))
+            causal_out = self.get_causal_pred(causal_rep)
+            clear_masks(self)
+
+            return causal_out
+
+    def get_graph_rep(self, *args, **kwargs):
+        return self.feat_encoder(*args, **kwargs)
+
+    def get_causal_pred(self, h_graph):
+        return self.causal_lin(h_graph)
+
+    def get_conf_pred(self, conf_graph_x):
+        return self.conf_lin(conf_graph_x)
+
+    def get_comb_pred(self, causal_graph_x, conf_graph_x):
+        causal_pred = self.causal_lin(causal_graph_x)
+        conf_pred = self.conf_lin(conf_graph_x).detach()
+        return torch.sigmoid(conf_pred) * causal_pred
 
 class CausalAttNet(nn.Module):
 
-    def __init__(self, causal_ratio, config):
+    def __init__(self, causal_ratio, config, **kwargs):
         super(CausalAttNet, self).__init__()
         config_catt = copy.deepcopy(config)
         config_catt.model.model_layer = 2
         config_catt.model.dropout_rate = 0
-        self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True)
+        if kwargs.get('virtual_node'):
+            self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True)
+        else:
+            self.gnn_node = GINFeatExtractor(config_catt, without_readout=True)
         self.linear = nn.Linear(config_catt.model.dim_hidden * 2, 1)
         self.ratio = causal_ratio
 
     def forward(self, *args, **kwargs):
         data = kwargs.get('data') or None
+        data.edge_index, data.edge_attr = remove_self_loops(data.edge_index, data.edge_attr)
 
         # x are last layer node representations
         x = self.gnn_node(*args, **kwargs)
@@ -142,7 +230,7 @@ def clear_masks(model: nn.Module):
 
 
 def split_graph(data, edge_score, ratio):
-    has_edge_attr = hasattr(data, 'edge_attr')
+    has_edge_attr = hasattr(data, 'edge_attr') and getattr(data, 'edge_attr') is not None
 
     causal_edge_index = torch.LongTensor([[], []]).to(data.x.device)
     causal_edge_weight = torch.tensor([]).to(data.x.device)
