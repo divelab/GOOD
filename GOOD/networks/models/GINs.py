@@ -100,16 +100,21 @@ class GINEncoder(BasicEncoder):
         config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch], *args):
+    def __init__(self, config: Union[CommonArgs, Munch], *args, **kwargs):
 
         super(GINEncoder, self).__init__(config, *args)
         num_layer = config.model.model_layer
 
         # self.atom_encoder = AtomEncoder(config.model.dim_hidden)
 
-        self.conv1 = GINConv(nn.Sequential(nn.Linear(config.dataset.dim_node, 2 * config.model.dim_hidden),
-                                           nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
-                                           nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+        if kwargs.get('without_embed'):
+            self.conv1 = GINConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
+                                               nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
+                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+        else:
+            self.conv1 = GINConv(nn.Sequential(nn.Linear(config.dataset.dim_node, 2 * config.model.dim_hidden),
+                                               nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
+                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
 
         self.convs = nn.ModuleList(
             [
@@ -141,6 +146,8 @@ class GINEncoder(BasicEncoder):
                 post_conv = relu(post_conv)
             post_conv = dropout(post_conv)
 
+        if self.without_readout:
+            return post_conv
         out_readout = self.readout(post_conv, batch)
         return out_readout
 
@@ -152,10 +159,13 @@ class GINMolEncoder(BasicEncoder):
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(GINMolEncoder, self).__init__(config)
         num_layer = config.model.model_layer
-        self.atom_encoder = AtomEncoder(config.model.dim_hidden)
+        if kwargs.get('without_embed'):
+            self.atom_encoder = lambda x: x
+        else:
+            self.atom_encoder = AtomEncoder(config.model.dim_hidden)
 
         self.conv1 = GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
                                             nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
@@ -192,6 +202,8 @@ class GINMolEncoder(BasicEncoder):
                 post_conv = relu(post_conv)
             post_conv = dropout(post_conv)
 
+        if self.without_readout:
+            return post_conv
         out_readout = self.readout(post_conv, batch)
         return out_readout
 

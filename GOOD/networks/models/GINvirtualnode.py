@@ -114,7 +114,7 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
     """
 
     def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
-        super(vGINEncoder, self).__init__(config)
+        super(vGINEncoder, self).__init__(config, **kwargs)
         self.config = config
         self.without_readout = kwargs.get('without_readout')
 
@@ -133,10 +133,7 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
 
-        if x.dtype != torch.long and x.shape[1] == self.config.model.dim_hidden:
-            post_conv = x
-        else:
-            post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
+        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---
@@ -163,7 +160,7 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
     """
 
     def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
-        super(vGINMolEncoder, self).__init__(config)
+        super(vGINMolEncoder, self).__init__(config, **kwargs)
         self.config: Union[CommonArgs, Munch] = config
         self.without_readout = kwargs.get('without_readout')
 
@@ -182,11 +179,9 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
         """
         virtual_node_feat = self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
-        if x.dtype != torch.long and x.shape[1] == self.config.model.dim_hidden:
-            post_conv = x
-        else:
-            x = self.atom_encoder(x)
-            post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
+
+        x = self.atom_encoder(x)
+        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---

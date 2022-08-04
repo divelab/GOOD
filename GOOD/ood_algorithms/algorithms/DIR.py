@@ -27,7 +27,7 @@ class DIR(BaseOODAlg):
         if self.stage == 0 and at_stage(1, config):
             reset_random_seed(config)
             self.stage = 1
-        config.train.alpha = config.ood.ood_param * (config.train.epoch ** 1.6)
+        config.train.alpha = config.ood.extra_param[0] * (config.train.epoch ** 1.6)
 
     def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor,
                        config: Union[CommonArgs, Munch]) -> Tensor:

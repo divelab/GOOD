@@ -82,7 +82,7 @@ class GOODTwitch(InMemoryDataset):
         assert domain in ['language']
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1gd2zkLflabY1dPGRzK5ufX-m7BF3t3fW/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/11_m_o_JbQ3OeWVvrDafzwXQe5nKDmYUZ/view?usp=sharing'
 
         self.generate = generate
 
@@ -255,7 +255,7 @@ class GOODTwitch(InMemoryDataset):
 
         # sorted_domain_split_data_list = sorted(sorted_domain_split_data_list, key=lambda domain_data: domain_data[-1], reverse=)
 
-        bias_connect = [0.95, 0.95, 0.9, 0.85, 0.5]
+        bias_connect = [0.8, 0.7, 0.8, 0.7, 0.5]
         is_train_split = [True, False, True, True, False]
         is_val_split = [False if i < len(is_train_split) - 1 else True for i in range(len(is_train_split))]
         is_test_split = [not (tr_sp or val_sp) for tr_sp, val_sp in zip(is_train_split, is_val_split)]

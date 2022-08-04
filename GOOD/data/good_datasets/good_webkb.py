@@ -81,7 +81,7 @@ class GOODWebKB(InMemoryDataset):
         assert domain in ['university']
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1F1v4OSZ2_Uo3zhDcbTgt7RR2KX5sQyBB/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1tatdDrcwZAS2iUZujB4AEsTvPF-3LYoX/view?usp=sharing'
 
         self.generate = generate
 
@@ -225,7 +225,7 @@ class GOODWebKB(InMemoryDataset):
                                                 train_list[-2 * num_id_test: - num_id_test], \
                                                 train_list[- num_id_test:]
         # Compose domains to environments
-        num_env_train = 10
+        num_env_train = 2
         num_per_env = len(train_list) // num_env_train
         cur_env_id = -1
         cur_domain_id = None
@@ -258,7 +258,7 @@ class GOODWebKB(InMemoryDataset):
 
         # sorted_domain_split_data_list = sorted(sorted_domain_split_data_list, key=lambda domain_data: domain_data[-1], reverse=)
 
-        bias_connect = [0.95, 0.95, 0.9, 0.85, 0.5]
+        bias_connect = [0.85, 0.75, 0.85, 0.8, 0.5]
         is_train_split = [True, False, True, True, False]
         is_val_split = [False if i < len(is_train_split) - 1 else True for i in range(len(is_train_split))]
         is_test_split = [not (tr_sp or val_sp) for tr_sp, val_sp in zip(is_train_split, is_val_split)]
@@ -386,7 +386,7 @@ class GOODWebKB(InMemoryDataset):
     def process(self):
         data_list = []
         university = []
-        for domain_name in ['cornell', 'texas', 'wisconsin']:
+        for domain_name in ['wisconsin', 'cornell', 'texas']:
             domain_graph = WebKB(root=self.root, name=domain_name).data
             university += [domain_name for _ in range(domain_graph.x.shape[0])]
             data_list.append(domain_graph)

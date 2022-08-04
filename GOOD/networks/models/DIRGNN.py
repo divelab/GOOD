@@ -1,13 +1,11 @@
 import copy
 
-import numpy as np
 import torch
 import torch.nn as nn
 from torch import Tensor
 from torch_geometric.data import Data
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.utils import degree
-from torch_geometric.nn.pool import topk_pool
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
@@ -20,8 +18,8 @@ class DIRvGIN(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRvGIN, self).__init__(config)
-        self.att_net = CausalAttNet(config.ood.extra_param[0], config)
-        self.feat_encoder = vGINFeatExtractor(config)
+        self.att_net = CausalAttNet(config.ood.ood_param, config)
+        self.feat_encoder = vGINFeatExtractor(config, without_embed=True)
 
         self.num_tasks = config.dataset.num_classes
         self.causal_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
@@ -57,7 +55,7 @@ class DIRvGIN(GNNBasic):
             set_masks(conf_edge_weight, self)
             conf_rep = self.get_graph_rep(
                 data=Data(x=conf_x, edge_index=conf_edge_index,
-                edge_attr=conf_edge_attr, batch=conf_batch)).detach()
+                          edge_attr=conf_edge_attr, batch=conf_batch)).detach()
             conf_out = self.get_conf_pred(conf_rep)
 
             # --- combine to causal phase (detach the conf phase) ---
@@ -216,7 +214,7 @@ def sparse_sort(src: torch.Tensor, index: torch.Tensor, dim=0, descending=False,
     '''
     f_src = src.float()
     f_min, f_max = f_src.min(dim)[0], f_src.max(dim)[0]
-    norm = (f_src - f_min)/(f_max - f_min + eps) + index.float()*(-1)**int(descending)
+    norm = (f_src - f_min) / (f_max - f_min + eps) + index.float() * (-1) ** int(descending)
     perm = norm.argsort(dim=dim, descending=descending)
 
     return src[perm], perm
