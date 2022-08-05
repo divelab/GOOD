@@ -314,165 +314,165 @@ class GINEConv(gnn.MessagePassing):
         return f'{self.__class__.__name__}(nn={self.nn})'
 
 
-class GINConv(gnn.GINConv):
-    r"""The graph isomorphism operator from the `"How Powerful are
-    Graph Neural Networks?" <https://arxiv.org/abs/1810.00826>`_ paper
-
-    .. math::
-        \mathbf{x}^{\prime}_i = h_{\mathbf{\Theta}} \left( (1 + \epsilon) \cdot
-        \mathbf{x}_i + \sum_{j \in \mathcal{N}(i)} \mathbf{x}_j \right)
-
-    or
-
-    .. math::
-        \mathbf{X}^{\prime} = h_{\mathbf{\Theta}} \left( \left( \mathbf{A} +
-        (1 + \epsilon) \cdot \mathbf{I} \right) \cdot \mathbf{X} \right),
-
-    here :math:`h_{\mathbf{\Theta}}` denotes a neural network, *.i.e.* an MLP.
-
-    Args:
-        nn (torch.nn.Module): A neural network :math:`h_{\mathbf{\Theta}}` that
-            maps node features :obj:`x` of shape :obj:`[-1, in_channels]` to
-            shape :obj:`[-1, out_channels]`, *e.g.*, defined by
-            :class:`torch.nn.Sequential`.
-        eps (float, optional): (Initial) :math:`\epsilon`-value.
-            (default: :obj:`0.`)
-        train_eps (bool, optional): If set to :obj:`True`, :math:`\epsilon`
-            will be a trainable parameter. (default: :obj:`False`)
-        **kwargs (optional): Additional arguments of
-            :class:`torch_geometric.nn.conv.MessagePassing`.
-
-    Shapes:
-        - **input:**
-          node features :math:`(|\mathcal{V}|, F_{in})` or
-          :math:`((|\mathcal{V_s}|, F_{s}), (|\mathcal{V_t}|, F_{t}))`
-          if bipartite,
-          edge indices :math:`(2, |\mathcal{E}|)`
-        - **output:** node features :math:`(|\mathcal{V}|, F_{out})` or
-          :math:`(|\mathcal{V}_t|, F_{out})` if bipartite
-    """
-
-    def __init__(self, nn: Callable, eps: float = 0., train_eps: bool = False,
-                 **kwargs):
-        super().__init__(nn, eps, train_eps, **kwargs)
-        self.edge_weight = None
-        self.fc_steps = None
-        self.reweight = None
-        self.__explain_flow__ = None
-        self.__explain__ = False
-        self.__edge_mask__ = None
-
-    def forward(self, x: Union[Tensor, OptPairTensor], edge_index: Adj,
-                edge_weight: OptTensor = None, **kwargs) -> Tensor:
-        """"""
-        self.num_nodes = x.shape[0]
-        if isinstance(x, Tensor):
-            x: OptPairTensor = (x, x)
-
-        # propagate_type: (x: OptPairTensor)
-        if edge_weight is not None:
-            self.edge_weight = edge_weight
-            assert edge_weight.shape[0] == edge_index.shape[1]
-            self.reweight = False
-        else:
-            edge_index, _ = remove_self_loops(edge_index)
-            self_loop_edge_index, _ = add_self_loops(edge_index, num_nodes=self.num_nodes)
-            if self_loop_edge_index.shape[1] != edge_index.shape[1]:
-                edge_index = self_loop_edge_index
-            self.reweight = True
-        out = self.propagate(edge_index, x=x[0], size=None)
-
-        nn_out = self.nn(out)
-
-        return nn_out
-
-    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-        r"""The initial call to start propagating messages.
-
-        Args:
-            edge_index (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
-                :obj:`torch_sparse.SparseTensor` that defines the underlying
-                graph connectivity/message passing flow.
-                :obj:`edge_index` holds the indices of a general (sparse)
-                assignment matrix of shape :obj:`[N, M]`.
-                If :obj:`edge_index` is of type :obj:`torch.LongTensor`, its
-                shape must be defined as :obj:`[2, num_messages]`, where
-                messages from nodes in :obj:`edge_index[0]` are sent to
-                nodes in :obj:`edge_index[1]`
-                (in case :obj:`flow="source_to_target"`).
-                If :obj:`edge_index` is of type
-                :obj:`torch_sparse.SparseTensor`, its sparse indices
-                :obj:`(row, col)` should relate to :obj:`row = edge_index[1]`
-                and :obj:`col = edge_index[0]`.
-                The major difference between both formats is that we need to
-                input the *transposed* sparse adjacency matrix into
-                :func:`propagate`.
-            size (tuple, optional): The size :obj:`(N, M)` of the assignment
-                matrix in case :obj:`edge_index` is a :obj:`LongTensor`.
-                If set to :obj:`None`, the size will be automatically inferred
-                and assumed to be quadratic.
-                This argument is ignored in case :obj:`edge_index` is a
-                :obj:`torch_sparse.SparseTensor`. (default: :obj:`None`)
-            **kwargs: Any additional data which is needed to construct and
-                aggregate messages, and to update node embeddings.
-        """
-        size = self.__check_input__(edge_index, size)
-
-        # Run "fused" message and aggregation (if applicable).
-        if (isinstance(edge_index, SparseTensor) and self.fuse
-                and not self.__explain__):
-            coll_dict = self.__collect__(self.__fused_user_args__, edge_index,
-                                         size, kwargs)
-
-            msg_aggr_kwargs = self.inspector.distribute(
-                'message_and_aggregate', coll_dict)
-            out = self.message_and_aggregate(edge_index, **msg_aggr_kwargs)
-
-            update_kwargs = self.inspector.distribute('update', coll_dict)
-            return self.update(out, **update_kwargs)
-
-        # Otherwise, run both functions in separation.
-        elif isinstance(edge_index, Tensor) or not self.fuse:
-            coll_dict = self.__collect__(self.__user_args__, edge_index, size,
-                                         kwargs)
-
-            msg_kwargs = self.inspector.distribute('message', coll_dict)
-            out = self.message(**msg_kwargs)
-
-            # For `GNNExplainer`, we require a separate message and aggregate
-            # procedure since this allows us to inject the `edge_mask` into the
-            # message passing computation scheme.
-            if self.__explain__:
-                edge_mask = self.__edge_mask__.sigmoid()
-                # Some ops add self-loops to `edge_index`. We need to do the
-                # same for `edge_mask` (but do not train those).
-                if out.size(self.node_dim) != edge_mask.size(0):
-                    loop = edge_mask.new_ones(size[0])
-                    edge_mask = torch.cat([edge_mask, loop], dim=0)
-                assert out.size(self.node_dim) == edge_mask.size(0)
-                out = out * edge_mask.view([-1] + [1] * (out.dim() - 1))
-            elif self.__explain_flow__:
-
-                edge_mask = self.layer_edge_mask.sigmoid()
-                # Some ops add self-loops to `edge_index`. We need to do the
-                # same for `edge_mask` (but do not train those).
-                if out.size(self.node_dim) != edge_mask.size(0):
-                    loop = edge_mask.new_ones(size[0])
-                    edge_mask = torch.cat([edge_mask, loop], dim=0)
-                assert out.size(self.node_dim) == edge_mask.size(0)
-                out = out * edge_mask.view([-1] + [1] * (out.dim() - 1))
-
-            aggr_kwargs = self.inspector.distribute('aggregate', coll_dict)
-            out = self.aggregate(out, **aggr_kwargs)
-
-            update_kwargs = self.inspector.distribute('update', coll_dict)
-            return self.update(out, **update_kwargs)
-
-    def message(self, x_j: Tensor) -> Tensor:
-        if self.reweight:
-            edge_weight = torch.ones(x_j.shape[0], device=x_j.device)
-            edge_weight.data[-self.num_nodes:] += self.eps
-            edge_weight = edge_weight.detach().clone()
-            edge_weight.requires_grad_(True)
-            self.edge_weight = edge_weight
-        return x_j * self.edge_weight.view(-1, 1)
+# class GINConv(gnn.GINConv):
+#     r"""The graph isomorphism operator from the `"How Powerful are
+#     Graph Neural Networks?" <https://arxiv.org/abs/1810.00826>`_ paper
+#
+#     .. math::
+#         \mathbf{x}^{\prime}_i = h_{\mathbf{\Theta}} \left( (1 + \epsilon) \cdot
+#         \mathbf{x}_i + \sum_{j \in \mathcal{N}(i)} \mathbf{x}_j \right)
+#
+#     or
+#
+#     .. math::
+#         \mathbf{X}^{\prime} = h_{\mathbf{\Theta}} \left( \left( \mathbf{A} +
+#         (1 + \epsilon) \cdot \mathbf{I} \right) \cdot \mathbf{X} \right),
+#
+#     here :math:`h_{\mathbf{\Theta}}` denotes a neural network, *.i.e.* an MLP.
+#
+#     Args:
+#         nn (torch.nn.Module): A neural network :math:`h_{\mathbf{\Theta}}` that
+#             maps node features :obj:`x` of shape :obj:`[-1, in_channels]` to
+#             shape :obj:`[-1, out_channels]`, *e.g.*, defined by
+#             :class:`torch.nn.Sequential`.
+#         eps (float, optional): (Initial) :math:`\epsilon`-value.
+#             (default: :obj:`0.`)
+#         train_eps (bool, optional): If set to :obj:`True`, :math:`\epsilon`
+#             will be a trainable parameter. (default: :obj:`False`)
+#         **kwargs (optional): Additional arguments of
+#             :class:`torch_geometric.nn.conv.MessagePassing`.
+#
+#     Shapes:
+#         - **input:**
+#           node features :math:`(|\mathcal{V}|, F_{in})` or
+#           :math:`((|\mathcal{V_s}|, F_{s}), (|\mathcal{V_t}|, F_{t}))`
+#           if bipartite,
+#           edge indices :math:`(2, |\mathcal{E}|)`
+#         - **output:** node features :math:`(|\mathcal{V}|, F_{out})` or
+#           :math:`(|\mathcal{V}_t|, F_{out})` if bipartite
+#     """
+#
+#     def __init__(self, nn: Callable, eps: float = 0., train_eps: bool = False,
+#                  **kwargs):
+#         super().__init__(nn, eps, train_eps, **kwargs)
+#         self.edge_weight = None
+#         self.fc_steps = None
+#         self.reweight = None
+#         self.__explain_flow__ = None
+#         self.__explain__ = False
+#         self.__edge_mask__ = None
+#
+#     def forward(self, x: Union[Tensor, OptPairTensor], edge_index: Adj,
+#                 edge_weight: OptTensor = None, **kwargs) -> Tensor:
+#         """"""
+#         self.num_nodes = x.shape[0]
+#         if isinstance(x, Tensor):
+#             x: OptPairTensor = (x, x)
+#
+#         # propagate_type: (x: OptPairTensor)
+#         if edge_weight is not None:
+#             self.edge_weight = edge_weight
+#             assert edge_weight.shape[0] == edge_index.shape[1]
+#             self.reweight = False
+#         else:
+#             edge_index, _ = remove_self_loops(edge_index)
+#             self_loop_edge_index, _ = add_self_loops(edge_index, num_nodes=self.num_nodes)
+#             if self_loop_edge_index.shape[1] != edge_index.shape[1]:
+#                 edge_index = self_loop_edge_index
+#             self.reweight = True
+#         out = self.propagate(edge_index, x=x[0], size=None)
+#
+#         nn_out = self.nn(out)
+#
+#         return nn_out
+#
+#     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+#         r"""The initial call to start propagating messages.
+#
+#         Args:
+#             edge_index (Tensor or SparseTensor): A :obj:`torch.LongTensor` or a
+#                 :obj:`torch_sparse.SparseTensor` that defines the underlying
+#                 graph connectivity/message passing flow.
+#                 :obj:`edge_index` holds the indices of a general (sparse)
+#                 assignment matrix of shape :obj:`[N, M]`.
+#                 If :obj:`edge_index` is of type :obj:`torch.LongTensor`, its
+#                 shape must be defined as :obj:`[2, num_messages]`, where
+#                 messages from nodes in :obj:`edge_index[0]` are sent to
+#                 nodes in :obj:`edge_index[1]`
+#                 (in case :obj:`flow="source_to_target"`).
+#                 If :obj:`edge_index` is of type
+#                 :obj:`torch_sparse.SparseTensor`, its sparse indices
+#                 :obj:`(row, col)` should relate to :obj:`row = edge_index[1]`
+#                 and :obj:`col = edge_index[0]`.
+#                 The major difference between both formats is that we need to
+#                 input the *transposed* sparse adjacency matrix into
+#                 :func:`propagate`.
+#             size (tuple, optional): The size :obj:`(N, M)` of the assignment
+#                 matrix in case :obj:`edge_index` is a :obj:`LongTensor`.
+#                 If set to :obj:`None`, the size will be automatically inferred
+#                 and assumed to be quadratic.
+#                 This argument is ignored in case :obj:`edge_index` is a
+#                 :obj:`torch_sparse.SparseTensor`. (default: :obj:`None`)
+#             **kwargs: Any additional data which is needed to construct and
+#                 aggregate messages, and to update node embeddings.
+#         """
+#         size = self.__check_input__(edge_index, size)
+#
+#         # Run "fused" message and aggregation (if applicable).
+#         if (isinstance(edge_index, SparseTensor) and self.fuse
+#                 and not self.__explain__):
+#             coll_dict = self.__collect__(self.__fused_user_args__, edge_index,
+#                                          size, kwargs)
+#
+#             msg_aggr_kwargs = self.inspector.distribute(
+#                 'message_and_aggregate', coll_dict)
+#             out = self.message_and_aggregate(edge_index, **msg_aggr_kwargs)
+#
+#             update_kwargs = self.inspector.distribute('update', coll_dict)
+#             return self.update(out, **update_kwargs)
+#
+#         # Otherwise, run both functions in separation.
+#         elif isinstance(edge_index, Tensor) or not self.fuse:
+#             coll_dict = self.__collect__(self.__user_args__, edge_index, size,
+#                                          kwargs)
+#
+#             msg_kwargs = self.inspector.distribute('message', coll_dict)
+#             out = self.message(**msg_kwargs)
+#
+#             # For `GNNExplainer`, we require a separate message and aggregate
+#             # procedure since this allows us to inject the `edge_mask` into the
+#             # message passing computation scheme.
+#             if self.__explain__:
+#                 edge_mask = self.__edge_mask__.sigmoid()
+#                 # Some ops add self-loops to `edge_index`. We need to do the
+#                 # same for `edge_mask` (but do not train those).
+#                 if out.size(self.node_dim) != edge_mask.size(0):
+#                     loop = edge_mask.new_ones(size[0])
+#                     edge_mask = torch.cat([edge_mask, loop], dim=0)
+#                 assert out.size(self.node_dim) == edge_mask.size(0)
+#                 out = out * edge_mask.view([-1] + [1] * (out.dim() - 1))
+#             elif self.__explain_flow__:
+#
+#                 edge_mask = self.layer_edge_mask.sigmoid()
+#                 # Some ops add self-loops to `edge_index`. We need to do the
+#                 # same for `edge_mask` (but do not train those).
+#                 if out.size(self.node_dim) != edge_mask.size(0):
+#                     loop = edge_mask.new_ones(size[0])
+#                     edge_mask = torch.cat([edge_mask, loop], dim=0)
+#                 assert out.size(self.node_dim) == edge_mask.size(0)
+#                 out = out * edge_mask.view([-1] + [1] * (out.dim() - 1))
+#
+#             aggr_kwargs = self.inspector.distribute('aggregate', coll_dict)
+#             out = self.aggregate(out, **aggr_kwargs)
+#
+#             update_kwargs = self.inspector.distribute('update', coll_dict)
+#             return self.update(out, **update_kwargs)
+#
+#     def message(self, x_j: Tensor) -> Tensor:
+#         if self.reweight:
+#             edge_weight = torch.ones(x_j.shape[0], device=x_j.device)
+#             edge_weight.data[-self.num_nodes:] += self.eps
+#             edge_weight = edge_weight.detach().clone()
+#             edge_weight.requires_grad_(True)
+#             self.edge_weight = edge_weight
+#         return x_j * self.edge_weight.view(-1, 1)

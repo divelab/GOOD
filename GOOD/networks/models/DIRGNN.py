@@ -111,7 +111,7 @@ class CausalAttNet(nn.Module):
     def __init__(self, causal_ratio, config, **kwargs):
         super(CausalAttNet, self).__init__()
         config_catt = copy.deepcopy(config)
-        config_catt.model.model_layer = 2
+        config_catt.model.model_layer = config.model.model_layer - 1
         config_catt.model.dropout_rate = 0
         if kwargs.get('virtual_node'):
             self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True)
@@ -187,7 +187,7 @@ def split_graph(data, edge_score, ratio):
     #
     # edge_indices, _, _, num_edges, cum_edges = split_batch(data)
     #
-    # all_idx_reserve = []
+    # # all_idx_reserve = []
     # for edge_index, N, C in zip(edge_indices, num_edges, cum_edges):
     #     n_reserve = math.ceil(ratio * N)
     #     if has_edge_attr:
@@ -198,7 +198,7 @@ def split_graph(data, edge_score, ratio):
     #     # idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
     #     rank = torch.sort(-single_mask).indices
     #     idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
-    #     all_idx_reserve.append(C + idx_reserve)
+    #     # all_idx_reserve.append(C + idx_reserve)
     #
     #     causal_edge_index = torch.cat([causal_edge_index, edge_index[:, idx_reserve]], dim=1)
     #     conf_edge_index = torch.cat([conf_edge_index, edge_index[:, idx_drop]], dim=1)
@@ -222,6 +222,8 @@ def split_graph(data, edge_score, ratio):
 
     return (new_causal_edge_index, new_causal_edge_attr, new_causal_edge_weight), \
            (new_conf_edge_index, new_conf_edge_attr, new_conf_edge_weight)
+    # return (causal_edge_index, causal_edge_attr, causal_edge_weight), \
+    #        (conf_edge_index, conf_edge_attr, conf_edge_weight)
 
 
 def split_batch(g):
