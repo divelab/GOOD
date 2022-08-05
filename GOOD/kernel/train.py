@@ -88,10 +88,9 @@ def train(model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader
             if data.batch is not None and (data.batch[-1] < config.train.train_bs - 1):
                 continue
 
-            # Parameter for DANN & DIR
+            # Parameter for DANN
             p = (index / len(loader['train']) + epoch) / config.train.max_epoch
             config.train.alpha = 2. / (1. + np.exp(-10 * p)) - 1
-
 
             # train a batch
             train_stat = train_batch(model, data, ood_algorithm, pbar, config)
