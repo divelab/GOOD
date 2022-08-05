@@ -111,7 +111,7 @@ class CausalAttNet(nn.Module):
     def __init__(self, causal_ratio, config, **kwargs):
         super(CausalAttNet, self).__init__()
         config_catt = copy.deepcopy(config)
-        config_catt.model.model_layer = config.model.model_layer - 1
+        config_catt.model.model_layer = 2
         config_catt.model.dropout_rate = 0
         if kwargs.get('virtual_node'):
             self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True)
