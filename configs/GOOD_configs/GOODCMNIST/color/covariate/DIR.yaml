@@ -8,7 +8,6 @@ ood:
   extra_param:
     - 1e-4
 train:
-  train_bs:
   max_epoch: 500
   lr: 1e-3
   mile_stones: [300]
