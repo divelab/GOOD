@@ -162,57 +162,57 @@ def clear_masks(model: nn.Module):
 def split_graph(data, edge_score, ratio):
     has_edge_attr = hasattr(data, 'edge_attr') and getattr(data, 'edge_attr') is not None
 
-    # new_idx_reserve, new_idx_drop, _, _, _ = sparse_topk(edge_score, data.batch[data.edge_index[0]], ratio, descending=True)
-    # new_causal_edge_index = data.edge_index[:, new_idx_reserve]
-    # new_conf_edge_index = data.edge_index[:, new_idx_drop]
-    #
-    # new_causal_edge_weight = edge_score[new_idx_reserve]
-    # new_conf_edge_weight = - edge_score[new_idx_drop]
-    #
-    # if has_edge_attr:
-    #     new_causal_edge_attr = data.edge_attr[new_idx_reserve]
-    #     new_conf_edge_attr = data.edge_attr[new_idx_drop]
-    # else:
-    #     new_causal_edge_attr = None
-    #     new_conf_edge_attr = None
+    new_idx_reserve, new_idx_drop, _, _, _ = sparse_topk(edge_score, data.batch[data.edge_index[0]], ratio, descending=True)
+    new_causal_edge_index = data.edge_index[:, new_idx_reserve]
+    new_conf_edge_index = data.edge_index[:, new_idx_drop]
 
-    causal_edge_index = torch.LongTensor([[], []]).to(data.x.device)
-    causal_edge_weight = torch.tensor([]).to(data.x.device)
-    conf_edge_index = torch.LongTensor([[], []]).to(data.x.device)
-    conf_edge_weight = torch.tensor([]).to(data.x.device)
+    new_causal_edge_weight = edge_score[new_idx_reserve]
+    new_conf_edge_weight = - edge_score[new_idx_drop]
 
     if has_edge_attr:
-        causal_edge_attr = torch.LongTensor([]).to(data.x.device)
-        conf_edge_attr = torch.LongTensor([]).to(data.x.device)
+        new_causal_edge_attr = data.edge_attr[new_idx_reserve]
+        new_conf_edge_attr = data.edge_attr[new_idx_drop]
+    else:
+        new_causal_edge_attr = None
+        new_conf_edge_attr = None
 
-    edge_indices, _, _, num_edges, cum_edges = split_batch(data)
-
-    # all_idx_reserve = []
-    for edge_index, N, C in zip(edge_indices, num_edges, cum_edges):
-        n_reserve = math.ceil(ratio * N)
-        if has_edge_attr:
-            edge_attr = data.edge_attr[C:C + N]
-        single_mask = edge_score[C:C + N]
-        # single_mask_detach = edge_score[C:C + N].detach().cpu().numpy()
-        # rank = np.argpartition(-single_mask_detach, n_reserve)
-        # idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
-        rank = torch.sort(-single_mask).indices
-        idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
-        # all_idx_reserve.append(C + idx_reserve)
-
-        causal_edge_index = torch.cat([causal_edge_index, edge_index[:, idx_reserve]], dim=1)
-        conf_edge_index = torch.cat([conf_edge_index, edge_index[:, idx_drop]], dim=1)
-
-        causal_edge_weight = torch.cat([causal_edge_weight, single_mask[idx_reserve]])
-        conf_edge_weight = torch.cat([conf_edge_weight, -1 * single_mask[idx_drop]])
-
-        if has_edge_attr:
-            causal_edge_attr = torch.cat([causal_edge_attr, edge_attr[idx_reserve]])
-            conf_edge_attr = torch.cat([conf_edge_attr, edge_attr[idx_drop]])
-        else:
-            causal_edge_attr = None
-            conf_edge_attr = None
-
+    # causal_edge_index = torch.LongTensor([[], []]).to(data.x.device)
+    # causal_edge_weight = torch.tensor([]).to(data.x.device)
+    # conf_edge_index = torch.LongTensor([[], []]).to(data.x.device)
+    # conf_edge_weight = torch.tensor([]).to(data.x.device)
+    #
+    # if has_edge_attr:
+    #     causal_edge_attr = torch.LongTensor([]).to(data.x.device)
+    #     conf_edge_attr = torch.LongTensor([]).to(data.x.device)
+    #
+    # edge_indices, _, _, num_edges, cum_edges = split_batch(data)
+    #
+    # # all_idx_reserve = []
+    # for edge_index, N, C in zip(edge_indices, num_edges, cum_edges):
+    #     n_reserve = math.ceil(ratio * N)
+    #     if has_edge_attr:
+    #         edge_attr = data.edge_attr[C:C + N]
+    #     single_mask = edge_score[C:C + N]
+    #     # single_mask_detach = edge_score[C:C + N].detach().cpu().numpy()
+    #     # rank = np.argpartition(-single_mask_detach, n_reserve)
+    #     # idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
+    #     rank = torch.sort(-single_mask).indices
+    #     idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
+    #     # all_idx_reserve.append(C + idx_reserve)
+    #
+    #     causal_edge_index = torch.cat([causal_edge_index, edge_index[:, idx_reserve]], dim=1)
+    #     conf_edge_index = torch.cat([conf_edge_index, edge_index[:, idx_drop]], dim=1)
+    #
+    #     causal_edge_weight = torch.cat([causal_edge_weight, single_mask[idx_reserve]])
+    #     conf_edge_weight = torch.cat([conf_edge_weight, -1 * single_mask[idx_drop]])
+    #
+    #     if has_edge_attr:
+    #         causal_edge_attr = torch.cat([causal_edge_attr, edge_attr[idx_reserve]])
+    #         conf_edge_attr = torch.cat([conf_edge_attr, edge_attr[idx_drop]])
+    #     else:
+    #         causal_edge_attr = None
+    #         conf_edge_attr = None
+    #
     # all_idx_reserve = torch.cat(all_idx_reserve)
     #
     # assert causal_edge_index == new_causal_edge_index
@@ -220,10 +220,10 @@ def split_graph(data, edge_score, ratio):
     # assert causal_edge_weight == new_causal_edge_weight
 
 
-    # return (new_causal_edge_index, new_causal_edge_attr, new_causal_edge_weight), \
-    #        (new_conf_edge_index, new_conf_edge_attr, new_conf_edge_weight)
-    return (causal_edge_index, causal_edge_attr, causal_edge_weight), \
-           (conf_edge_index, conf_edge_attr, conf_edge_weight)
+    return (new_causal_edge_index, new_causal_edge_attr, new_causal_edge_weight), \
+           (new_conf_edge_index, new_conf_edge_attr, new_conf_edge_weight)
+    # return (causal_edge_index, causal_edge_attr, causal_edge_weight), \
+    #        (conf_edge_index, conf_edge_attr, conf_edge_weight)
 
 
 def split_batch(g):
