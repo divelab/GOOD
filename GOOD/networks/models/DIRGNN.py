@@ -50,6 +50,7 @@ class DIRGIN(GNNBasic):
         pred_edge_weight = self.att_net(*args, **kwargs)
 
 
+
         # --- Causal repr ---
         set_masks(causal_edge_weight, self)
         causal_rep = self.get_graph_rep(
@@ -130,11 +131,18 @@ class CausalAttNet(nn.Module):
         edge_rep = torch.cat([x[row], x[col]], dim=-1)
         edge_score = self.linear(edge_rep).view(-1)
 
-        (causal_edge_index, causal_edge_attr, causal_edge_weight), \
-        (conf_edge_index, conf_edge_attr, conf_edge_weight) = split_graph(data, edge_score, self.ratio)
+        if data.edge_index.shape[1] != 0:
+            (causal_edge_index, causal_edge_attr, causal_edge_weight), \
+            (conf_edge_index, conf_edge_attr, conf_edge_weight) = split_graph(data, edge_score, self.ratio)
 
-        causal_x, causal_edge_index, causal_batch, _ = relabel(x, causal_edge_index, data.batch)
-        conf_x, conf_edge_index, conf_batch, _ = relabel(x, conf_edge_index, data.batch)
+            causal_x, causal_edge_index, causal_batch, _ = relabel(x, causal_edge_index, data.batch)
+            conf_x, conf_edge_index, conf_batch, _ = relabel(x, conf_edge_index, data.batch)
+        else:
+            causal_x, causal_edge_index, causal_edge_attr, causal_edge_weight, causal_batch = \
+                x, data.edge_index, data.edge_attr, \
+                float('inf') * torch.ones(data.edge_index.shape[1], device=data.x.device), \
+                data.batch
+            conf_x, conf_edge_index, conf_edge_attr, conf_edge_weight, conf_batch = None, None, None, None, None
 
         return (causal_x, causal_edge_index, causal_edge_attr, causal_edge_weight, causal_batch), \
                (conf_x, conf_edge_index, conf_edge_attr, conf_edge_weight, conf_batch), \
@@ -161,6 +169,7 @@ def clear_masks(model: nn.Module):
 
 def split_graph(data, edge_score, ratio):
     has_edge_attr = hasattr(data, 'edge_attr') and getattr(data, 'edge_attr') is not None
+
 
     new_idx_reserve, new_idx_drop, _, _, _ = sparse_topk(edge_score, data.batch[data.edge_index[0]], ratio, descending=True)
     new_causal_edge_index = data.edge_index[:, new_idx_reserve]
