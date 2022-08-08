@@ -4,7 +4,7 @@ model:
   model_name: Coral_vGIN
 ood:
   ood_alg: Coral
-  ood_param: 0.1
+  ood_param: 1.
 train:
   max_epoch: 200
   lr: 1e-3

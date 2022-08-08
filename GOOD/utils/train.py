@@ -120,9 +120,9 @@ class TrainHelper(object):
             print('#IM#Saved a new best In-Domain checkpoint.')
 
         # --- Out-Of-Domain checkpoint ---
-        if id_val_stat.get('score'):
-            if not (config.metric.lower_better * id_val_stat['score'] < config.metric.lower_better * val_stat['score']):
-                return
+        # if id_val_stat.get('score'):
+        #     if not (config.metric.lower_better * id_val_stat['score'] < config.metric.lower_better * val_stat['score']):
+        #         return
         if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better * \
                 config.metric.best_stat['score']:
             config.metric.best_stat['score'] = val_stat['score']

@@ -4,7 +4,7 @@ model:
   model_name: vGIN
 ood:
   ood_alg: VREx
-  ood_param: 1000.
+  ood_param: 100.
 train:
   max_epoch: 200
   lr: 1e-3

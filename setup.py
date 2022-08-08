@@ -19,7 +19,7 @@ install_requires = [
     'sphinx-rtd-theme==1.0.0',
     'tensorboard==2.8.0',
     'tqdm==4.64.0',
-    'typed-argument-parser==1.7.2'
+    'typed-argument-parser==1.7.2',
     'dive-into-graphs'
 ]
 
