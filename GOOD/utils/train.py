@@ -58,9 +58,9 @@ class TrainHelper(object):
             None
 
         """
-
+        state_dict = self.model.state_dict() if config.ood.ood_alg != 'EERM' else self.model.gnn.state_dict()
         ckpt = {
-            'state_dict': self.model.state_dict(),
+            'state_dict': state_dict,
             'train_score': train_stat['score'],
             'train_loss': train_stat['loss'],
             'id_val_score': id_val_stat['score'],
