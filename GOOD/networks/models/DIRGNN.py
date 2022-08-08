@@ -23,7 +23,9 @@ class DIRGIN(GNNBasic):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRGIN, self).__init__(config)
         self.att_net = CausalAttNet(config.ood.ood_param, config)
-        self.feat_encoder = GINFeatExtractor(config, without_embed=True)
+        config_fe = copy.deepcopy(config)
+        config_fe.model.model_layer = config.model.model_layer - 2
+        self.feat_encoder = GINFeatExtractor(config_fe, without_embed=True)
 
         self.num_tasks = config.dataset.num_classes
         self.causal_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
@@ -104,7 +106,19 @@ class DIRvGIN(DIRGIN):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRvGIN, self).__init__(config)
         self.att_net = CausalAttNet(config.ood.ood_param, config, virtual_node=True)
-        self.feat_encoder = vGINFeatExtractor(config, without_embed=True)
+        config_fe = copy.deepcopy(config)
+        config_fe.model.model_layer = config.model.model_layer - 2
+        self.feat_encoder = vGINFeatExtractor(config_fe, without_embed=True)
+
+@register.model_register
+class DIRvGINNB(DIRGIN):
+
+    def __init__(self, config: Union[CommonArgs, Munch]):
+        super(DIRvGINNB, self).__init__(config)
+        self.att_net = CausalAttNet(config.ood.ood_param, config, virtual_node=True, no_bn=True)
+        config_fe = copy.deepcopy(config)
+        config_fe.model.model_layer = config.model.model_layer - 2
+        self.feat_encoder = vGINFeatExtractor(config_fe, without_embed=True)
 
 
 class CausalAttNet(nn.Module):
@@ -115,9 +129,9 @@ class CausalAttNet(nn.Module):
         config_catt.model.model_layer = 2
         config_catt.model.dropout_rate = 0
         if kwargs.get('virtual_node'):
-            self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True)
+            self.gnn_node = vGINFeatExtractor(config_catt, without_readout=True, **kwargs)
         else:
-            self.gnn_node = GINFeatExtractor(config_catt, without_readout=True)
+            self.gnn_node = GINFeatExtractor(config_catt, without_readout=True, **kwargs)
         self.linear = nn.Linear(config_catt.model.dim_hidden * 2, 1)
         self.ratio = causal_ratio
 

@@ -18,6 +18,7 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic, BasicEncoder
 from .Classifiers import Classifier
 from .MolEncoders import AtomEncoder, BondEncoder
+from torch.nn import Identity
 
 
 @register.model_register
@@ -102,7 +103,7 @@ class GINEncoder(BasicEncoder):
 
     def __init__(self, config: Union[CommonArgs, Munch], *args, **kwargs):
 
-        super(GINEncoder, self).__init__(config, *args)
+        super(GINEncoder, self).__init__(config, *args, **kwargs)
         num_layer = config.model.model_layer
         self.without_readout = kwargs.get('without_readout')
 
@@ -162,11 +163,11 @@ class GINMolEncoder(BasicEncoder):
     """
 
     def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
-        super(GINMolEncoder, self).__init__(config)
+        super(GINMolEncoder, self).__init__(config, **kwargs)
         self.without_readout = kwargs.get('without_readout')
         num_layer = config.model.model_layer
         if kwargs.get('without_embed'):
-            self.atom_encoder = lambda x: x
+            self.atom_encoder = Identity()
         else:
             self.atom_encoder = AtomEncoder(config.model.dim_hidden)
 
