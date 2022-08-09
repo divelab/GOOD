@@ -150,11 +150,40 @@ class SRGNN(BaseOODAlg):
             # # embed()
             # kmm_weight, MMD_dist = KMM(Z_train, Z_test, label_balance_constraints, beta=0.2)
             self.kmm_weight = torch.zeros(data.y.shape[0], device=config.device)
+            Z_all = torch_geometric.utils.to_dense_adj(
+                data.edge_index[:, data.train_mask[data.edge_index[0]] | data.train_mask[data.edge_index[1]]],
+                torch.zeros(data.y.shape[0], dtype=torch.long, device=config.device)).squeeze()
+
+            # a = int(data.y.shape[0]/2)
+            # b = data.y.shape[0] - a
+            # Z_train = Z_all
+            # Z_test = Z_train[torch.cat((torch.randperm(b)+a, torch.randperm(a)))]
+            # label_balance_constraints = np.zeros((config.dataset.num_classes, data.y.shape[0]))
+            # for i, y in enumerate(data.y):
+            #     label_balance_constraints[y, i] = 1
+            # kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
+            # self.kmm_weight = torch.from_numpy(kmm_weight_env).float().cuda(
+            #     device=config.device).squeeze()
+
+            # for i in range(config.dataset.num_envs):
+            #     env_idx = (data.env_id == i).clone().detach()
+            #     if data.y[env_idx].shape[0] > 0:
+            #         Z_train = Z_all[env_idx]
+            #         Z_test = Z_train[torch.randperm(data.y[env_idx].shape[0])]
+            #         # Z_train = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]])
+            #         # edge_env_mask = env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]
+            #         # Z_test = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx_2[data.edge_index[0]] | env_idx_2[data.edge_index[1]]])
+            #         label_balance_constraints = np.zeros((config.dataset.num_classes, data.y[env_idx].shape[0]))
+            #         for i, y in enumerate(data.y[env_idx]):
+            #             label_balance_constraints[y, i] = 1
+            #         kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
+            #         self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().cuda(device=config.device).squeeze()
+
             for i in range(config.dataset.num_envs):
                 env_idx = (data.env_id == i).clone().detach()
                 if data.y[env_idx].shape[0] > 0:
-                    Z_train = torch_geometric.utils.to_dense_adj(data.edge_index[:, data.train_mask[data.edge_index[0]] | data.train_mask[data.edge_index[1]]], torch.zeros(data.y.shape[0], dtype=torch.long, device=config.device)).squeeze()[env_idx]
-                    Z_test = Z_train[torch.randperm(data.y[env_idx].shape[0])]
+                    Z_train = Z_all[env_idx]
+                    Z_test = Z_all[~env_idx][:(data.y[env_idx].shape[0])]
                     # Z_train = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]])
                     # edge_env_mask = env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]
                     # Z_test = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx_2[data.edge_index[0]] | env_idx_2[data.edge_index[1]]])
