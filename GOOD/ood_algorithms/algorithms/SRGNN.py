@@ -208,7 +208,8 @@ class SRGNN(BaseOODAlg):
             env_idx_1 = data.env_id == i
             env_feat_1 = self.feat[env_idx_1]
             if env_feat_1.shape[0] > 1:
-                env_feat_2 = env_feat_1[torch.randperm(env_feat_1.shape[0])]
+                # env_feat_2 = env_feat_1[torch.randperm(env_feat_1.shape[0])]
+                env_feat_2 = self.feat[~env_idx_1][:(data.y[env_idx_1].shape[0])]
                 shift_robust_loss = cmd(env_feat_1, env_feat_2)
                 SRloss_list.append(shift_robust_loss)
 
