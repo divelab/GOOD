@@ -22,6 +22,7 @@ class EERMGCN(GNNBasic):
         self.classifier = Classifier(config)
 
         self.gl = Graph_Editer(self.K, config.dataset.num_train_nodes, config.device)
+        self.gl.reset_parameters()
         self.gl_optimizer = torch.optim.Adam(self.gl.parameters(), lr=config.ood.extra_param[3])
 
     def reset_parameters(self):
@@ -32,13 +33,9 @@ class EERMGCN(GNNBasic):
     def forward(self, *args, **kwargs):
         data = kwargs.get('data')
         loss_func = self.config.metric.loss_func
-        # --- useless ---
-        # x, y = data.graph['node_feat'].to(self.config.device), data.label.to(self.config.device)
-        # edge_index = data.graph['edge_index'].to(self.config.device)
 
         # --- K fold ---
         if self.training:
-            self.gl.reset_parameters()
             edge_index, _ = subgraph(data.train_mask, data.edge_index, relabel_nodes=True)
             x = data.x[data.train_mask]
             y = data.y[data.train_mask]

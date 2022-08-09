@@ -80,8 +80,10 @@ class EERM(BaseOODAlg):
             loss based on VREx algorithm
 
         """
+        beta = 10 * config.ood.ood_param * config.train.epoch / config.train.max_epoch \
+               + config.ood.ood_param * (1 - config.train.epoch / config.train.max_epoch)
         Var, Mean = loss
-        loss = Mean + config.ood.ood_param * Var
+        loss = Var + beta * Mean
         self.mean_loss = Mean
         self.spec_loss = Var
         return loss
