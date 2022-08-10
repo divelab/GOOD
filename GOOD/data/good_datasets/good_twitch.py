@@ -82,7 +82,7 @@ class GOODTwitch(InMemoryDataset):
         assert domain in ['language']
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/11_m_o_JbQ3OeWVvrDafzwXQe5nKDmYUZ/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1PuO-pWsVFfCwiXx7TzKP12-QXAx6vz4O/view?usp=sharing'
 
         self.generate = generate
 
