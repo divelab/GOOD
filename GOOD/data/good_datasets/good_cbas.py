@@ -370,6 +370,7 @@ class GOODCBAS(InMemoryDataset):
         meta_info.dim_edge = dataset.num_edge_features
 
         meta_info.num_envs = (torch.unique(dataset.data.env_id) >= 0).sum()
+        meta_info.num_train_nodes = dataset[0].train_mask.sum()
 
         # Define networks' output shape.
         if dataset.task == 'Binary classification':
