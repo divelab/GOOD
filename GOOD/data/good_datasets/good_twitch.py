@@ -168,9 +168,9 @@ class GOODTwitch(InMemoryDataset):
         num_data = self.num_data
         node_indices = torch.randperm(num_data)
 
-        train_ratio = 0.6
-        val_ratio = 0.2
-        test_ratio = 0.2
+        train_ratio = 0.4
+        val_ratio = 0.3
+        test_ratio = 0.3
 
         train_split = int(num_data * train_ratio)
         val_split = int(num_data * (train_ratio + val_ratio))
