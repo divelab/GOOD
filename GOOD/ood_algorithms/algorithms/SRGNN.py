@@ -188,6 +188,8 @@ class SRGNN(BaseOODAlg):
                     # edge_env_mask = env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]
                     # Z_test = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx_2[data.edge_index[0]] | env_idx_2[data.edge_index[1]]])
                     label_balance_constraints = np.zeros((config.dataset.num_classes, data.y[env_idx].shape[0]))
+                    torch.eye(config.dataset.num_classes)[data.y[env_idx]].T
+                    # torch.stack([torch.arange(config.dataset.num_classes), data.y[env_idx]], dim=1)
                     for i, y in enumerate(data.y[env_idx]):
                         label_balance_constraints[y, i] = 1
                     kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
