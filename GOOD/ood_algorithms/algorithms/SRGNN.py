@@ -105,6 +105,7 @@ class SRGNN(BaseOODAlg):
         super(SRGNN, self).__init__(config)
         self.feat = None
         self.kmm_weight = None
+        self.z_test_idx = None
 
     def input_preprocess(self,
                          data: Batch,
@@ -141,14 +142,7 @@ class SRGNN(BaseOODAlg):
 
         """
         if training:
-            # Z_train = torch.FloatTensor(adj[idx_train.tolist(), :].todense())
-            # Z_test = torch.FloatTensor(adj[iid_train.tolist(), :].todense())
-            # # embed()
-            # label_balance_constraints = np.zeros((labels.max().item() + 1, len(idx_train)))
-            # for i, idx in enumerate(idx_train):
-            #     label_balance_constraints[labels[idx], i] = 1
-            # # embed()
-            # kmm_weight, MMD_dist = KMM(Z_train, Z_test, label_balance_constraints, beta=0.2)
+
             self.kmm_weight = torch.zeros(data.y.shape[0], device=config.device)
             Z_all = torch_geometric.utils.to_dense_adj(
                 data.edge_index[:, data.train_mask[data.edge_index[0]] | data.train_mask[data.edge_index[1]]],
@@ -179,19 +173,43 @@ class SRGNN(BaseOODAlg):
             #         kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
             #         self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().cuda(device=config.device).squeeze()
 
+            # for i in range(config.dataset.num_envs):
+            #     env_idx = (data.env_id == i).clone().detach()
+            #     if data.y[env_idx].shape[0] > 0:
+            #         Z_train = Z_all[env_idx]
+            #         Z_test = Z_all[~env_idx][:(data.y[env_idx].shape[0])]
+            #         # Z_train = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]])
+            #         # edge_env_mask = env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]
+            #         # Z_test = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx_2[data.edge_index[0]] | env_idx_2[data.edge_index[1]]])
+            #         label_balance_constraints = np.zeros((config.dataset.num_classes, data.y[env_idx].shape[0]))
+            #         label_balance_constraints = torch.eye(config.dataset.num_classes)[data.y[env_idx]].T
+            #         # torch.stack([torch.arange(config.dataset.num_classes), data.y[env_idx]], dim=1)
+            #         for i, y in enumerate(data.y[env_idx]):
+            #             label_balance_constraints[y, i] = 1
+            #         kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
+            #         self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().cuda(device=config.device).squeeze()
+
+            Z_val = torch_geometric.utils.to_dense_adj(
+                data.edge_index[:, data.val_mask[data.edge_index[0]] | data.val_mask[data.edge_index[1]]],
+                torch.zeros(data.y.shape[0], dtype=torch.long, device=config.device)).squeeze()
+
+
             for i in range(config.dataset.num_envs):
                 env_idx = (data.env_id == i).clone().detach()
                 if data.y[env_idx].shape[0] > 0:
                     Z_train = Z_all[env_idx]
-                    Z_test = Z_all[~env_idx][:(data.y[env_idx].shape[0])]
+                    if data.val_mask.sum() >= data.y[env_idx].shape[0]:
+
+                        Z_test = Z_val[data.val_mask][torch.randperm(data.val_mask.sum())][:(data.y[env_idx].shape[0])]
+                    else:
+
+                        Z_test = Z_val[torch.randperm(Z_val.shape[0])][:(data.y[env_idx].shape[0])]
                     # Z_train = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]])
                     # edge_env_mask = env_idx[data.edge_index[0]] | env_idx[data.edge_index[1]]
                     # Z_test = torch_geometric.utils.to_dense_adj(data.edge_index[:,env_idx_2[data.edge_index[0]] | env_idx_2[data.edge_index[1]]])
-                    label_balance_constraints = np.zeros((config.dataset.num_classes, data.y[env_idx].shape[0]))
-                    torch.eye(config.dataset.num_classes)[data.y[env_idx]].T
-                    # torch.stack([torch.arange(config.dataset.num_classes), data.y[env_idx]], dim=1)
-                    for i, y in enumerate(data.y[env_idx]):
-                        label_balance_constraints[y, i] = 1
+                    if config.dataset.num_classes == 1:
+                        config.dataset.num_classes = 2
+                    label_balance_constraints = torch.eye(config.dataset.num_classes)[data.y[env_idx].long().squeeze()].T.double().cpu().detach().numpy()  #data.y.unique().shape[0]
                     kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
                     self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().cuda(device=config.device).squeeze()
 
@@ -210,8 +228,11 @@ class SRGNN(BaseOODAlg):
             env_idx_1 = data.env_id == i
             env_feat_1 = self.feat[env_idx_1]
             if env_feat_1.shape[0] > 1:
-                # env_feat_2 = env_feat_1[torch.randperm(env_feat_1.shape[0])]
-                env_feat_2 = self.feat[~env_idx_1][:(data.y[env_idx_1].shape[0])]
+                if data.val_mask.sum() >= data.y[env_idx_1].shape[0]:
+                    env_feat_2 = self.feat[data.val_mask][torch.randperm(data.val_mask.sum())][:(data.y[env_idx_1].shape[0])]
+                else:
+                    env_feat_2 = self.feat[torch.randperm(self.feat.shape[0])][:(data.y[env_idx_1].shape[0])]
+
                 shift_robust_loss = cmd(env_feat_1, env_feat_2)
                 SRloss_list.append(shift_robust_loss)
 

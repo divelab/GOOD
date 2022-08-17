@@ -26,3 +26,5 @@ dataset:
   dim_edge: null
   num_classes: null
   num_envs: null
+ood:
+  extra_param: null
