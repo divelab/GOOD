@@ -62,7 +62,7 @@ class GOODSST2(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1R0NRDi-a9_fZWXRiRfywOWiERlSvBAZq/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1e2GmmeN-mN6X5KL6t8CosBujS1kfjeNS/view?usp=sharing'
 
         self.generate = generate
 
@@ -329,6 +329,7 @@ class GOODSST2(InMemoryDataset):
         data_list = []
         for i, data in enumerate(dataset):
             data.idx = i
+            data.sentence_tokens = dataset.supplement['sentence_tokens'][str(i)]
             data_list.append(data)
         self.num_data = data_list.__len__()
         print('Extract data done!')

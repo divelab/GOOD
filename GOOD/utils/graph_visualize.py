@@ -13,9 +13,9 @@ from torch_geometric.utils import remove_self_loops, to_networkx, subgraph, k_ho
 
 # plt.style.use('seaborn')
 
-def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', node_size=300,
+def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', font_size=12, node_size=300,
                arrows=True, vmin=None, vmax=None, pos=None, line_width=1.0,
-               enable_label=True, enable_colorbar=True, save_fig_path=None):
+               enable_label=True, label_attr=None, enable_colorbar=True, save_fig_path=None):
     r"""
     Plot a graph with Matplotlib
 
@@ -44,6 +44,7 @@ def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', node_siz
     else:
         colors = 'red'
 
+
     # plt.clf()
     fig, ax = plt.subplots(dpi=300)
     fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=.001, hspace=.001)
@@ -64,7 +65,7 @@ def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', node_siz
                                 vmin=vmin, vmax=vmax,
                                 ax=ax, node_size=node_size)
     if enable_label:
-        lc = nx.draw_networkx_labels(nx_Gs, pos, font_color=font_color, ax=ax)
+        lc = nx.draw_networkx_labels(nx_Gs, pos, labels=nx.get_node_attributes(nx_Gs, label_attr), font_color=font_color, font_size=font_size, ax=ax)
     if enable_colorbar:
         plt.colorbar(nc)
     if save_fig_path:
@@ -97,19 +98,34 @@ def plot_calculation_graph(calculation_graph, graph_idx=0, color_attr=None, k_ho
     else:
         if k_hop:
             subset = k_hop_subgraph(node_idx=graph_idx, num_hops=k_hop, edge_index=calculation_graph.edge_index)[0]
-            if subset.shape[0] > 2000:
+            if subset.shape[0] > 1000:
                 print(f'The graph is too large. {subset.shape[0]}')
                 subset = k_hop_subgraph(node_idx=graph_idx, num_hops=1, edge_index=calculation_graph.edge_index)[0]
+                if subset.shape[0] > 1000:
+                    return
 
                 # return None
         else:
             subset = torch.arange(calculation_graph.x.shape[0], dtype=torch.long, device=calculation_graph.x.device)
     vis_edge_index = \
-        remove_self_loops(subgraph(subset=subset, edge_index=calculation_graph.edge_index, relabel_nodes=True)[0])[0]
+        remove_self_loops(subgraph(subset=subset, edge_index=calculation_graph.edge_index, relabel_nodes=True, num_nodes=calculation_graph.x.shape[0])[0])[0]
     data = Data(edge_index=vis_edge_index)
+    node_attrs = []
     if color_attr:
         data.__setattr__(color_attr, calculation_graph.get(color_attr)[subset])
+        node_attrs.append(color_attr)
+    label_attr = kwargs.get('label_attr')
+    if label_attr:
+        labels = calculation_graph.get(label_attr)
+        if type(labels) is list:
+            label_subset = [labels[i] for i in subset]
+        else:
+            label_subset = labels[subset]
+        data.__setattr__(label_attr, label_subset)
+        node_attrs.append(label_attr)
 
-    vis_nx_G = to_networkx(data, node_attrs=[color_attr] if color_attr else None)
+    vis_nx_G = to_networkx(data, node_attrs=node_attrs)
     plot_graph(vis_nx_G, color_attr=color_attr, **kwargs)
+    print('One graph plotted')
+
 
