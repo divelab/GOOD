@@ -15,6 +15,7 @@ def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
     config.dataset.dim_edge = meta_info.dim_edge
     config.dataset.num_envs = meta_info.num_envs
     config.dataset.num_classes = meta_info.num_classes
+    config.dataset.num_train_nodes = meta_info.get('num_train_nodes')
 
 
 def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
@@ -80,8 +81,12 @@ def create_dataloader(dataset, config: Union[CommonArgs, Munch]):
                                              walk_length=config.model.model_layer,
                                              num_steps=config.train.num_steps, sample_coverage=100,
                                              save_dir=dataset.processed_dir)
-        loader = {'train': loader, 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
-                  'test': [graph]}
+        if config.ood.ood_alg == 'EERM':
+            loader = {'train': [graph], 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
+                      'test': [graph]}
+        else:
+            loader = {'train': loader, 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
+                      'test': [graph]}
     else:
         loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True),
                   'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False),

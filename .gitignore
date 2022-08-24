@@ -3,4 +3,13 @@ storage
 docs/build
 /docs/source/_autosummary/
 **/__pycace__/
+/GOOD/kernel/auto_launch.py
+/GOOD/kernel/auto_chart.py
+/GOOD/kernel/auto_chart_final.py
+/GOOD/kernel/auto_chart_paper.py
+/GOOD/kernel/auto_chart_tvt.py
+/GOOD/kernel/auto_checkpoint.py
+/GOOD/kernel/auto_curve.py
+/GOOD/kernel/auto_curve_chart.py
+/configs/auto_config_finetune/
 /graphEx/

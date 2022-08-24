@@ -60,9 +60,9 @@ class TrainHelper(object):
             None
 
         """
-
+        state_dict = self.model.state_dict() if config.ood.ood_alg != 'EERM' else self.model.gnn.state_dict()
         ckpt = {
-            'state_dict': self.model.state_dict(),
+            'state_dict': state_dict,
             'train_score': train_stat['score'],
             'train_loss': train_stat['loss'],
             'id_val_score': id_val_stat['score'],
@@ -98,8 +98,7 @@ class TrainHelper(object):
             'max epoch': config.train.max_epoch,
             'others': config.other_saved
         }
-        if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
-            'score'] < config.metric.lower_better *
+        if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better *
                 config.metric.best_stat['score']
                 or (id_val_stat.get('score') and (
                         config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
@@ -116,8 +115,7 @@ class TrainHelper(object):
         shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'last.ckpt'))
 
         # --- In-Domain checkpoint ---
-        if id_val_stat.get('score') and (
-                config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
+        if id_val_stat.get('score') and (config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
             'score'] < config.metric.lower_better * config.metric.id_best_stat['score']):
             config.metric.id_best_stat['score'] = id_val_stat['score']
             config.metric.id_best_stat['loss'] = id_val_stat['loss']
@@ -131,7 +129,6 @@ class TrainHelper(object):
         if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
             'score'] < config.metric.lower_better * \
                 config.metric.best_stat['score']:
-        # if config.metric.best_stat['score'] is None or val_stat['loss'] < config.metric.best_stat['loss']:
             config.metric.best_stat['score'] = val_stat['score']
             config.metric.best_stat['loss'] = val_stat['loss']
             shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'best.ckpt'))

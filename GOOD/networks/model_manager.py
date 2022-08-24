@@ -20,8 +20,8 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
         A instantiated GNN model.
 
     """
-    reset_random_seed(config)
     try:
+        reset_random_seed(config)
         model = register.models[name](config)
     except KeyError as e:
         print(f'#E#Model {name} dose not exist.')
@@ -32,7 +32,7 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
-def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Munch], load_param=True):
+def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Munch], load_param=False):
     r"""
     A model configuration utility. Responsible for transiting model from CPU -> GPU and loading checkpoints.
     Args:
@@ -113,7 +113,10 @@ def config_model(model: torch.nn.Module, mode: str, config: Union[CommonArgs, Mu
             print(
                 f'#IN#ChartInfo {ckpt["test_score"]:.4f} {ckpt["val_score"]:.4f}', end='')
         if load_param:
-            model.load_state_dict(ckpt['state_dict'])
+            if config.ood.ood_alg != 'EERM':
+                model.load_state_dict(ckpt['state_dict'])
+            else:
+                model.gnn.load_state_dict(ckpt['state_dict'])
         config.train.epoch = ckpt['epoch']
         config.other_saved = ckpt.get('others')
         return ckpt["test_score"], ckpt["test_loss"]

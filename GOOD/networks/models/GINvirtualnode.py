@@ -53,15 +53,16 @@ class vGINFeatExtractor(GNNBasic):
 
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
+            **kwargs: `without_readout` will output node features instead of graph features.
     """
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         super(vGINFeatExtractor, self).__init__(config)
         num_layer = config.model.model_layer
         if config.dataset.dataset_type == 'mol':
-            self.encoder = vGINMolEncoder(config)
+            self.encoder = vGINMolEncoder(config, **kwargs)
             self.edge_feat = True
         else:
-            self.encoder = vGINEncoder(config)
+            self.encoder = vGINEncoder(config, **kwargs)
             self.edge_feat = False
 
     def forward(self, *args, **kwargs):
@@ -76,11 +77,11 @@ class vGINFeatExtractor(GNNBasic):
             node feature representations
         """
         if self.edge_feat:
-            x, edge_index, edge_attr, batch = self.arguments_read(*args, **kwargs)
-            out_readout = self.encoder(x, edge_index, edge_attr, batch)
+            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
+            out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size)
         else:
-            x, edge_index, batch = self.arguments_read(*args, **kwargs)
-            out_readout = self.encoder(x, edge_index, batch)
+            x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
+            out_readout = self.encoder(x, edge_index, batch, batch_size)
         return out_readout
 
 
@@ -112,11 +113,12 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.model.dropout_rate`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
-        super(vGINEncoder, self).__init__(config)
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
+        super(vGINEncoder, self).__init__(config, **kwargs)
         self.config = config
+        self.without_readout = kwargs.get('without_readout')
 
-    def forward(self, x, edge_index, batch):
+    def forward(self, x, edge_index, batch, batch_size):
         r"""
         The vGIN encoder for non-molecule data.
 
@@ -124,12 +126,13 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             x (Tensor): node features
             edge_index (Tensor): edge indices
             batch (Tensor): batch indicator
+            batch_size (int): Batch size.
 
         Returns (Tensor):
             node feature representations
         """
         virtual_node_feat = self.virtual_node_embedding(
-            torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
+            torch.zeros(batch_size, device=self.config.device, dtype=torch.long))
 
         post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
         for i, (conv, batch_norm, relu, dropout) in enumerate(
@@ -142,9 +145,11 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             post_conv = dropout(post_conv)
             # --- update global info ---
             if i < len(self.convs) - 1:
-                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch) + virtual_node_feat)
+                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch, batch_size) + virtual_node_feat)
 
-        out_readout = self.readout(post_conv, batch)
+        if self.without_readout:
+            return post_conv
+        out_readout = self.readout(post_conv, batch, batch_size)
         return out_readout
 
 
@@ -155,11 +160,12 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.model.dropout_rate`)
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
-        super(vGINMolEncoder, self).__init__(config)
-        self.config = config
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
+        super(vGINMolEncoder, self).__init__(config, **kwargs)
+        self.config: Union[CommonArgs, Munch] = config
+        self.without_readout = kwargs.get('without_readout')
 
-    def forward(self, x, edge_index, edge_attr, batch):
+    def forward(self, x, edge_index, edge_attr, batch, batch_size):
         r"""
         The vGIN encoder for molecule data.
 
@@ -168,12 +174,13 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             edge_index (Tensor): edge indices
             edge_attr (Tensor): edge attributes
             batch (Tensor): batch indicator
+            batch_size (int): Batch size.
 
         Returns (Tensor):
             node feature representations
         """
         virtual_node_feat = self.virtual_node_embedding(
-            torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))
+            torch.zeros(batch_size, device=self.config.device, dtype=torch.long))
 
         x = self.atom_encoder(x)
         post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
@@ -187,7 +194,9 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             post_conv = dropout(post_conv)
             # --- update global info ---
             if i < len(self.convs) - 1:
-                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch) + virtual_node_feat)
+                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch, batch_size) + virtual_node_feat)
 
-        out_readout = self.readout(post_conv, batch)
+        if self.without_readout:
+            return post_conv
+        out_readout = self.readout(post_conv, batch, batch_size)
         return out_readout

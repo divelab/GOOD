@@ -2,13 +2,12 @@
 Base class for OOD algorithms
 """
 from abc import ABC
-from typing import Tuple
-
 from torch import Tensor
 from torch_geometric.data import Batch
 
-from GOOD.utils.initial import reset_random_seed
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from typing import Tuple
+from GOOD.utils.initial import reset_random_seed
 from GOOD.utils.train import at_stage
 
 

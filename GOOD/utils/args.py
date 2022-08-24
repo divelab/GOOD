@@ -70,12 +70,13 @@ class OODArgs(Tap):
     """
     ood_alg: str = None  #: Name of the chosen OOD algorithm.
     ood_param: float = None  #: OOD algorithms' hyperparameter(s). Currently, most of algorithms use it as a float value.
+    extra_param: List = None  #: OOD algorithms' extra hyperparameter(s).
 
 
-class Auto(Tap):
+class AutoArgs(Tap):
     allow_datasets: List[str] = None  #: Allow dataset in list to run.
     allow_devices: List[int] = None  #: Devices allowed to run.
-    round: int = None  #: Number of experiment rounds.
+    round: int = None # The number of experiment round.
 
 
 class CommonArgs(Tap):

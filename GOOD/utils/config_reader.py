@@ -217,6 +217,9 @@ def process_configs(config: Union[CommonArgs, Munch]):
             config.ckpt_dir = opj(config.ckpt_dir, str(config.ood.ood_param))
         else:
             config.ckpt_dir = opj(config.ckpt_dir, 'no_param')
+        if config.ood.extra_param is not None:
+            for i, param in enumerate(config.ood.extra_param):
+                config.ckpt_dir = opj(config.ckpt_dir, str(param))
         if config.save_tag:
             config.ckpt_dir = opj(config.ckpt_dir, config.save_tag)
     config.test_ckpt = opj(config.ckpt_dir, f'best.ckpt')

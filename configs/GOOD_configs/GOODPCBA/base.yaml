@@ -6,3 +6,4 @@ model:
 train:
   num_steps: 10
   test_bs: 4096
+  mile_stones: [150]

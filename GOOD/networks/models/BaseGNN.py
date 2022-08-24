@@ -7,6 +7,7 @@ from torch_geometric.data.batch import Batch
 from torch import Tensor
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .Pooling import GlobalMeanPool, GlobalMaxPool, IdenticalPool
+from torch.nn import Identity
 
 
 class GNNBasic(torch.nn.Module):
@@ -61,14 +62,18 @@ class GNNBasic(torch.nn.Module):
         else:
             x, edge_index, batch = data.x, data.edge_index, data.batch
 
+        if self.config.model.model_level != 'node':
+            # --- Maybe batch size --- Reason: some method may filter graphs leading inconsistent of batch size
+            batch_size: int = kwargs.get('batch_size') or (batch[-1].item() + 1)
+
         if self.config.model.model_level == 'node':
             edge_weight = kwargs.get('edge_weight')
             return x, edge_index, edge_weight, batch
         elif self.config.dataset.dim_edge:
             edge_attr = data.edge_attr
-            return x, edge_index, edge_attr, batch
+            return x, edge_index, edge_attr, batch, batch_size
 
-        return x, edge_index, batch
+        return x, edge_index, batch, batch_size
 
     def probs(self, *args, **kwargs):
         # nodes x classes
@@ -94,7 +99,7 @@ class BasicEncoder(torch.nn.Module):
 
     """
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], **kwargs):
         if type(self).mro()[type(self).mro().index(__class__) + 1] is torch.nn.Module:
             super(BasicEncoder, self).__init__()
         else:
@@ -108,11 +113,18 @@ class BasicEncoder(torch.nn.Module):
                 for _ in range(num_layer - 1)
             ]
         )
-        self.batch_norm1 = nn.BatchNorm1d(config.model.dim_hidden)
-        self.batch_norms = nn.ModuleList([
-            nn.BatchNorm1d(config.model.dim_hidden)
-            for _ in range(num_layer - 1)
-        ])
+        if kwargs.get('no_bn'):
+            self.batch_norm1 = Identity()
+            self.batch_norms = [
+                Identity()
+                for _ in range(num_layer - 1)
+            ]
+        else:
+            self.batch_norm1 = nn.BatchNorm1d(config.model.dim_hidden)
+            self.batch_norms = nn.ModuleList([
+                nn.BatchNorm1d(config.model.dim_hidden)
+                for _ in range(num_layer - 1)
+            ])
         self.dropout1 = nn.Dropout(config.model.dropout_rate)
         self.dropouts = nn.ModuleList([
             nn.Dropout(config.model.dropout_rate)

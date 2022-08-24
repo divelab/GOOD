@@ -15,7 +15,7 @@
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
 
-:fire:New! If you only need to use the GOOD datasets, you can directly use the [DIG](https://github.com/divelab/DIG) library.
+:fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!**
 
 ## Table of contents
 

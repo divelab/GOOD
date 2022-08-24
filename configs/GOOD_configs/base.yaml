@@ -14,6 +14,7 @@ train:
   tr_ctn: False
   epoch: 0
   ctn_epoch: 0
+  epoch: 0
   alpha: 0.2  # parameter for DANN
   stage_stones: []
 model:
@@ -27,3 +28,5 @@ dataset:
   dim_edge: null
   num_classes: null
   num_envs: null
+ood:
+  extra_param: null

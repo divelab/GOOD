@@ -34,10 +34,10 @@ def train_batch(model: torch.nn.Module, data: Batch, ood_algorithm: BaseOODAlg, 
     data = data.to(config.device)
 
     mask, targets = nan2zero_get_mask(data, 'train', config)
-    node_norm = data.node_norm if config.model.model_level == 'node' else None
+    node_norm = data.get('node_norm') if config.model.model_level == 'node' else None
     data, targets, mask, node_norm = ood_algorithm.input_preprocess(data, targets, mask, node_norm, model.training,
                                                                     config)
-    edge_weight = data.edge_norm if config.model.model_level == 'node' else None
+    edge_weight = data.get('edge_norm') if config.model.model_level == 'node' else None
 
     config.train_helper.optimizer.zero_grad()
 
