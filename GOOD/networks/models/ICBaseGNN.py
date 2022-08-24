@@ -139,8 +139,12 @@ class BasicEncoder(torch.nn.Module):
             self.readout = IdenticalPool()
         elif config.model.global_pool == 'mean':
             self.readout = GlobalMeanPool()
-        else:
+        elif config.model.global_pool == 'max':
             self.readout = GlobalMaxPool()
+        elif config.model.global_pool == 'id':
+            self.readout = IdenticalPool()
+        else:
+            raise ValueError(f'Unrecognized global_pool: {config.model.global_pool}')
 
-        self.config = config
+        self.config: Union[CommonArgs, Munch] = config
 

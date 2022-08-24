@@ -120,6 +120,8 @@ class Metric(object):
             roc_auc score
 
         """
+        if y_true.max() == 1 and y_pred.ndim > 1:
+            y_pred = y_pred[:, 1]
         return sk_roc_auc(torch.tensor(y_true).long(), torch.tensor(y_pred), multi_class='ovo')
 
     def reg_absolute_error(self, y_true, y_pred):

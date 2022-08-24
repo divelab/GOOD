@@ -164,7 +164,7 @@ def evaluate(model: torch.nn.Module,
         loss_all.append(loss)
 
         # ------------- Score data collection ------------------
-        pred, target = eval_data_preprocess(data.y, raw_preds, mask, config)
+        pred, target = eval_data_preprocess(targets, raw_preds, mask, config)
         pred_all.append(pred)
         target_all.append(target)
 

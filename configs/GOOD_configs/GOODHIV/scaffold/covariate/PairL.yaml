@@ -1,0 +1,11 @@
+includes:
+  - base.yaml
+model:
+  model_name: PL_vGIN
+ood:
+  ood_alg: PairL
+  ood_param: -1.
+train:
+  max_epoch: 200
+  lr: 1e-3
+

@@ -206,6 +206,6 @@ def at_stage(i, config):
         raise ValueError(f"Stage i should be smaller than the largest stage {len(config.train.stage_stones)},"
                          f"but got {i}.")
     if i - 2 < 0:
-        return config.train.epoch < config.train.stage_stones[i - 1]
+        return config.train.epoch <= config.train.stage_stones[i - 1]
     else:
         return config.train.stage_stones[i - 2] < config.train.epoch <= config.train.stage_stones[i - 1]
