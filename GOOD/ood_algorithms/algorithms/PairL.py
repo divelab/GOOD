@@ -146,33 +146,35 @@ class PairL(BaseOODAlg):
         targets = targets.long().reshape(-1)
         mask = mask.reshape(-1)
         if training:
-            num_data = data.batch[-1] + 1
-            env_ids = torch.zeros((config.dataset.num_envs, num_data), dtype=torch.bool, device=config.device)
-            target_ids = torch.zeros((targets.max() + 1, num_data), dtype=torch.bool, device=config.device)
-            for env_id in data.env_id.unique():
-                env_ids[env_id] = data.env_id == env_id
-            for target in targets.unique():
-                target_ids[target] = targets == target
+            # num_data = data.batch[-1] + 1
+            # env_ids = torch.zeros((config.dataset.num_envs, num_data), dtype=torch.bool, device=config.device)
+            # target_ids = torch.zeros((targets.max() + 1, num_data), dtype=torch.bool, device=config.device)
+            # for env_id in data.env_id.unique():
+            #     env_ids[env_id] = data.env_id == env_id
+            # for target in targets.unique():
+            #     target_ids[target] = targets == target
+            #
+            # orig_data = []
+            # pair_data = []
+            # is_paired = torch.ones((num_data,), dtype=torch.bool, device=config.device)
+            # for i in range(num_data):
+            #     graph = data[i]
+            #     if training:
+            #         select_idx = torch.where(~env_ids[graph.env_id].squeeze() & target_ids[targets[i]])[0]
+            #         select_idx = select_idx[0] if select_idx.shape[0] > 0 else None
+            #         if select_idx is not None:
+            #             mask[i] = mask[i] & mask[select_idx]
+            #             orig_data.append(graph)
+            #             pair_data.append(data[select_idx])
+            #         else:
+            #             is_paired[i] = False
 
-            orig_data = []
-            pair_data = []
-            is_paired = torch.ones((num_data,), dtype=torch.bool, device=config.device)
-            for i in range(num_data):
-                graph = data[i]
-                if training:
-                    select_idx = torch.where(~env_ids[graph.env_id].squeeze() & target_ids[targets[i]])[0]
-                    select_idx = select_idx[0] if select_idx.shape[0] > 0 else None
-                    if select_idx is not None:
-                        mask[i] = mask[i] & mask[select_idx]
-                        orig_data.append(graph)
-                        pair_data.append(data[select_idx])
-                    else:
-                        is_paired[i] = False
+            # data = Batch.from_data_list(orig_data + pair_data)
+            t1, t2 = targets.chunk(2)
+            assert (t1 != t2).sum() == 0
 
-            data = Batch.from_data_list(orig_data + pair_data)
-
-            targets = targets[is_paired]
-            mask = mask[is_paired]
+            targets = targets.chunk(2)[0]
+            mask = mask.chunk(2)[0]
         else:
             # num_data = data.batch[-1] + 1
             # orig_data = []

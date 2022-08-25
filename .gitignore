@@ -13,3 +13,4 @@ docs/build
 /GOOD/kernel/auto_curve_chart.py
 /configs/auto_config_finetune/
 /graphEx/
+/debug_log.py

@@ -9,6 +9,7 @@ class Register(object):
     def __init__(self):
         self.models = dict()
         self.datasets = dict()
+        self.dataloader = dict()
         self.ood_algs = dict()
 
     def model_register(self, model_class):
@@ -38,6 +39,20 @@ class Register(object):
         """
         self.datasets[dataset_class.__name__] = dataset_class
         return dataset_class
+
+    def dataloader_register(self, dataloader_class):
+        r"""
+        Register for dataloader access.
+
+        Args:
+            dataloader_class (class): dataloader class
+
+        Returns (class):
+            dataloader class
+
+        """
+        self.dataloader[dataloader_class.__name__] = dataloader_class
+        return dataloader_class
 
     def ood_alg_register(self, ood_alg_class):
         r"""
