@@ -11,9 +11,9 @@ All :mod:`algorithms <GOOD.ood_algorithms.algorithms>`, :mod:`GNNs <GOOD.network
 can be easily registered by :obj:`register <GOOD.utils.register>` and automatically embedded into the designed pipeline like a breeze! Using this register
 and overwriting classes, you can custom your methods and embed them into the test bed conveniently.
 
-Currently, GOOD contains 8 datasets with 14 domain selections. When combined with covariate, concept, and no shifts, we obtain 42 different splits.
-We provide performance results on 7 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, Mixup) with 10 random runs.
-This results in 294 dataset-model combinations in total. Our results show significant performance gaps between in-distribution and OOD settings.
+Currently, GOOD contains 11 datasets with 17 domain selections. When combined with covariate, concept, and no shifts, we obtain 51 different splits.
+We provide performance results on 10 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, Mixup, DIR, EERM, SRGNN).
+This results in 510 dataset-model combinations in total. Our results show significant performance gaps between in-distribution and OOD settings.
 This GOOD benchmark is a growing project and expects to expand in quantity and variety of resources as the area develops.
 Any contribution is welcomed!
 

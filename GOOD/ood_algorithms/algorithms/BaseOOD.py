@@ -24,6 +24,14 @@ class BaseOODAlg(ABC):
         self.stage = 0
 
     def stage_control(self, config):
+        r"""
+        Set valuables before each epoch. Largely used for controlling multi-stage training and epoch related parameter
+        settings.
+
+        Args:
+            config: munchified dictionary of args.
+
+        """
         if self.stage == 0 and at_stage(1, config):
             reset_random_seed(config)
             self.stage = 1

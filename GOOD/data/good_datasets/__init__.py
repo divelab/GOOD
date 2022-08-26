@@ -1,8 +1,8 @@
 r"""
-This module includes 8 GOOD datasets.
+This module includes 11 GOOD datasets.
 
-- Graph prediction datasets: GOOD-HIV, GOOD-PCBA, GOOD-ZINC, GOOD-CMNIST, GOOD-Motif.
-- Node prediction datasets: GOOD-Cora, GOOD-Arxiv, GOOD-CBAS.
+- Graph prediction datasets: GOOD-HIV, GOOD-PCBA, GOOD-ZINC, GOOD-SST2, GOOD-CMNIST, GOOD-Motif.
+- Node prediction datasets: GOOD-Cora, GOOD-Arxiv, GOOD-Twitch, GOOD-WebKB, GOOD-CBAS.
 """
 
 import glob

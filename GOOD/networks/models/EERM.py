@@ -1,3 +1,7 @@
+r"""
+The implementation of `Handling Distribution Shifts on Graphs: An Invariance Perspective <https://arxiv.org/abs/2202.02466>`_.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,6 +16,9 @@ from .GCNs import GCNFeatExtractor
 
 @register.model_register
 class EERMGCN(GNNBasic):
+    r"""
+    EERM implementation adapted from https://github.com/qitianwu/GraphOOD-EERM.
+    """
     def __init__(self, config):
         super(EERMGCN, self).__init__(config)
         self.gnn = GCNFeatExtractor(config)
@@ -64,6 +71,9 @@ class EERMGCN(GNNBasic):
 
 
 class Graph_Editer(nn.Module):
+    r"""
+    EERM's graph editer adapted from https://github.com/qitianwu/GraphOOD-EERM.
+    """
     def __init__(self, K, n, device):
         super(Graph_Editer, self).__init__()
         self.B = nn.Parameter(torch.FloatTensor(K, n, n))

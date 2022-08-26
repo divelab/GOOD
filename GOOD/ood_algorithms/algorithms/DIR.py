@@ -25,6 +25,14 @@ class DIR(BaseOODAlg):
         self.conf_out = None
 
     def stage_control(self, config: Union[CommonArgs, Munch]):
+        r"""
+        Set valuables before each epoch. Largely used for controlling multi-stage training and epoch related parameter
+        settings.
+
+        Args:
+            config: munchified dictionary of args.
+
+        """
         if self.stage == 0 and at_stage(1, config):
             reset_random_seed(config)
             self.stage = 1
@@ -38,7 +46,7 @@ class DIR(BaseOODAlg):
             model_output (Tensor): model raw output
 
         Returns (Tensor):
-            model raw predictions
+            model raw predictions.
 
         """
         if isinstance(model_output, tuple):
