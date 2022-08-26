@@ -17,6 +17,8 @@
 
 :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!**
 
+:eye:**Note that we split the licences of our code and datasets, please refer to different licenses for different usages.**
+
 ## Table of contents
 
 * [Overview](#overview)
@@ -27,6 +29,7 @@
   * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
 * [Reproducibility](#reproducibility)
 * [Citing GOOD](#citing-good)
+* [License](#license)
 * [Contact](#contact)
 
 ## Overview
@@ -34,8 +37,8 @@
 **GOOD** (Graph OOD) is a graph out-of-distribution (OOD) algorithm benchmarking library depending on PyTorch and PyG
 to make develop and benchmark OOD algorithms easily.
 
-Currently, GOOD contains 11 datasets with 17 domain selections. When combined with covariate, concept, and no shifts, we obtain 51 different splits. 
-We provide performance results on 10 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, Mixup, DIR, EERM, SRGNN).
+Currently, GOOD contains 11 datasets with 17 domain selections. When combined with covariate, concept, and no shifts, we obtain 51 different splits.
+We provide performance results on 10 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, MixupForGraph, DIR, EERM,SRGNN) including 4 graph specific methods with 10 random runs.
 
 The GOOD dataset summaries are shown in the following figure.
 
@@ -198,6 +201,11 @@ If you find this repository helpful, please cite our [paper](https://arxiv.org/a
   year={2022}
 }
 ```
+
+## License
+
+The GOOD datasets are under [MIT license](https://drive.google.com/file/d/1xA-5q3YHXLGLz7xV2tT69a9dcVmiJmiV/view?usp=sharing).
+The GOOD code are under [GPLv3 license](https://github.com/divelab/GOOD/blob/main/LICENSE).
 
 ## Discussion
 
