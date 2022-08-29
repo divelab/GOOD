@@ -17,7 +17,7 @@ class Rerunner(object):
                                  '--dim_hidden', '2',
                                  '--dim_ffn', '2',
                                  '--model_layer', '2',
-                                 '--train_bs', '32'])
+                                 '--train_bs', '8'])
         self.config = config_summoner(self.args)
 
     def __call__(self, *args, **kwargs):
