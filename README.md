@@ -19,6 +19,14 @@
 
 :eye:**Note that we split the licences of our code and datasets, please refer to different licenses for different usages.**
 
+## Roadmap
+
+### Documentation
+- [ ] More detailed documentation for benchmarking new algorithms.
+### Algorithms
+- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
+- [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987)
+
 ## Table of contents
 
 * [Overview](#overview)
