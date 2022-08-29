@@ -20,7 +20,8 @@ install_requires = [
     'tensorboard==2.8.0',
     'tqdm==4.64.0',
     'typed-argument-parser==1.7.2',
-    'dive-into-graphs'
+    'dive-into-graphs',
+    'cvxopt>=1.3.0'
 ]
 
 setuptools.setup(
