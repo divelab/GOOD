@@ -1,6 +1,5 @@
 """
-Implementation of the IRM algorithm from `"Invariant Risk Minimization"
-<https://arxiv.org/abs/1907.02893>`_ paper
+Implementation of the DIR algorithm from `"Discovering Invariant Rationales for Graph Neural Networks" <https://openreview.net/pdf?id=hGXij5rfiHw>`_ paper
 """
 from typing import Tuple
 
@@ -17,6 +16,13 @@ from .BaseOOD import BaseOODAlg
 
 @register.ood_alg_register
 class DIR(BaseOODAlg):
+    r"""
+    Implementation of the IRM algorithm from `"Discovering Invariant Rationales for Graph Neural Networks"
+    <https://openreview.net/pdf?id=hGXij5rfiHw>`_ paper
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIR, self).__init__(config)
@@ -59,7 +65,7 @@ class DIR(BaseOODAlg):
     def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor,
                        config: Union[CommonArgs, Munch]) -> Tensor:
         r"""
-        Calculate loss based on Mixup algorithm
+        Calculate loss based on DIR algorithm
 
         Args:
             raw_pred (Tensor): model predictions
@@ -76,7 +82,7 @@ class DIR(BaseOODAlg):
 
 
         Returns (Tensor):
-            loss based on IRM algorithm
+            loss based on DIR algorithm
 
         """
 
@@ -104,4 +110,25 @@ class DIR(BaseOODAlg):
 
     def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch],
                          **kwargs) -> Tensor:
+        r"""
+        Process loss based on DIR algorithm
+
+        Args:
+            loss (Tensor): base loss between model predictions and input labels
+            data (Batch): input data
+            mask (Tensor): NAN masks for data formats
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
+
+        .. code-block:: python
+
+            config = munchify({device: torch.device('cuda'),
+                                   dataset: {num_envs: int(10)},
+                                   ood: {ood_param: float(0.1)}
+                                   })
+
+
+        Returns (Tensor):
+            loss based on DIR algorithm
+
+        """
         return loss
