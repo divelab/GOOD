@@ -248,7 +248,7 @@ class SRGNN(BaseOODAlg):
                         config.dataset.num_classes = 2
                     label_balance_constraints = torch.eye(config.dataset.num_classes)[data.y[env_idx].long().squeeze()].T.double().cpu().detach().numpy()  #data.y.unique().shape[0]
                     kmm_weight_env, MMD_dist = KMM(Z_train, Z_test, config, label_balance_constraints, beta=0.2)
-                    self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().cuda(device=config.device).squeeze()
+                    self.kmm_weight[[env_idx.nonzero().squeeze()]] = torch.from_numpy(kmm_weight_env).float().to(device=config.device).squeeze()
 
         return data, targets, mask, node_norm
 
