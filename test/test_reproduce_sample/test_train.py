@@ -36,12 +36,12 @@ config_root = Path(ROOT_DIR, 'configs', 'GOOD_configs')
 for dataset_path in config_root.iterdir():
     if not dataset_path.is_dir():
         continue
-    if dataset_path.name not in ['GOODMotif', 'GOODCora']:
+    if dataset_path.name not in ['GOODMotif', 'GOODWebKB']:
         continue
     for domain_path in dataset_path.iterdir():
         if not domain_path.is_dir():
             continue
-        if domain_path.name not in ['word', 'basis']:
+        if domain_path.name not in ['university', 'basis']:
             continue
         for shift_path in domain_path.iterdir():
             if not shift_path.is_dir():
