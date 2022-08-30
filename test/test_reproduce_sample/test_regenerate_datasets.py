@@ -76,7 +76,7 @@ for dataset_path in config_root.iterdir():
     config_paths.append(single_dataset_paths)
 
 
-@pytest.mark.skip(reason="It will be tested offline and will be skipped in CI.")
+# @pytest.mark.skip(reason="It will be tested offline and will be skipped in CI.")
 @pytest.mark.parametrize('dataset_paths', config_paths)
 def test_regenerate(dataset_paths):
     def regenerate_dataset(config_path):
