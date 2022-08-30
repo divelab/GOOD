@@ -15,7 +15,7 @@ dependencies:
   - pip:
     - torch-scatter==2.0.9
     - torch-sparse==0.6.13
-    - torch-geometric~=2.0
+    - torch-geometric==2.0.4
     - cilog==1.2.3
     - gdown==4.4.0
     - matplotlib==3.5.2
