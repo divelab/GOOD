@@ -1,6 +1,5 @@
 """
-Implementation of the VREx algorithm from `"Out-of-Distribution Generalization via Risk Extrapolation (REx)"
-<http://proceedings.mlr.press/v139/krueger21a.html>`_ paper
+Implementation of the EERM algorithm from `"Handling Distribution Shifts on Graphs: An Invariance Perspective" <https://arxiv.org/abs/2202.02466>`_ paper
 """
 import torch
 from torch import Tensor
@@ -14,8 +13,8 @@ from GOOD.utils.initial import reset_random_seed
 @register.ood_alg_register
 class EERM(BaseOODAlg):
     r"""
-    Implementation of the VREx algorithm from `"Out-of-Distribution Generalization via Risk Extrapolation (REx)"
-    <http://proceedings.mlr.press/v139/krueger21a.html>`_ paper
+    Implementation of the EERM algorithm from `"Handling Distribution Shifts on Graphs: An Invariance Perspective"
+    <https://arxiv.org/abs/2202.02466>`_ paper
 
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
@@ -68,7 +67,7 @@ class EERM(BaseOODAlg):
 
     def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch], **kwargs) -> Tensor:
         r"""
-        Process loss based on VREx algorithm
+        Process loss based on EERM algorithm
 
         Args:
             loss (Tensor): base loss between model predictions and input labels
@@ -85,7 +84,7 @@ class EERM(BaseOODAlg):
 
 
         Returns (Tensor):
-            loss based on VREx algorithm
+            loss based on EERM algorithm
 
         """
         beta = 10 * config.ood.ood_param * config.train.epoch / config.train.max_epoch \
