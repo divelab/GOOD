@@ -24,6 +24,7 @@
 ### Documentation
 - [ ] More detailed documentation for benchmarking new algorithms.
 ### Algorithms
+- [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
 - [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987)
 
