@@ -5,7 +5,8 @@ import pytest
 
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
-from GOOD.kernel.pipeline import initialize_model_dataset, load_ood_alg, load_task, load_logger
+from GOOD.kernel.main import initialize_model_dataset, load_ood_alg, load_logger
+from GOOD.kernel.pipelines.basic_pipeline import Pipeline
 
 
 class Rerunner(object):
@@ -17,7 +18,7 @@ class Rerunner(object):
                                  '--dim_hidden', '2',
                                  '--dim_ffn', '2',
                                  '--model_layer', '2',
-                                 '--train_bs', '8'])
+                                 '--train_bs', '32'])
         self.config = config_summoner(self.args)
 
     def __call__(self, *args, **kwargs):
@@ -26,7 +27,8 @@ class Rerunner(object):
         model, loader = initialize_model_dataset(config)
         ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 
-        load_task(config.task, model, loader, ood_algorithm, config)
+        pipeline = Pipeline(config.task, model, loader, ood_algorithm, config)
+        pipeline.load_task()
 
         return 0
 
@@ -55,6 +57,6 @@ for dataset_path in config_root.iterdir():
 
 
 @pytest.mark.parametrize("config_path", config_paths)
-def test_reproduce(config_path):
+def test_train(config_path):
     rerunner = Rerunner(config_path)
     assert rerunner() == 0

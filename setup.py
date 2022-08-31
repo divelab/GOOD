@@ -47,7 +47,7 @@ setuptools.setup(
     install_requires=install_requires,
     entry_points = {
         'console_scripts': [
-            'goodtg = GOOD.kernel.pipeline:main'
+            'goodtg = GOOD.kernel.main:main'
         ]
     },
     python_requires=">=3.8",

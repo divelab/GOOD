@@ -158,15 +158,20 @@ config = config_summoner(args)
 load_logger(config)
 ```
 2. **Loader**
+
 ```python
-from GOOD.kernel.pipeline import initialize_model_dataset
+from GOOD.kernel.main import initialize_model_dataset
 from GOOD.ood_algorithms.ood_manager import load_ood_alg
+
 model, loader = initialize_model_dataset(config)
 ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 ```
 3. **Train/test pipeline**
+
 ```python
-from GOOD.kernel.pipeline import load_task
+
+from GOOD.kernel.trainers.basic_trainer import load_task
+
 load_task(config.task, model, loader, ood_algorithm, config)
 ```
 

@@ -5,6 +5,7 @@ from torch_geometric.loader import DataLoader, GraphSAINTRandomWalkSampler
 
 from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from GOOD.utils.initial import reset_random_seed
 
 
 def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
@@ -40,6 +41,7 @@ def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
 
     """
     try:
+        reset_random_seed(config)
         dataset, meta_info = register.datasets[name].load(dataset_root=config.dataset.dataset_root,
                                                           domain=config.dataset.domain,
                                                           shift=config.dataset.shift_type,
@@ -60,6 +62,7 @@ def create_dataloader(dataset, config: Union[CommonArgs, Munch]):
     Create a PyG data loader.
 
     Args:
+        loader_name:
         dataset: A GOOD dataset.
         config: Required configs:
             ``config.train.train_bs``
@@ -72,27 +75,12 @@ def create_dataloader(dataset, config: Union[CommonArgs, Munch]):
         A PyG dataset loader.
 
     """
-    if config.model.model_level == 'node':
-        graph = dataset[0]
-        loader = GraphSAINTRandomWalkSampler(graph, batch_size=config.train.train_bs,
-                                             walk_length=config.model.model_layer,
-                                             num_steps=config.train.num_steps, sample_coverage=100,
-                                             save_dir=dataset.processed_dir)
-        if config.ood.ood_alg == 'EERM':
-            loader = {'train': [graph], 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
-                      'test': [graph]}
-        else:
-            loader = {'train': loader, 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
-                      'test': [graph]}
-    else:
-        loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True),
-                  'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False),
-                  'id_val': DataLoader(dataset['id_val'], batch_size=config.train.val_bs, shuffle=False) if dataset.get(
-                      'id_val') else None,
-                  'id_test': DataLoader(dataset['id_test'], batch_size=config.train.test_bs,
-                                        shuffle=False) if dataset.get(
-                      'id_test') else None,
-                  'val': DataLoader(dataset['val'], batch_size=config.train.val_bs, shuffle=False),
-                  'test': DataLoader(dataset['test'], batch_size=config.train.test_bs, shuffle=False)}
+    loader_name = config.dataset.dataloader_name
+    try:
+        reset_random_seed(config)
+        loader = register.dataloader[loader_name].setup(dataset, config)
+    except KeyError as e:
+        print(f'DataLoader {loader_name} not found.')
+        raise e
 
     return loader

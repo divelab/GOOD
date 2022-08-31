@@ -7,9 +7,25 @@ class Register(object):
     """
 
     def __init__(self):
+        self.pipelines = dict()
         self.models = dict()
         self.datasets = dict()
+        self.dataloader = dict()
         self.ood_algs = dict()
+
+    def pipeline_register(self, pipeline_class):
+        r"""
+        Register for pipeline access.
+
+        Args:
+            pipeline_class (class): pipeline class
+
+        Returns (class):
+            pipeline class
+
+        """
+        self.pipelines[pipeline_class.__name__] = pipeline_class
+        return pipeline_class
 
     def model_register(self, model_class):
         r"""
@@ -39,6 +55,20 @@ class Register(object):
         self.datasets[dataset_class.__name__] = dataset_class
         return dataset_class
 
+    def dataloader_register(self, dataloader_class):
+        r"""
+        Register for dataloader access.
+
+        Args:
+            dataloader_class (class): dataloader class
+
+        Returns (class):
+            dataloader class
+
+        """
+        self.dataloader[dataloader_class.__name__] = dataloader_class
+        return dataloader_class
+
     def ood_alg_register(self, ood_alg_class):
         r"""
         Register for OOD algorithms access.
@@ -52,6 +82,8 @@ class Register(object):
         """
         self.ood_algs[ood_alg_class.__name__] = ood_alg_class
         return ood_alg_class
+
+
 
 
 register = Register()  #: The GOOD register object used for accessing models, datasets and OOD algorithms.

@@ -7,6 +7,7 @@ ckpt_root: null
 ckpt_dir: null
 save_tag: null
 pytest: False
+pipeline: Pipeline
 train:
   weight_decay: 0.
   save_gap: 10
@@ -20,6 +21,7 @@ model:
   dim_ffn: 300
   dropout_rate: 0.5
 dataset:
+  dataloader_name: BaseDataLoader
   dataset_root: null
   generate: False
   dim_node: null

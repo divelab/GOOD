@@ -9,9 +9,8 @@ from torch.utils.data import DataLoader
 
 from GOOD import config_summoner
 from GOOD.data import load_dataset, create_dataloader
-from GOOD.kernel.train import train
-from GOOD.networks.model_manager import load_model, config_model
-from GOOD.ood_algorithms.algorithms.BaseOOD import BaseOODAlg
+from GOOD.kernel.pipelines.basic_pipeline import Pipeline
+from GOOD.networks.model_manager import load_model
 from GOOD.ood_algorithms.ood_manager import load_ood_alg
 from GOOD.utils.args import args_parser
 from GOOD.utils.config_reader import CommonArgs, Munch
@@ -46,21 +45,6 @@ def initialize_model_dataset(config: Union[CommonArgs, Munch]) -> Tuple[torch.nn
     return model, loader
 
 
-def load_task(task: str, model: torch.nn.Module, loader: DataLoader, ood_algorithm: BaseOODAlg,
-              config: Union[CommonArgs, Munch]):
-    r"""
-    Launch a training or a test. (Project use only)
-    """
-    if task == 'train':
-        train(model, loader, ood_algorithm, config)
-
-    elif task == 'test':
-
-        # config model
-        print('#D#Config model and output the best checkpoint info...')
-        test_score, test_loss = config_model(model, 'test', config=config)
-
-
 def main():
     args = args_parser()
     config = config_summoner(args)
@@ -69,10 +53,12 @@ def main():
     model, loader = initialize_model_dataset(config)
     ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 
-    load_task(config.task, model, loader, ood_algorithm, config)
+    pipeline = Pipeline(config.task, model, loader, ood_algorithm, config)
+    pipeline.load_task()
 
     if config.task == 'train':
-        load_task('test', model, loader, ood_algorithm, config)
+        pipeline.task = 'test'
+        pipeline.load_task()
 
 
 if __name__ == '__main__':

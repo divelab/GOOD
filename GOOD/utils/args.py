@@ -89,6 +89,7 @@ class CommonArgs(Tap):
     random_seed: int = None  #: Fixed random seed for reproducibility.
     exp_round: int = None  #: Current experiment round.
     pytest: bool = None
+    pipeline: str = None  #: Training/test controller.
 
     ckpt_root: str = None  #: Checkpoint root for saving checkpoint files, where inner structure is automatically generated
     ckpt_dir: str = None  #: The direct directory for saving ckpt files
