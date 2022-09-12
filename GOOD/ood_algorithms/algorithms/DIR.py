@@ -17,7 +17,7 @@ from .BaseOOD import BaseOODAlg
 @register.ood_alg_register
 class DIR(BaseOODAlg):
     r"""
-    Implementation of the IRM algorithm from `"Discovering Invariant Rationales for Graph Neural Networks"
+    Implementation of the DIR algorithm from `"Discovering Invariant Rationales for Graph Neural Networks"
     <https://openreview.net/pdf?id=hGXij5rfiHw>`_ paper
 
         Args:

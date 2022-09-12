@@ -17,8 +17,8 @@ from .BaseOOD import BaseOODAlg
 @register.ood_alg_register
 class GSAT(BaseOODAlg):
     r"""
-    Implementation of the IRM algorithm from `"Discovering Invariant Rationales for Graph Neural Networks"
-    <https://openreview.net/pdf?id=hGXij5rfiHw>`_ paper
+    Implementation of the GSAT algorithm from `"Interpretable and Generalizable Graph Learning via Stochastic Attention
+    Mechanism" <https://arxiv.org/abs/2201.12987>`_ paper
 
         Args:
             config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.device`, :obj:`config.dataset.num_envs`, :obj:`config.ood.ood_param`)
@@ -62,7 +62,7 @@ class GSAT(BaseOODAlg):
     def loss_postprocess(self, loss: Tensor, data: Batch, mask: Tensor, config: Union[CommonArgs, Munch],
                          **kwargs) -> Tensor:
         r"""
-        Process loss based on DIR algorithm
+        Process loss based on GSAT algorithm
 
         Args:
             loss (Tensor): base loss between model predictions and input labels

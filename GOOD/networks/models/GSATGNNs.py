@@ -32,7 +32,7 @@ class GSATGIN(GNNBasic):
 
     def forward(self, *args, **kwargs):
         r"""
-        The DIR model implementation.
+        The GSAT model implementation.
 
         Args:
             *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
@@ -86,7 +86,7 @@ class GSATGIN(GNNBasic):
 @register.model_register
 class GSATvGIN(GSATGIN):
     r"""
-    The GIN virtual node version of DIR.
+    The GIN virtual node version of GSAT.
     """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
@@ -144,7 +144,7 @@ class MLP(BatchSequential):
 
 def set_masks(mask: Tensor, model: nn.Module):
     r"""
-    Adopted from https://github.com/wuyxin/dir-gnn.
+    Modified from https://github.com/wuyxin/dir-gnn.
     """
     for module in model.modules():
         if isinstance(module, MessagePassing):
@@ -157,7 +157,7 @@ def set_masks(mask: Tensor, model: nn.Module):
 
 def clear_masks(model: nn.Module):
     r"""
-    Adopted from https://github.com/wuyxin/dir-gnn.
+    Modified from https://github.com/wuyxin/dir-gnn.
     """
     for module in model.modules():
         if isinstance(module, MessagePassing):
