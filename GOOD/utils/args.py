@@ -116,9 +116,7 @@ class CommonArgs(Tap):
         self.argv = argv
 
         from GOOD.utils.metric import Metric
-        from GOOD.utils.train import TrainHelper
         self.metric: Metric = None
-        self.train_helper: TrainHelper = None
 
     def process_args(self) -> None:
         super().process_args()

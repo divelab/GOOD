@@ -1,27 +1,31 @@
 r"""Training pipeline: training/evaluation structure, batch training.
 """
+import datetime
 import os
+import shutil
 from typing import Dict
+from typing import Union
 
 import numpy as np
 import torch
 import torch.nn
+from munch import Munch
 from torch.utils.data import DataLoader
-from torch_geometric.data.batch import Batch
+from torch_geometric.data import Batch
 from tqdm import tqdm
 
-from GOOD.utils.evaluation import eval_data_preprocess, eval_score
 from GOOD.ood_algorithms.algorithms.BaseOOD import BaseOODAlg
-from GOOD.utils.config_reader import Union, CommonArgs, Munch
+from GOOD.utils.args import CommonArgs
+from GOOD.utils.evaluation import eval_data_preprocess, eval_score
 from GOOD.utils.logger import pbar_setting
-from GOOD.utils.train import nan2zero_get_mask
 from GOOD.utils.register import register
+from GOOD.utils.train import nan2zero_get_mask
 
 
 @register.pipeline_register
 class Pipeline:
     r"""
-    Pipeline. (Project use only)
+    Kernel pipeline.
 
     Args:
         task (str): Current running task. 'train' or 'test'
@@ -32,15 +36,15 @@ class Pipeline:
 
     """
 
-    def __init__(self, task: str, model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader]], ood_algorithm: BaseOODAlg,
-                  config: Union[CommonArgs, Munch]):
+    def __init__(self, task: str, model: torch.nn.Module, loader: Union[DataLoader, Dict[str, DataLoader]],
+                 ood_algorithm: BaseOODAlg,
+                 config: Union[CommonArgs, Munch]):
         super(Pipeline, self).__init__()
         self.task: str = task
         self.model: torch.nn.Module = model
         self.loader: Union[DataLoader, Dict[str, DataLoader]] = loader
         self.ood_algorithm: BaseOODAlg = ood_algorithm
         self.config: Union[CommonArgs, Munch] = config
-
 
     def train_batch(self, data: Batch, pbar) -> dict:
         r"""
@@ -54,12 +58,13 @@ class Pipeline:
         """
         data = data.to(self.config.device)
 
-        self.config.train_helper.optimizer.zero_grad()
+        self.ood_algorithm.optimizer.zero_grad()
 
         mask, targets = nan2zero_get_mask(data, 'train', self.config)
         node_norm = data.get('node_norm') if self.config.model.model_level == 'node' else None
-        data, targets, mask, node_norm = self.ood_algorithm.input_preprocess(data, targets, mask, node_norm, self.model.training,
-                                                                        self.config)
+        data, targets, mask, node_norm = self.ood_algorithm.input_preprocess(data, targets, mask, node_norm,
+                                                                             self.model.training,
+                                                                             self.config)
         edge_weight = data.get('edge_norm') if self.config.model.model_level == 'node' else None
 
         model_output = self.model(data=data, edge_weight=edge_weight, ood_algorithm=self.ood_algorithm)
@@ -67,12 +72,10 @@ class Pipeline:
 
         loss = self.ood_algorithm.loss_calculate(raw_pred, targets, mask, node_norm, self.config)
         loss = self.ood_algorithm.loss_postprocess(loss, data, mask, self.config)
-        loss.backward()
 
-        self.config.train_helper.optimizer.step()
+        self.ood_algorithm.backward(loss)
 
         return {'loss': loss.detach()}
-
 
     def train(self):
         r"""
@@ -84,7 +87,7 @@ class Pipeline:
 
         # Load training utils
         print('#D#Load training utils')
-        self.config.train_helper.set_up(self.model, self.config)
+        self.ood_algorithm.set_up(self.model, self.config)
 
         # train the model
         for epoch in range(self.config.train.ctn_epoch, self.config.train.max_epoch):
@@ -131,10 +134,10 @@ class Pipeline:
             test_stat = self.evaluate('test')
 
             # checkpoints save
-            self.config.train_helper.save_epoch(epoch, epoch_train_stat, id_val_stat, id_test_stat, val_stat, test_stat, self.config)
+            self.save_epoch(epoch, epoch_train_stat, id_val_stat, id_test_stat, val_stat, test_stat, self.config)
 
             # --- scheduler step ---
-            self.config.train_helper.scheduler.step()
+            self.ood_algorithm.scheduler.step()
 
         print('#IN#Training end.')
 
@@ -202,10 +205,9 @@ class Pipeline:
 
         return {'score': stat['score'], 'loss': stat['loss']}
 
-
     def load_task(self):
         r"""
-        Launch a training or a test. (Project use only)
+        Launch a training or a test.
         """
         if self.task == 'train':
             self.train()
@@ -215,7 +217,6 @@ class Pipeline:
             # config model
             print('#D#Config model and output the best checkpoint info...')
             test_score, test_loss = self.config_model('test')
-
 
     def config_model(self, mode: str, load_param=False):
         r"""
@@ -297,3 +298,96 @@ class Pipeline:
                 else:
                     self.model.gnn.load_state_dict(ckpt['state_dict'])
             return ckpt["test_score"], ckpt["test_loss"]
+
+    def save_epoch(self, epoch: int, train_stat: dir, id_val_stat: dir, id_test_stat: dir, val_stat: dir,
+                   test_stat: dir, config: Union[CommonArgs, Munch]):
+        r"""
+        Training util for checkpoint saving.
+
+        Args:
+            epoch (int): epoch number
+            train_stat (dir): train statistics
+            id_val_stat (dir): in-domain validation statistics
+            id_test_stat (dir): in-domain test statistics
+            val_stat (dir): ood validation statistics
+            test_stat (dir): ood test statistics
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.ckpt_dir`, :obj:`config.dataset`, :obj:`config.train`, :obj:`config.model`, :obj:`config.metric`, :obj:`config.log_path`, :obj:`config.ood`)
+
+        Returns:
+            None
+
+        """
+        state_dict = self.model.state_dict() if config.ood.ood_alg != 'EERM' else self.model.gnn.state_dict()
+        ckpt = {
+            'state_dict': state_dict,
+            'train_score': train_stat['score'],
+            'train_loss': train_stat['loss'],
+            'id_val_score': id_val_stat['score'],
+            'id_val_loss': id_val_stat['loss'],
+            'id_test_score': id_test_stat['score'],
+            'id_test_loss': id_test_stat['loss'],
+            'val_score': val_stat['score'],
+            'val_loss': val_stat['loss'],
+            'test_score': test_stat['score'],
+            'test_loss': test_stat['loss'],
+            'time': datetime.datetime.now().strftime('%b%d %Hh %M:%S'),
+            'model': {
+                'model name': f'{config.model.model_name} {config.model.model_level} layers',
+                'dim_hidden': config.model.dim_hidden,
+                'dim_ffn': config.model.dim_ffn,
+                'global pooling': config.model.global_pool
+            },
+            'dataset': config.dataset.dataset_name,
+            'train': {
+                'weight_decay': config.train.weight_decay,
+                'learning_rate': config.train.lr,
+                'mile stone': config.train.mile_stones,
+                'shift_type': config.dataset.shift_type,
+                'Batch size': f'{config.train.train_bs}, {config.train.val_bs}, {config.train.test_bs}'
+            },
+            'OOD': {
+                'OOD alg': config.ood.ood_alg,
+                'OOD param': config.ood.ood_param,
+                'number of environments': config.dataset.num_envs
+            },
+            'log file': config.log_path,
+            'epoch': epoch,
+            'max epoch': config.train.max_epoch
+        }
+        if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
+            'score'] < config.metric.lower_better *
+                config.metric.best_stat['score']
+                or (id_val_stat.get('score') and (
+                        config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
+                    'score'] < config.metric.lower_better * config.metric.id_best_stat['score']))
+                or epoch % config.train.save_gap == 0):
+            return
+
+        if not os.path.exists(config.ckpt_dir):
+            os.makedirs(config.ckpt_dir)
+            print(f'#W#Directory does not exists. Have built it automatically.\n'
+                  f'{os.path.abspath(config.ckpt_dir)}')
+        saved_file = os.path.join(config.ckpt_dir, f'{epoch}.ckpt')
+        torch.save(ckpt, saved_file)
+        shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'last.ckpt'))
+
+        # --- In-Domain checkpoint ---
+        if id_val_stat.get('score') and (
+                config.metric.id_best_stat['score'] is None or config.metric.lower_better * id_val_stat[
+            'score'] < config.metric.lower_better * config.metric.id_best_stat['score']):
+            config.metric.id_best_stat['score'] = id_val_stat['score']
+            config.metric.id_best_stat['loss'] = id_val_stat['loss']
+            shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'id_best.ckpt'))
+            print('#IM#Saved a new best In-Domain checkpoint.')
+
+        # --- Out-Of-Domain checkpoint ---
+        # if id_val_stat.get('score'):
+        #     if not (config.metric.lower_better * id_val_stat['score'] < config.metric.lower_better * val_stat['score']):
+        #         return
+        if config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
+            'score'] < config.metric.lower_better * \
+                config.metric.best_stat['score']:
+            config.metric.best_stat['score'] = val_stat['score']
+            config.metric.best_stat['loss'] = val_stat['loss']
+            shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'best.ckpt'))
+            print('#IM#Saved a new best checkpoint.')

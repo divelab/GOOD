@@ -17,7 +17,6 @@ from tap import Tap
 from GOOD.definitions import STORAGE_DIR
 from GOOD.utils.args import CommonArgs
 from GOOD.utils.metric import Metric
-from GOOD.utils.train import TrainHelper
 
 
 def merge_dicts(dict1: dict, dict2: dict):
@@ -200,7 +199,16 @@ def process_configs(config: Union[CommonArgs, Munch]):
     log_dirs = opj(log_dir_root, config.dataset.dataset_name, config.dataset.domain)
     if config.dataset.shift_type:
         log_dirs = opj(log_dirs, config.dataset.shift_type)
-    log_dirs = opj(log_dirs, config.ood.ood_alg)
+    log_dirs = opj(log_dirs, config.ood.ood_alg, config.model.global_pool)
+    if config.ood.ood_param is not None and config.ood.ood_param >= 0:
+        log_dirs = opj(log_dirs, str(config.ood.ood_param))
+    else:
+        log_dirs = opj(log_dirs, 'no_param')
+    if config.ood.extra_param is not None:
+        for i, param in enumerate(config.ood.extra_param):
+            log_dirs = opj(log_dirs, str(param))
+    if config.save_tag:
+        log_dirs = opj(log_dirs, config.save_tag)
     config.log_path = opj(log_dirs, config.log_file + '.log')
 
     # --- Checkpoint setting ---
@@ -233,7 +241,6 @@ def process_configs(config: Union[CommonArgs, Munch]):
 
     # --- Attach train_helper and metric modules ---
     config.metric = Metric()
-    config.train_helper = TrainHelper()
 
 
 def config_summoner(args: CommonArgs) -> Union[CommonArgs, Munch]:

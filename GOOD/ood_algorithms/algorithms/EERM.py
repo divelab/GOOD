@@ -34,11 +34,11 @@ class EERM(BaseOODAlg):
         if self.stage == 0 and at_stage(1, config):
             reset_random_seed(config)
             self.stage = 1
-            config.train_helper.optimizer = torch.optim.Adam(config.train_helper.model.gnn.parameters(), lr=config.train.lr,
-                                                             weight_decay=config.train.weight_decay)
-            config.train_helper.scheduler = torch.optim.lr_scheduler.MultiStepLR(config.train_helper.optimizer,
-                                                                                 milestones=config.train.mile_stones,
-                                                                                 gamma=0.1)
+            self.optimizer = torch.optim.Adam(self.model.gnn.parameters(), lr=config.train.lr,
+                                              weight_decay=config.train.weight_decay)
+            self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer,
+                                                                  milestones=config.train.mile_stones,
+                                                                  gamma=0.1)
 
     def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor, config: Union[CommonArgs, Munch]) -> Tensor:
         r"""

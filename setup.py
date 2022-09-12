@@ -26,7 +26,7 @@ install_requires = [
 
 setuptools.setup(
     name="graph-ood",
-    version="0.2.0",
+    version="0.3.0",
     author="Shurui Gui, Xiner Li",
     author_email="shurui.gui@tamu.edu",
     description="GOOD: A Graph Out-of-Distribution Benchmark",
