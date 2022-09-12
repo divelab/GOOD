@@ -27,6 +27,8 @@
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
 - [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
+  - [x] ~Method reproduction~ Branch: [gsat](https://github.com/divelab/GOOD/tree/gsat)
+  - [ ] Experiments: hyperparameter sweeping
 
 ## Table of contents
 
