@@ -22,12 +22,13 @@
 ## Roadmap
 
 ### Tutorial
+- [x] More flexible pipelines and dataloaders. Please refer to branch [dev](https://github.com/divelab/GOOD/tree/dev) for more details.
 - [ ] More detailed tutorial for adding new algorithms. [In progress]
 ### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
 - [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
-  - [x] ~Method reproduction~ Branch: [gsat](https://github.com/divelab/GOOD/tree/gsat)
+  - [x] Method reproduction. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
   - [ ] Experiments: hyperparameter sweeping
 
 ## Table of contents
