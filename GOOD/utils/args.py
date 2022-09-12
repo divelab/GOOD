@@ -38,6 +38,7 @@ class DatasetArgs(Tap):
     Correspond to ``dataset`` configs in config files.
     """
     dataset_name: str = None  #: Name of the chosen dataset.
+    dataloader_name: str = None  #: Name of the chosen dataloader.
     shift_type: Literal['no_shift', 'covariate', 'concept'] = None  #: The shift type of the chosen dataset.
     domain: str = None  #: Domain selection.
     generate: bool = None  #: The flag for generating GOOD datasets from scratch instead of downloading
