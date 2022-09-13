@@ -86,9 +86,11 @@ class GINFeatExtractor(GNNBasic):
         """
         if self.edge_feat:
             x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
+            kwargs.pop('batch_size', 'not found')
             out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size, **kwargs)
         else:
             x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
+            kwargs.pop('batch_size', 'not found')
             out_readout = self.encoder(x, edge_index, batch, batch_size, **kwargs)
         return out_readout
 
