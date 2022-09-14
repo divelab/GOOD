@@ -173,7 +173,7 @@ class PairL(BaseOODAlg):
             t1, t2 = targets.chunk(2)
             assert (t1 != t2).sum() == 0
 
-            targets = targets.chunk(2)[0]
+            targets = t1
             mask = mask.chunk(2)[0]
         else:
             # num_data = data.batch[-1] + 1

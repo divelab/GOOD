@@ -73,6 +73,10 @@ class OODArgs(Tap):
     ood_param: float = None  #: OOD algorithms' hyperparameter(s). Currently, most of algorithms use it as a float value.
     extra_param: List = None  #: OOD algorithms' extra hyperparameter(s).
 
+    def process_args(self) -> None:
+        self.extra_param = [eval(param) for param in self.extra_param] if self.extra_param is not None else None
+
+
 
 class AutoArgs(Tap):
     allow_datasets: List[str] = None  #: Allow dataset in list to run.

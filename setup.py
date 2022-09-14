@@ -9,7 +9,7 @@ install_requires = [
     'matplotlib==3.5.2',
     'munch==2.5.0',
     'networkx==2.8',
-    'ogb==1.3.3',
+    'ogb>=1.3.4',
     'pytest==7.1.2',
     'pytest-cov~=3.0',
     'pytest-xdist~=2.5',
