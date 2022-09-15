@@ -166,6 +166,24 @@ def ladder(start, width, role_start=0, m=5):
     return graph, roles
 
 
+def circular_ladder(start, width, role_start=0, m=5):
+    graph = nx.circular_ladder_graph(width)
+    roles = [0] * graph.number_of_nodes()
+    return graph, roles
+
+
+def dorogovtsev_goltsev_mendes(start, width, role_start=0, m=5):
+    graph = nx.dorogovtsev_goltsev_mendes_graph(width)
+    roles = [0] * graph.number_of_nodes()
+    return graph, roles
+
+
+def chordal_cycle(start, width, role_start=0, m=5):
+    graph = nx.chordal_cycle_graph(width)
+    roles = [0] * graph.number_of_nodes()
+    return graph, roles
+
+
 def house(start, role_start=0):
     """Builds a house-like  graph, with index.rst of nodes starting at start
     and role_ids at role_start

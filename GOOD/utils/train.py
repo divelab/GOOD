@@ -91,6 +91,7 @@ class TrainHelper(object):
             'OOD': {
                 'OOD alg': config.ood.ood_alg,
                 'OOD param': config.ood.ood_param,
+                'Extra params': config.ood.extra_param,
                 'number of environments': config.dataset.num_envs
             },
             'log file': config.log_path,
@@ -98,6 +99,8 @@ class TrainHelper(object):
             'max epoch': config.train.max_epoch,
             'others': config.other_saved
         }
+        if epoch < 20:
+            return
         if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat['score'] < config.metric.lower_better *
                 config.metric.best_stat['score']
                 or (id_val_stat.get('score') and (

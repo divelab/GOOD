@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: ICNN_GIN
+ood:
+  ood_alg: IC
+  ood_param: 1e-2
+#  ood_param: 0.
+train:
+  max_epoch: 200
+  lr: 1e-3
+  stage_stones: [200]
+  mile_stones: [150]

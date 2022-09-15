@@ -1,14 +1,15 @@
 includes:
   - base.yaml
 model:
-  model_name: PL_vGIN
+  model_name: PL_GIN
 ood:
   ood_alg: PairL
   ood_param: 0.5
   extra_param:
-    - 15
+    - 7
 train:
   max_epoch: 200
   lr: 1e-3
+  mile_stones: [150]
 dataset:
   dataloader_name: PairDataLoader
