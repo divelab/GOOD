@@ -94,7 +94,7 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
         Returns (Tensor):
             node feature representations
         """
-
+        batch_size = batch[-1] + 1
         virtual_node_feat = [self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
 
@@ -112,7 +112,7 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             layer_feat.append(dropout(post_conv))
             # --- update global info ---
             if 0 < i < len(self.convs) - 1:
-                virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+                virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch, batch_size) + virtual_node_feat[-1]))
 
         # out_readout = self.readout(layer_feat[-1], batch)
         out_readout = layer_feat[-1]
@@ -144,6 +144,7 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
         Returns (Tensor):
             node feature representations
         """
+        batch_size = batch[-1] + 1
         virtual_node_feat = [self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
 
@@ -158,7 +159,7 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             layer_feat.append(dropout(post_conv))
             # --- update global info ---
             if i < len(self.convs) - 1:
-                virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+                virtual_node_feat.append(self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch, batch_size) + virtual_node_feat[-1]))
 
         # out_readout = self.readout(layer_feat[-1], batch)
         out_readout = layer_feat[-1]

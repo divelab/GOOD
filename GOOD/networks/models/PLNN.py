@@ -54,7 +54,7 @@ class PL_GIN(GNNBasic):
         self.eps = 1e-8
         self.filter_non_matched = False
         self.euclidean = True
-        self.stochastic = True
+        self.stochastic = False
         self.soft_pick = False
 
     def forward(self, *args, **kwargs) -> Tuple:
