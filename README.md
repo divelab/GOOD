@@ -17,7 +17,9 @@
 
 <!-- :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!** -->
 
-:eye:**Note that we split the licences of our code and datasets, please refer to different licenses for different usages.**
+:tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!** :confetti_ball:
+
+:eye:Note that we split the licences of our code and datasets, please refer to different licenses for different usages.
 
 ## Roadmap
 
@@ -26,7 +28,7 @@
 - [ ] More detailed tutorial for adding new algorithms. [In progress]
 ### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
-- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
+- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for the official implementation. It was accepted by NeurIPS 2022 recently:smile:]
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
   - [x] Method reproduction. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
   - [ ] Experiments: hyperparameter sweeping
