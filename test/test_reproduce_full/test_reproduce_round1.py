@@ -8,7 +8,7 @@ from torch_geometric.data import extract_zip
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
 from GOOD.kernel.main import initialize_model_dataset, load_ood_alg, load_logger
-from GOOD.kernel.pipelines.basic_pipeline import Pipeline
+from GOOD.kernel.pipeline_manager import load_pipeline
 
 
 class Reproducer(object):
@@ -34,7 +34,7 @@ class Reproducer(object):
         model, loader = initialize_model_dataset(config)
         ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 
-        pipeline = Pipeline('test', model, loader, ood_algorithm, config)
+        pipeline = load_pipeline(config.pipeline, 'test', model, loader, ood_algorithm, config)
         test_score, test_loss = pipeline.config_model('test', load_param=True)
         test_stat = pipeline.evaluate('test')
         return test_score, test_loss.cpu().numpy(), test_stat['score'], test_stat['loss'].cpu().numpy()

@@ -6,7 +6,7 @@ import pytest
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
 from GOOD.kernel.main import initialize_model_dataset, load_ood_alg, load_logger
-from GOOD.kernel.pipelines.basic_pipeline import Pipeline
+from GOOD.kernel.pipeline_manager import load_pipeline
 
 
 class Rerunner(object):
@@ -27,7 +27,7 @@ class Rerunner(object):
         model, loader = initialize_model_dataset(config)
         ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 
-        pipeline = Pipeline(config.task, model, loader, ood_algorithm, config)
+        pipeline = load_pipeline(config.pipeline, config.task, model, loader, ood_algorithm, config)
         pipeline.load_task()
 
         return 0

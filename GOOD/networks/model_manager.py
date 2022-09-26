@@ -28,6 +28,4 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
     return model
 
 
-from GOOD.utils.config_reader import Union, CommonArgs, Munch
-
 
