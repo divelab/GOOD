@@ -8,6 +8,7 @@ class Register(object):
 
     def __init__(self):
         self.pipelines = dict()
+        self.launchers = dict()
         self.models = dict()
         self.datasets = dict()
         self.dataloader = dict()
@@ -26,6 +27,20 @@ class Register(object):
         """
         self.pipelines[pipeline_class.__name__] = pipeline_class
         return pipeline_class
+
+    def launcher_register(self, launcher_class):
+        r"""
+        Register for pipeline access.
+
+        Args:
+            launcher_class (class): pipeline class
+
+        Returns (class):
+            pipeline class
+
+        """
+        self.launchers[launcher_class.__name__] = launcher_class
+        return launcher_class
 
     def model_register(self, model_class):
         r"""

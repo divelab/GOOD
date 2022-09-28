@@ -16,6 +16,7 @@ from GOOD.utils.args import args_parser
 from GOOD.utils.config_reader import CommonArgs, Munch
 from GOOD.utils.initial import reset_random_seed
 from GOOD.utils.logger import load_logger
+from GOOD.definitions import OOM_CODE
 
 
 def initialize_model_dataset(config: Union[CommonArgs, Munch]) -> Tuple[torch.nn.Module, Union[dict, DataLoader]]:
@@ -45,6 +46,18 @@ def initialize_model_dataset(config: Union[CommonArgs, Munch]) -> Tuple[torch.nn
     return model, loader
 
 
+# def oom_check(func):
+#     try:
+#         func()
+#     except RuntimeError as e:
+#         if 'out of memory' in str(e):
+#             print(f'#E#{e}')
+#             exit(OOM_CODE)
+#         else:
+#             raise e
+
+
+
 def main():
     args = args_parser()
     config = config_summoner(args)
@@ -59,6 +72,17 @@ def main():
     if config.task == 'train':
         pipeline.task = 'test'
         pipeline.load_task()
+
+
+def goodtg():
+    try:
+        main()
+    except RuntimeError as e:
+        if 'out of memory' in str(e):
+            print(f'#E#{e}')
+            exit(OOM_CODE)
+        else:
+            raise e
 
 
 if __name__ == '__main__':
