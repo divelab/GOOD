@@ -32,6 +32,8 @@
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
   - [x] Method reproduction. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
   - [ ] Experiments: hyperparameter sweeping
+### New features
+- [x] Automatic program launcher. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
 
 ## Table of contents
 
@@ -208,11 +210,13 @@ sampled tests to go through (because of the limitation of computational resource
 ## Citing GOOD
 If you find this repository helpful, please cite our [paper](https://arxiv.org/abs/2206.08452).
 ```
-@article{gui2022good,
-  title={{GOOD}: A Graph Out-of-Distribution Benchmark},
-  author={Gui, Shurui and Li, Xiner and Wang, Limei and Ji, Shuiwang},
-  journal={arXiv preprint arXiv:2206.08452},
-  year={2022}
+@inproceedings{
+gui2022good,
+title={{GOOD}: A Graph Out-of-Distribution Benchmark},
+author={Shurui Gui and Xiner Li and Limei Wang and Shuiwang Ji},
+booktitle={Thirty-sixth Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
+year={2022},
+url={https://openreview.net/forum?id=8hHg-zs_p-h}
 }
 ```
 
