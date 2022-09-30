@@ -62,7 +62,7 @@ for dataset_path in config_root.iterdir():
                     continue
                 config_paths.append(str(ood_config_path))
 
-
+@pytest.mark.skip(reason="No longer valid for new version of GOOD.")
 @pytest.mark.parametrize("config_path", config_paths)
 def test_reproduce(config_path):
     reproducer = Reproducer(config_path)

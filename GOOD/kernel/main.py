@@ -1,6 +1,6 @@
 r"""Kernel pipeline: main pipeline, initialization, task loading, etc.
 """
-
+import os
 import time
 from typing import Tuple, Union
 
@@ -45,16 +45,6 @@ def initialize_model_dataset(config: Union[CommonArgs, Munch]) -> Tuple[torch.nn
 
     return model, loader
 
-
-# def oom_check(func):
-#     try:
-#         func()
-#     except RuntimeError as e:
-#         if 'out of memory' in str(e):
-#             print(f'#E#{e}')
-#             exit(OOM_CODE)
-#         else:
-#             raise e
 
 
 

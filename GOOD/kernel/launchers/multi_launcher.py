@@ -12,7 +12,7 @@ class MultiLauncher(Launcher):
         super(MultiLauncher, self).__init__()
 
     def __call__(self, jobs_group, auto_args):
-        super(MultiLauncher, self).__call__(jobs_group, auto_args)
+        jobs_group = super(MultiLauncher, self).__call__(jobs_group, auto_args)
         procs_by_gpu = [None] * len(auto_args.allow_devices)
 
         while len(jobs_group) > 0:

@@ -59,7 +59,7 @@ def merge_dicts(dict1: dict, dict2: dict):
     return return_dict, duplicates
 
 
-def load_config(path: str, previous_includes: list = []) -> dict:
+def load_config(path: str, previous_includes: list = [], skip_include=False) -> dict:
     r"""Config loader.
     Loading configs from a config file.
 
@@ -80,6 +80,8 @@ def load_config(path: str, previous_includes: list = []) -> dict:
 
     yaml = YAML(typ='safe')
     direct_config = yaml.load(open(path, "r"))
+    if skip_include:
+        return direct_config, None, None
     # direct_config = yaml.safe_load(open(path, "r"))
 
     # Load config from included files.

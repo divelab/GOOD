@@ -1,43 +1,22 @@
 import itertools
+import os
 import os.path
 import sys
 from pathlib import Path
-import copy
-import signal
-import os
-import subprocess
-import shlex
-import sys
-import time
 
-import numpy as np
-import yaml
-from pathlib import Path
-from GOOD.utils.config_reader import load_config
-import queue
-from GOOD.utils.args import args_parser
-from GOOD.utils.config_reader import CommonArgs, Munch
-from GOOD.utils.initial import reset_random_seed
-from GOOD.utils.config_reader import config_summoner
-from GOOD.utils.args import AutoArgs
-
-import pynvml
-import psutil
-from tqdm import tqdm
-import shutil
 from GOOD.definitions import ROOT_DIR
 from GOOD.kernel.launcher_manager import load_launcher
-
-
+from GOOD.utils.args import AutoArgs
+from GOOD.utils.config_reader import load_config
 
 
 def launch():
     conda_interpreter = sys.executable
     conda_goodtg = os.path.join(sys.exec_prefix, 'bin', 'goodtg')
     auto_args = AutoArgs().parse_args(known_only=True)
-    config_root = get_config_root(auto_args)
+    auto_args.config_root = get_config_root(auto_args)
 
-    jobs_group = make_list_cmds(auto_args, conda_goodtg, config_root)
+    jobs_group = make_list_cmds(auto_args, conda_goodtg)
     launcher = load_launcher(auto_args.launcher)
     launcher(jobs_group, auto_args)
 
@@ -53,9 +32,9 @@ def get_config_root(auto_args):
     return config_root
 
 
-def make_list_cmds(auto_args, conda_goodtg, config_root):
+def make_list_cmds(auto_args, conda_goodtg):
     args_group = []
-    for dataset_path in config_root.iterdir():
+    for dataset_path in auto_args.config_root.iterdir():
         if not dataset_path.is_dir() or dataset_path.name not in auto_args.allow_datasets:
             continue
         for domain_path in dataset_path.iterdir():
@@ -81,7 +60,6 @@ def make_list_cmds(auto_args, conda_goodtg, config_root):
 
                     # args = args_parser(['--config_path', str(ood_config_path)])
                     # config = config_summoner(args)
-
 
                     if auto_args.sweep_root:
                         cmd_args = [f'{conda_goodtg} --config_path \"{ood_config_path}\" --log_file default']
@@ -113,10 +91,10 @@ def make_list_cmds(auto_args, conda_goodtg, config_root):
                             f'{conda_goodtg} --exp_round {round} --config_path \"{ood_config_path}\" --log_file default'
                             for round in auto_args.allow_rounds]
 
-
                     args_group += cmd_args
 
     return args_group
+
 
 if __name__ == '__main__':
     launch()

@@ -80,7 +80,10 @@ class OODArgs(Tap):
 class AutoArgs(Tap):
     config_root: str = None  #: The root of input configuration files.
     sweep_root: str = None  #: The root of hyperparameter searching configurations.
+    final_root: str = None  #: The root of output final configuration files.
     launcher: str = None  #: The launcher name.
+
+
     allow_datasets: List[str] = None  #: Allow datasets in list to run.
     allow_domains: List[str] = None  #: Allow domains in list to run.
     allow_shifts: List[str] = None  #: Allow shifts.
