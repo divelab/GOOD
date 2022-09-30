@@ -10,23 +10,30 @@
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
-[**Documentation**](https://good.readthedocs.io) | [**Paper (and Leaderboard)**](https://arxiv.org/pdf/2206.08452.pdf)
+[**Documentation**](https://good.readthedocs.io) | [**Paper (and Leaderboard)**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1))
 <!-- > We are actively building the document. -->
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
 
-:fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!**
+<!-- :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!** -->
 
-:eye:**Note that we split the licences of our code and datasets, please refer to different licenses for different usages.**
+:tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!** :confetti_ball:
+
+:eye:Note that we split the licences of our code and datasets, please refer to different licenses for different usages.
 
 ## Roadmap
 
-### Documentation
-- [ ] More detailed documentation for benchmarking new algorithms.
-### Algorithms
+### Tutorial
+- [x] More flexible pipelines and dataloaders. Please refer to branch [dev](https://github.com/divelab/GOOD/tree/dev) for more details.
+- [ ] More detailed tutorial for adding new algorithms. [In progress]
+### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
-- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf)
-- [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987)
+- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for the official implementation. It was accepted by NeurIPS 2022 recently:smile:]
+- [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
+  - [x] Method reproduction. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
+  - [ ] Experiments: hyperparameter sweeping
+### New features
+- [x] Automatic program launcher. Please refer to branch [gsat](https://github.com/divelab/GOOD/tree/gsat) for more details.
 
 ## Table of contents
 
@@ -208,11 +215,13 @@ sampled tests to go through (because of the limitation of computational resource
 ## Citing GOOD
 If you find this repository helpful, please cite our [paper](https://arxiv.org/abs/2206.08452).
 ```
-@article{gui2022good,
-  title={{GOOD}: A Graph Out-of-Distribution Benchmark},
-  author={Gui, Shurui and Li, Xiner and Wang, Limei and Ji, Shuiwang},
-  journal={arXiv preprint arXiv:2206.08452},
-  year={2022}
+@inproceedings{
+gui2022good,
+title={{GOOD}: A Graph Out-of-Distribution Benchmark},
+author={Shurui Gui and Xiner Li and Limei Wang and Shuiwang Ji},
+booktitle={Thirty-sixth Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
+year={2022},
+url={https://openreview.net/forum?id=8hHg-zs_p-h}
 }
 ```
 
