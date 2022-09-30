@@ -21,6 +21,8 @@
 
 For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch.
 
+New features' description will be updated on this README earlier than on the documentation.
+
 ## Roadmap
 
 ### Tutorial
