@@ -26,8 +26,9 @@ class HarvestLauncher(Launcher):
         result_dict = self.harvest_all_fruits(jobs_group)
         best_fruits = self.picky_farmer(result_dict)
 
-        self.process_final_root(auto_args)
-        self.update_best_config(auto_args, best_fruits)
+        if auto_args.sweep_root:
+            self.process_final_root(auto_args)
+            self.update_best_config(auto_args, best_fruits)
 
     def update_best_config(self, auto_args, best_fruits):
         for ddsa_key in best_fruits.keys():
