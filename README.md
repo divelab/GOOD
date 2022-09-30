@@ -42,9 +42,6 @@ For the original code used in the paper, please check branch [GOOD version 0](ht
 * [Why GOOD?](#why-good)
 * [Installation](#installation)
 * [Quick tutorial](#quick-tutorial)
-  * [Module usage (recommended: use only GOOD datasets)](#module-usage)
-  * [Project usage (recommended: OOD algorithm researches & developments)](#project-usage)
-* [Reproducibility](#reproducibility)
 * [Citing GOOD](#citing-good)
 * [License](#license)
 * [Contact](#contact)
@@ -76,9 +73,6 @@ Then you can compare your results with the leaderboard.
 * **Easy comparisons with the leaderboard:** We provide insightful comparisons from multiple perspectives. Any research and studies can use
 our leaderboard results for comparison. Note that this is a growing project, so we will include new OOD algorithms gradually.
 Besides, if you hope to include your algorithms in the leaderboard, please contact us or contribute to this project. A big welcome!
-* **Reproducibility:** 
-  * OOD Datasets: GOOD provides full OOD split generalization code to reproduce or generate new datasets.
-  * Leaderboard results: One random seed round results are provided, and loaded models pass the test result reproduction.
 
 
 ## Installation 
