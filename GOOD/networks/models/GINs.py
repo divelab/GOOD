@@ -86,10 +86,12 @@ class GINFeatExtractor(GNNBasic):
         """
         if self.edge_feat:
             x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
-            out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size)
+            kwargs.pop('batch_size', 'not found')
+            out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size, **kwargs)
         else:
             x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
-            out_readout = self.encoder(x, edge_index, batch, batch_size)
+            kwargs.pop('batch_size', 'not found')
+            out_readout = self.encoder(x, edge_index, batch, batch_size, **kwargs)
         return out_readout
 
 
@@ -127,7 +129,7 @@ class GINEncoder(BasicEncoder):
             ]
         )
 
-    def forward(self, x, edge_index, batch, batch_size):
+    def forward(self, x, edge_index, batch, batch_size, **kwargs):
         r"""
         The GIN encoder for non-molecule data.
 
@@ -149,7 +151,7 @@ class GINEncoder(BasicEncoder):
                 post_conv = relu(post_conv)
             post_conv = dropout(post_conv)
 
-        if self.without_readout:
+        if self.without_readout or kwargs.get('without_readout'):
             return post_conv
         out_readout = self.readout(post_conv, batch, batch_size)
         return out_readout
@@ -184,7 +186,7 @@ class GINMolEncoder(BasicEncoder):
             ]
         )
 
-    def forward(self, x, edge_index, edge_attr, batch, batch_size):
+    def forward(self, x, edge_index, edge_attr, batch, batch_size, **kwargs):
         r"""
         The GIN encoder for molecule data.
 
@@ -207,7 +209,7 @@ class GINMolEncoder(BasicEncoder):
                 post_conv = relu(post_conv)
             post_conv = dropout(post_conv)
 
-        if self.without_readout:
+        if self.without_readout or kwargs.get('without_readout'):
             return post_conv
         out_readout = self.readout(post_conv, batch, batch_size)
         return out_readout

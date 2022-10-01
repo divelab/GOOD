@@ -1,3 +1,7 @@
+r"""
+The implementation of `Discovering Invariant Rationales for Graph Neural Networks <https://openreview.net/pdf?id=hGXij5rfiHw>`_.
+"""
+
 import copy
 import math
 
@@ -40,7 +44,7 @@ class DIRGIN(GNNBasic):
             **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
 
         Returns (Tensor):
-            label predictions
+            Label predictions and other results for loss calculations.
 
         """
         data = kwargs.get('data')
@@ -102,6 +106,9 @@ class DIRGIN(GNNBasic):
 
 @register.model_register
 class DIRvGIN(DIRGIN):
+    r"""
+    The GIN virtual node version of DIR.
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRvGIN, self).__init__(config)
@@ -112,6 +119,9 @@ class DIRvGIN(DIRGIN):
 
 @register.model_register
 class DIRvGINNB(DIRGIN):
+    r"""
+    The GIN virtual node without batchnorm version of DIR.
+    """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(DIRvGINNB, self).__init__(config)
@@ -122,6 +132,9 @@ class DIRvGINNB(DIRGIN):
 
 
 class CausalAttNet(nn.Module):
+    r"""
+    Causal Attention Network adapted from https://github.com/wuyxin/dir-gnn.
+    """
 
     def __init__(self, causal_ratio, config, **kwargs):
         super(CausalAttNet, self).__init__()
@@ -164,6 +177,9 @@ class CausalAttNet(nn.Module):
 
 
 def set_masks(mask: Tensor, model: nn.Module):
+    r"""
+    Adopted from https://github.com/wuyxin/dir-gnn.
+    """
     for module in model.modules():
         if isinstance(module, MessagePassing):
             module.__explain__ = True
@@ -173,6 +189,9 @@ def set_masks(mask: Tensor, model: nn.Module):
 
 
 def clear_masks(model: nn.Module):
+    r"""
+    Adopted from https://github.com/wuyxin/dir-gnn.
+    """
     for module in model.modules():
         if isinstance(module, MessagePassing):
             module.__explain__ = False
@@ -182,6 +201,9 @@ def clear_masks(model: nn.Module):
 
 
 def split_graph(data, edge_score, ratio):
+    r"""
+    Adapted from https://github.com/wuyxin/dir-gnn.
+    """
     has_edge_attr = hasattr(data, 'edge_attr') and getattr(data, 'edge_attr') is not None
 
 
@@ -199,57 +221,14 @@ def split_graph(data, edge_score, ratio):
         new_causal_edge_attr = None
         new_conf_edge_attr = None
 
-    # causal_edge_index = torch.LongTensor([[], []]).to(data.x.device)
-    # causal_edge_weight = torch.tensor([]).to(data.x.device)
-    # conf_edge_index = torch.LongTensor([[], []]).to(data.x.device)
-    # conf_edge_weight = torch.tensor([]).to(data.x.device)
-    #
-    # if has_edge_attr:
-    #     causal_edge_attr = torch.LongTensor([]).to(data.x.device)
-    #     conf_edge_attr = torch.LongTensor([]).to(data.x.device)
-    #
-    # edge_indices, _, _, num_edges, cum_edges = split_batch(data)
-    #
-    # # all_idx_reserve = []
-    # for edge_index, N, C in zip(edge_indices, num_edges, cum_edges):
-    #     n_reserve = math.ceil(ratio * N)
-    #     if has_edge_attr:
-    #         edge_attr = data.edge_attr[C:C + N]
-    #     single_mask = edge_score[C:C + N]
-    #     # single_mask_detach = edge_score[C:C + N].detach().cpu().numpy()
-    #     # rank = np.argpartition(-single_mask_detach, n_reserve)
-    #     # idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
-    #     rank = torch.sort(-single_mask).indices
-    #     idx_reserve, idx_drop = rank[:n_reserve], rank[n_reserve:]
-    #     # all_idx_reserve.append(C + idx_reserve)
-    #
-    #     causal_edge_index = torch.cat([causal_edge_index, edge_index[:, idx_reserve]], dim=1)
-    #     conf_edge_index = torch.cat([conf_edge_index, edge_index[:, idx_drop]], dim=1)
-    #
-    #     causal_edge_weight = torch.cat([causal_edge_weight, single_mask[idx_reserve]])
-    #     conf_edge_weight = torch.cat([conf_edge_weight, -1 * single_mask[idx_drop]])
-    #
-    #     if has_edge_attr:
-    #         causal_edge_attr = torch.cat([causal_edge_attr, edge_attr[idx_reserve]])
-    #         conf_edge_attr = torch.cat([conf_edge_attr, edge_attr[idx_drop]])
-    #     else:
-    #         causal_edge_attr = None
-    #         conf_edge_attr = None
-    #
-    # all_idx_reserve = torch.cat(all_idx_reserve)
-    #
-    # assert causal_edge_index == new_causal_edge_index
-    # assert conf_edge_index == new_conf_edge_index
-    # assert causal_edge_weight == new_causal_edge_weight
-
-
     return (new_causal_edge_index, new_causal_edge_attr, new_causal_edge_weight), \
            (new_conf_edge_index, new_conf_edge_attr, new_conf_edge_weight)
-    # return (causal_edge_index, causal_edge_attr, causal_edge_weight), \
-    #        (conf_edge_index, conf_edge_attr, conf_edge_weight)
 
 
 def split_batch(g):
+    r"""
+    Adopted from https://github.com/wuyxin/dir-gnn.
+    """
     split = degree(g.batch[g.edge_index[0]], dtype=torch.long).tolist()
     edge_indices = torch.split(g.edge_index, split, dim=1)
     num_nodes = degree(g.batch, dtype=torch.long)
@@ -261,6 +240,9 @@ def split_batch(g):
 
 
 def relabel(x, edge_index, batch, pos=None):
+    r"""
+    Adopted from https://github.com/wuyxin/dir-gnn.
+    """
     num_nodes = x.size(0)
     sub_nodes = torch.unique(edge_index)
     x = x[sub_nodes]
@@ -277,7 +259,7 @@ def relabel(x, edge_index, batch, pos=None):
 
 def sparse_sort(src: torch.Tensor, index: torch.Tensor, dim=0, descending=False, eps=1e-12):
     r'''
-    Adopt from <https://github.com/rusty1s/pytorch_scatter/issues/48>_.
+    Adopted from https://github.com/rusty1s/pytorch_scatter/issues/48.
     '''
     f_src = src.float()
     f_min, f_max = f_src.min(dim)[0], f_src.max(dim)[0]
@@ -288,6 +270,9 @@ def sparse_sort(src: torch.Tensor, index: torch.Tensor, dim=0, descending=False,
 
 
 def sparse_topk(src: torch.Tensor, index: torch.Tensor, ratio: float, dim=0, descending=False, eps=1e-12):
+    r"""
+    Sparse topk calculation.
+    """
     rank, perm = sparse_sort(src, index, dim, descending, eps)
     num_nodes = degree(index, dtype=torch.long)
     k = (ratio * num_nodes.to(float)).ceil().to(torch.long)

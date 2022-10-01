@@ -17,7 +17,6 @@ from tap import Tap
 from GOOD.definitions import STORAGE_DIR
 from GOOD.utils.args import CommonArgs
 from GOOD.utils.metric import Metric
-from GOOD.utils.train import TrainHelper
 
 
 def merge_dicts(dict1: dict, dict2: dict):
@@ -60,7 +59,7 @@ def merge_dicts(dict1: dict, dict2: dict):
     return return_dict, duplicates
 
 
-def load_config(path: str, previous_includes: list = []) -> dict:
+def load_config(path: str, previous_includes: list = [], skip_include=False) -> dict:
     r"""Config loader.
     Loading configs from a config file.
 
@@ -81,6 +80,8 @@ def load_config(path: str, previous_includes: list = []) -> dict:
 
     yaml = YAML(typ='safe')
     direct_config = yaml.load(open(path, "r"))
+    if skip_include:
+        return direct_config, None, None
     # direct_config = yaml.safe_load(open(path, "r"))
 
     # Load config from included files.
@@ -195,19 +196,24 @@ def process_configs(config: Union[CommonArgs, Munch]):
     if config.exp_round:
         config.random_seed = config.exp_round * 97 + 13
 
-    # --- Log setting ---
-    log_dir_root = opj(STORAGE_DIR, 'log', 'round' + str(config.exp_round))
-    log_dirs = opj(log_dir_root, config.dataset.dataset_name, config.dataset.domain)
+    # --- Directory name definitions ---
+    dataset_dirname = config.dataset.dataset_name + '_' + config.dataset.domain
     if config.dataset.shift_type:
-        log_dirs = opj(log_dirs, config.dataset.shift_type)
-    log_dirs = opj(log_dirs, config.ood.ood_alg, config.model.global_pool)
+        dataset_dirname += '_' + config.dataset.shift_type
+    model_dirname = f'{config.model.model_name}_{config.model.model_layer}l_{config.model.global_pool}pool_{config.model.dropout_rate}dp'
+    train_dirname = f'{config.train.lr}lr_{config.train.weight_decay}wd'
+    ood_dirname = config.ood.ood_alg
     if config.ood.ood_param is not None and config.ood.ood_param >= 0:
-        log_dirs = opj(log_dirs, str(config.ood.ood_param))
+        ood_dirname += f'_{config.ood.ood_param}'
     else:
-        log_dirs = opj(log_dirs, 'no_param')
+        ood_dirname += '_no_param'
     if config.ood.extra_param is not None:
         for i, param in enumerate(config.ood.extra_param):
-            log_dirs = opj(log_dirs, str(param))
+            ood_dirname += f'_{param}'
+
+    # --- Log setting ---
+    log_dir_root = opj(STORAGE_DIR, 'log', 'round' + str(config.exp_round))
+    log_dirs = opj(log_dir_root, dataset_dirname, model_dirname, train_dirname, ood_dirname)
     if config.save_tag:
         log_dirs = opj(log_dirs, config.save_tag)
     config.log_path = opj(log_dirs, config.log_file + '.log')
@@ -216,19 +222,8 @@ def process_configs(config: Union[CommonArgs, Munch]):
     if config.ckpt_root is None:
         config.ckpt_root = opj(STORAGE_DIR, 'checkpoints')
     if config.ckpt_dir is None:
-        config.ckpt_dir = opj(config.ckpt_root, 'round' + str(config.exp_round),
-                              config.dataset.dataset_name, config.dataset.domain,
-                              f'{config.model.model_name}_{config.model.model_layer}l')
-        if config.dataset.shift_type:
-            config.ckpt_dir = opj(config.ckpt_dir, config.dataset.shift_type)
-        config.ckpt_dir = opj(config.ckpt_dir, config.ood.ood_alg, config.model.global_pool)
-        if config.ood.ood_param is not None and config.ood.ood_param >= 0:
-            config.ckpt_dir = opj(config.ckpt_dir, str(config.ood.ood_param))
-        else:
-            config.ckpt_dir = opj(config.ckpt_dir, 'no_param')
-        if config.ood.extra_param is not None:
-            for i, param in enumerate(config.ood.extra_param):
-                config.ckpt_dir = opj(config.ckpt_dir, str(param))
+        config.ckpt_dir = opj(config.ckpt_root, 'round' + str(config.exp_round))
+        config.ckpt_dir = opj(config.ckpt_dir, dataset_dirname, model_dirname, train_dirname, ood_dirname)
         if config.save_tag:
             config.ckpt_dir = opj(config.ckpt_dir, config.save_tag)
     config.test_ckpt = opj(config.ckpt_dir, f'best.ckpt')
@@ -242,7 +237,6 @@ def process_configs(config: Union[CommonArgs, Munch]):
 
     # --- Attach train_helper and metric modules ---
     config.metric = Metric()
-    config.train_helper = TrainHelper()
 
 
 def config_summoner(args: CommonArgs) -> Union[CommonArgs, Munch]:

@@ -27,7 +27,7 @@ jobs:
             conda activate graphood
             conda install -y pytorch==${TORCH} -c pytorch -c conda-forge
             conda install -y -c conda-forge rdkit==2020.09.5
-            pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
+            pip install torch-scatter==2.0.9 torch-sparse==0.6.13 torch-geometric==2.0.4 -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
             pip install -e .
       - run:
           name: Test

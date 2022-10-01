@@ -1,5 +1,5 @@
 """
-The GOOD-Twitch dataset. Adapted from the `Characteristic Functions on Graphs:
+The GOOD-Twitch dataset adapted from the `Characteristic Functions on Graphs:
 Birds of a Feather, from Statistical Descriptors to Parametric Models
 <https://arxiv.org/pdf/2005.07959>`_.
 """

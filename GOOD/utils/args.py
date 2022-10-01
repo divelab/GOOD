@@ -77,11 +77,19 @@ class OODArgs(Tap):
         self.extra_param = [eval(param) for param in self.extra_param] if self.extra_param is not None else None
 
 
-
 class AutoArgs(Tap):
-    allow_datasets: List[str] = None  #: Allow dataset in list to run.
+    config_root: str = None  #: The root of input configuration files.
+    sweep_root: str = None  #: The root of hyperparameter searching configurations.
+    final_root: str = None  #: The root of output final configuration files.
+    launcher: str = None  #: The launcher name.
+
+
+    allow_datasets: List[str] = None  #: Allow datasets in list to run.
+    allow_domains: List[str] = None  #: Allow domains in list to run.
+    allow_shifts: List[str] = None  #: Allow shifts.
+    allow_algs: List[str] = None  #: Allowed OOD algorithms.
     allow_devices: List[int] = None  #: Devices allowed to run.
-    round: int = None # The number of experiment round.
+    allow_rounds: List[int] = None # The numbers of experiment round.
 
 
 class CommonArgs(Tap):
@@ -94,6 +102,7 @@ class CommonArgs(Tap):
     random_seed: int = None  #: Fixed random seed for reproducibility.
     exp_round: int = None  #: Current experiment round.
     pytest: bool = None
+    pipeline: str = None  #: Training/test controller.
 
     ckpt_root: str = None  #: Checkpoint root for saving checkpoint files, where inner structure is automatically generated
     ckpt_dir: str = None  #: The direct directory for saving ckpt files
@@ -121,9 +130,7 @@ class CommonArgs(Tap):
         self.argv = argv
 
         from GOOD.utils.metric import Metric
-        from GOOD.utils.train import TrainHelper
         self.metric: Metric = None
-        self.train_helper: TrainHelper = None
 
     def process_args(self) -> None:
         super().process_args()

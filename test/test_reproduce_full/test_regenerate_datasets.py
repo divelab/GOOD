@@ -7,7 +7,7 @@ import torch
 
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
-from GOOD.kernel.pipeline import load_dataset, reset_random_seed
+from GOOD.kernel.main import load_dataset, reset_random_seed
 
 
 class Regenerator(object):

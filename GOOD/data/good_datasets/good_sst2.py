@@ -1,6 +1,5 @@
 """
-The GOOD-SST2 dataset. Adapted from `DIG
-    <https://github.com/divelab/DIG>`_.
+The GOOD-SST2 dataset. Adapted from `DIG <https://github.com/divelab/DIG>`_.
 """
 import itertools
 import os
@@ -43,8 +42,7 @@ from GOOD import register
 @register.dataset_register
 class GOODSST2(InMemoryDataset):
     r"""
-    The GOOD-SST2 dataset. Adapted from `DIG
-    <https://github.com/divelab/DIG>`_.
+    The GOOD-SST2 dataset. Adapted from `DIG <https://github.com/divelab/DIG>`_.
 
     Args:
         root (str): The dataset saving root.

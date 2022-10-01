@@ -9,6 +9,7 @@ from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from typing import Tuple
 from GOOD.utils.initial import reset_random_seed
 from GOOD.utils.train import at_stage
+import torch
 
 
 class BaseOODAlg(ABC):
@@ -21,11 +22,24 @@ class BaseOODAlg(ABC):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(BaseOODAlg, self).__init__()
+        self.optimizer: torch.optim.Adam = None
+        self.scheduler: torch.optim.lr_scheduler._LRScheduler = None
+        self.model: torch.nn.Module = None
+
+
         self.mean_loss = None
         self.spec_loss = None
         self.stage = 0
 
     def stage_control(self, config):
+        r"""
+        Set valuables before each epoch. Largely used for controlling multi-stage training and epoch related parameter
+        settings.
+
+        Args:
+            config: munchified dictionary of args.
+
+        """
         if self.stage == 0 and at_stage(1, config):
             reset_random_seed(config)
             self.stage = 1
@@ -116,3 +130,31 @@ class BaseOODAlg(ABC):
         """
         self.mean_loss = loss.sum() / mask.sum()
         return self.mean_loss
+
+    def set_up(self, model: torch.nn.Module, config: Union[CommonArgs, Munch]):
+        r"""
+        Training setup of optimizer and scheduler
+
+        Args:
+            model (torch.nn.Module): model for setup
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.train.lr`, :obj:`config.metric`, :obj:`config.train.mile_stones`)
+
+        Returns:
+            None
+
+        """
+        self.model: torch.nn.Module = model
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.train.lr,
+                                          weight_decay=config.train.weight_decay)
+        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=config.train.mile_stones,
+                                                              gamma=0.1)
+
+    def backward(self, loss):
+        r"""
+        Gradient backward process and parameter update.
+
+        Args:
+            loss: target loss
+        """
+        loss.backward()
+        self.optimizer.step()

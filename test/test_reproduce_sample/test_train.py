@@ -5,7 +5,8 @@ import pytest
 
 from GOOD import config_summoner, args_parser
 from GOOD.definitions import ROOT_DIR, STORAGE_DIR
-from GOOD.kernel.pipeline import initialize_model_dataset, load_ood_alg, load_task, load_logger
+from GOOD.kernel.main import initialize_model_dataset, load_ood_alg, load_logger
+from GOOD.kernel.pipeline_manager import load_pipeline
 
 
 class Rerunner(object):
@@ -26,7 +27,8 @@ class Rerunner(object):
         model, loader = initialize_model_dataset(config)
         ood_algorithm = load_ood_alg(config.ood.ood_alg, config)
 
-        load_task(config.task, model, loader, ood_algorithm, config)
+        pipeline = load_pipeline(config.pipeline, config.task, model, loader, ood_algorithm, config)
+        pipeline.load_task()
 
         return 0
 
@@ -36,12 +38,12 @@ config_root = Path(ROOT_DIR, 'configs', 'GOOD_configs')
 for dataset_path in config_root.iterdir():
     if not dataset_path.is_dir():
         continue
-    if dataset_path.name not in ['GOODMotif', 'GOODCora']:
+    if dataset_path.name not in ['GOODMotif', 'GOODWebKB']:
         continue
     for domain_path in dataset_path.iterdir():
         if not domain_path.is_dir():
             continue
-        if domain_path.name not in ['word', 'basis']:
+        if domain_path.name not in ['university', 'basis']:
             continue
         for shift_path in domain_path.iterdir():
             if not shift_path.is_dir():
@@ -55,6 +57,6 @@ for dataset_path in config_root.iterdir():
 
 
 @pytest.mark.parametrize("config_path", config_paths)
-def test_reproduce(config_path):
+def test_train(config_path):
     rerunner = Rerunner(config_path)
     assert rerunner() == 0

@@ -40,8 +40,8 @@ def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:
             - config.dataset.num_classes
 
     """
-    reset_random_seed(config)
     try:
+        reset_random_seed(config)
         dataset, meta_info = register.datasets[name].load(dataset_root=config.dataset.dataset_root,
                                                           domain=config.dataset.domain,
                                                           shift=config.dataset.shift_type,

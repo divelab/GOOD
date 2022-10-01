@@ -8,6 +8,7 @@ ckpt_dir: null
 save_tag: null
 other_saved: null
 pytest: False
+pipeline: Pipeline
 train:
   weight_decay: 0.
   save_gap: 10
