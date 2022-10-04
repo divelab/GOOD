@@ -106,33 +106,33 @@ class BasicEncoder(torch.nn.Module):
             super(BasicEncoder, self).__init__(config)
         num_layer = config.model.model_layer
 
-        self.relu1 = nn.ReLU()
         self.relus = nn.ModuleList(
             [
                 nn.ReLU()
-                for _ in range(num_layer - 1)
+                for _ in range(num_layer)
             ]
         )
         if kwargs.get('no_bn'):
-            self.batch_norm1 = Identity()
             self.batch_norms = [
                 Identity()
-                for _ in range(num_layer - 1)
+                for _ in range(num_layer)
             ]
         else:
-            self.batch_norm1 = nn.BatchNorm1d(config.model.dim_hidden)
             self.batch_norms = nn.ModuleList([
-                nn.BatchNorm1d(config.model.dim_hidden)
-                for _ in range(num_layer - 1)
+                nn.BatchNorm1d(config.model.dim_hidden, track_running_stats=True)
+                for _ in range(num_layer)
             ])
-        self.dropout1 = nn.Dropout(config.model.dropout_rate)
         self.dropouts = nn.ModuleList([
             nn.Dropout(config.model.dropout_rate)
-            for _ in range(num_layer - 1)
+            for _ in range(num_layer)
         ])
         if config.model.model_level == 'node':
             self.readout = IdenticalPool()
         elif config.model.global_pool == 'mean':
             self.readout = GlobalMeanPool()
+        elif config.model.global_pool == 'max':
+            self.readout = GlobalMaxPool()
+        elif config.model.global_pool == 'id':
+            self.readout = IdenticalPool()
         else:
             self.readout = GlobalMaxPool()

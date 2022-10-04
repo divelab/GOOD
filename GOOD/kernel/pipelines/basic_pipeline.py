@@ -112,9 +112,20 @@ class Pipeline:
                 train_stat = self.train_batch(data, pbar)
                 mean_loss = (mean_loss * index + self.ood_algorithm.mean_loss) / (index + 1)
 
-                if self.config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup']:
-                    spec_loss = (spec_loss * index + self.ood_algorithm.spec_loss) / (index + 1)
-                    pbar.set_description(f'M/S Loss: {mean_loss:.4f}/{spec_loss:.4f}')
+                if self.ood_algorithm.spec_loss is not None:
+                    if isinstance(self.ood_algorithm.spec_loss, dict):
+                        desc = f'ML: {mean_loss:.4f}|'
+                        for loss_name, loss_value in self.ood_algorithm.spec_loss.items():
+                            if not isinstance(spec_loss, dict):
+                                spec_loss = dict()
+                            if loss_name not in spec_loss.keys():
+                                spec_loss[loss_name] = 0
+                            spec_loss[loss_name] = (spec_loss[loss_name] * index + loss_value) / (index + 1)
+                            desc += f'{loss_name}: {spec_loss[loss_name]:.4f}|'
+                        pbar.set_description(desc[:-1])
+                    else:
+                        spec_loss = (spec_loss * index + self.ood_algorithm.spec_loss) / (index + 1)
+                        pbar.set_description(f'M/S Loss: {mean_loss:.4f}/{spec_loss:.4f}')
                 else:
                     pbar.set_description(f'Loss: {mean_loss:.4f}')
 
@@ -122,8 +133,14 @@ class Pipeline:
 
             # Epoch val
             print('#IN#\nEvaluating...')
-            if self.config.ood.ood_alg not in ['ERM', 'GroupDRO', 'Mixup']:
-                print(f'#IN#Approximated average M/S Loss {mean_loss:.4f}/{spec_loss:.4f}')
+            if self.ood_algorithm.spec_loss is not None:
+                if isinstance(self.ood_algorithm.spec_loss, dict):
+                    desc = f'ML: {mean_loss:.4f}|'
+                    for loss_name, loss_value in self.ood_algorithm.spec_loss.items():
+                        desc += f'{loss_name}: {spec_loss[loss_name]:.4f}|'
+                    print(f'#IN#Approximated ' + desc[:-1])
+                else:
+                    print(f'#IN#Approximated average M/S Loss {mean_loss:.4f}/{spec_loss:.4f}')
             else:
                 print(f'#IN#Approximated average training loss {mean_loss.cpu().item():.4f}')
 

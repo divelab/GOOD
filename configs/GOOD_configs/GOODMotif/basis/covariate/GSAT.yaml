@@ -4,7 +4,7 @@ model:
   model_name: GSATGIN
 ood:
   ood_alg: GSAT
-  ood_param: 1.0    # info loss coefficient
+  ood_param: 0    # info loss coefficient
   extra_param:
     - true    # learn_edge_att
     - 20      # decay_interval

@@ -12,6 +12,7 @@ from GOOD.utils.train import at_stage
 import torch
 
 
+
 class BaseOODAlg(ABC):
     r"""
     Base class for OOD algorithms

@@ -1,10 +1,11 @@
 r"""
 Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism <https://arxiv.org/abs/2201.12987>`_.
 """
-
+import munch
 import torch
 import torch.nn as nn
 from torch import Tensor
+from torch.autograd import Function
 from torch_geometric.nn import InstanceNorm
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.utils import is_undirected
@@ -16,23 +17,37 @@ from .BaseGNN import GNNBasic
 from .Classifiers import Classifier
 from .GINs import GINFeatExtractor
 from .GINvirtualnode import vGINFeatExtractor
+from munch import munchify
 
 
 @register.model_register
-class GSATGIN(GNNBasic):
+class GEIGIN(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
-        super(GSATGIN, self).__init__(config)
-        self.gnn = GINFeatExtractor(config)
+        super(GEIGIN, self).__init__(config)
+        self.sub_gnn = GINFeatExtractor(config)
         self.extractor = ExtractorMLP(config)
 
-        self.classifier = Classifier(config)
-        self.learn_edge_att = config.ood.extra_param[0]
+        self.inv_gnn = GINFeatExtractor(config)
+        self.var_gnn = GINFeatExtractor(config)
+
+        self.lc_classifier = Classifier(config)
+        self.la_classifier = Classifier(config)
+        self.ec_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
+                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
+        self.ea_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
+                                                  'dataset': {'num_classes': config.dataset.num_envs}}))
         self.config = config
+
+        self.learn_edge_att = True
+        self.LA = config.ood.extra_param[0]
+        self.EC = config.ood.extra_param[1]
+        self.EA = config.ood.extra_param[2]
+
 
     def forward(self, *args, **kwargs):
         r"""
-        The GSAT model implementation.
+        The GEIGIN model implementation.
 
         Args:
             *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
@@ -43,8 +58,8 @@ class GSATGIN(GNNBasic):
 
         """
         data = kwargs.get('data')
-        emb = self.gnn(*args, without_readout=True, **kwargs)
-        att_log_logits = self.extractor(emb, data.edge_index, data.batch)
+        node_repr = self.sub_gnn.get_node_repr(*args, **kwargs)
+        att_log_logits = self.extractor(node_repr, data.edge_index, data.batch)
         att = self.sampling(att_log_logits, self.training)
 
         if self.learn_edge_att:
@@ -56,10 +71,35 @@ class GSATGIN(GNNBasic):
         else:
             edge_att = self.lift_node_att_to_edge_att(att, data.edge_index)
 
+
         set_masks(edge_att, self)
-        logits = self.classifier(self.gnn(*args, **kwargs))
+        lc_logits = self.lc_classifier(self.inv_gnn(*args, **kwargs))
         clear_masks(self)
-        return logits, att, edge_att
+
+        if self.LA:
+            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self)
+            la_logits = self.la_classifier(self.var_gnn(*args, **kwargs))
+            clear_masks(self)
+        else:
+            la_logits = None
+
+        if self.EC:
+            set_masks(1 - edge_att, self)
+            ec_logits = self.ec_classifier(self.var_gnn(*args, **kwargs))
+            clear_masks(self)
+        else:
+            ec_logits = None
+
+        if self.EA:
+            set_masks(edge_att, self)
+            ea_logits = self.ea_classifier(GradientReverseLayerF.apply(self.inv_gnn(*args, **kwargs), self.config.train.alpha))
+            clear_masks(self)
+        else:
+            ea_logits = None
+
+
+
+        return (lc_logits, la_logits, ec_logits, ea_logits), att, edge_att
 
     def sampling(self, att_log_logits, training):
         att = self.concrete_sample(att_log_logits, temp=1, training=training)
@@ -74,7 +114,8 @@ class GSATGIN(GNNBasic):
 
     @staticmethod
     def concrete_sample(att_log_logit, temp, training):
-        if training:
+        # if training:
+        if True:
             random_noise = torch.empty_like(att_log_logit).uniform_(1e-10, 1 - 1e-10)
             random_noise = torch.log(random_noise) - torch.log(1.0 - random_noise)
             att_bern = ((att_log_logit + random_noise) / temp).sigmoid()
@@ -84,13 +125,13 @@ class GSATGIN(GNNBasic):
 
 
 @register.model_register
-class GSATvGIN(GSATGIN):
+class GEIvGIN(GEIGIN):
     r"""
     The GIN virtual node version of GSAT.
     """
 
     def __init__(self, config: Union[CommonArgs, Munch]):
-        super(GSATvGIN, self).__init__(config)
+        super(GEIvGIN, self).__init__(config)
         self.gnn = vGINFeatExtractor(config)
 
 
@@ -99,7 +140,7 @@ class ExtractorMLP(nn.Module):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super().__init__()
         hidden_size = config.model.dim_hidden
-        self.learn_edge_att = config.ood.extra_param[0]  # learn_edge_att
+        self.learn_edge_att = True
         dropout_p = config.model.dropout_rate
 
         if self.learn_edge_att:
@@ -135,12 +176,49 @@ class MLP(BatchSequential):
             m.append(nn.Linear(channels[i - 1], channels[i], bias))
 
             if i < len(channels) - 1:
-                m.append(InstanceNorm(channels[i]))
-                # m.append(nn.BatchNorm1d(channels[i]))
+                # m.append(InstanceNorm(channels[i]))
+                m.append(nn.BatchNorm1d(channels[i], track_running_stats=True))
                 m.append(nn.ReLU())
                 m.append(nn.Dropout(dropout))
 
         super(MLP, self).__init__(*m)
+
+class GradientReverseLayerF(Function):
+    r"""
+    Gradient reverse layer for DANN algorithm.
+    """
+    @staticmethod
+    def forward(ctx, x, alpha):
+        r"""
+        gradient forward propagation
+
+        Args:
+            ctx (object): object of the GradientReverseLayerF class
+            x (Tensor): feature representations
+            alpha (float): the GRL learning rate
+
+        Returns (Tensor):
+            feature representations
+
+        """
+        ctx.alpha = alpha
+        return x.view_as(x)  # * alpha
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        r"""
+        gradient backpropagation step
+
+        Args:
+            ctx (object): object of the GradientReverseLayerF class
+            grad_output (Tensor): raw backpropagation gradient
+
+        Returns (Tensor):
+            backpropagation gradient
+
+        """
+        output = grad_output.neg() * ctx.alpha
+        return output, None
 
 
 def set_masks(mask: Tensor, model: nn.Module):

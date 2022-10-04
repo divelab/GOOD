@@ -9,7 +9,7 @@ from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
 from .Classifiers import Classifier
-from .GINs import GINEncoder, GINMolEncoder
+from .GINs import GINEncoder, GINMolEncoder, GINFeatExtractor
 from .Pooling import GlobalAddPool
 
 
@@ -47,7 +47,7 @@ class vGIN(GNNBasic):
         return out
 
 
-class vGINFeatExtractor(GNNBasic):
+class vGINFeatExtractor(GINFeatExtractor):
     r"""
         vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
 
@@ -64,27 +64,6 @@ class vGINFeatExtractor(GNNBasic):
         else:
             self.encoder = vGINEncoder(config, **kwargs)
             self.edge_feat = False
-
-    def forward(self, *args, **kwargs):
-        r"""
-        vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
-
-        Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-
-        Returns (Tensor):
-            node feature representations
-        """
-        if self.edge_feat:
-            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
-            kwargs.pop('batch_size', 'not found')
-            out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size, **kwargs)
-        else:
-            x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
-            kwargs.pop('batch_size', 'not found')
-            out_readout = self.encoder(x, edge_index, batch, batch_size, **kwargs)
-        return out_readout
 
 
 class VirtualNodeEncoder(torch.nn.Module):
@@ -131,28 +110,49 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             batch_size (int): Batch size.
 
         Returns (Tensor):
+            graph feature representations
+        """
+        node_repr = self.get_node_repr(x, edge_index, batch, batch_size, **kwargs)
+
+        if self.without_readout or kwargs.get('without_readout'):
+            return node_repr
+        out_readout = self.readout(node_repr, batch, batch_size)
+        return out_readout
+
+    def get_node_repr(self, x, edge_index, batch, batch_size, **kwargs):
+        r"""
+        The vGIN encoder for non-molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            batch (Tensor): batch indicator
+            batch_size (int): batch size
+
+        Returns (Tensor):
             node feature representations
         """
-        virtual_node_feat = self.virtual_node_embedding(
-            torch.zeros(batch_size, device=self.config.device, dtype=torch.long))
 
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
+        virtual_node_feat = [self.virtual_node_embedding(
+            torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
+
+        layer_feat = [x]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---
-            post_conv = post_conv + virtual_node_feat[batch]
+            if i > 0:
+                post_conv = layer_feat[-1] + virtual_node_feat[-1][batch]
+            else:
+                post_conv = layer_feat[-1]
             post_conv = batch_norm(conv(post_conv, edge_index))
             if i < len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            post_conv = dropout(post_conv)
+            layer_feat.append(dropout(post_conv))
             # --- update global info ---
-            if i < len(self.convs) - 1:
-                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch, batch_size) + virtual_node_feat)
-
-        if self.without_readout or kwargs.get('without_readout'):
-            return post_conv
-        out_readout = self.readout(post_conv, batch, batch_size)
-        return out_readout
+            if 0 < i < len(self.convs) - 1:
+                virtual_node_feat.append(
+                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+        return layer_feat[-1]
 
 
 
@@ -180,26 +180,43 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             batch_size (int): Batch size.
 
         Returns (Tensor):
+            graph feature representations
+        """
+        node_repr = self.get_node_repr(x, edge_index, edge_attr, batch, batch_size, **kwargs)
+
+        if self.without_readout or kwargs.get('without_readout'):
+            return node_repr
+        out_readout = self.readout(node_repr, batch, batch_size)
+        return out_readout
+
+    def get_node_repr(self, x, edge_index, edge_attr, batch, batch_size, **kwargs):
+        r"""
+        The vGIN encoder for molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_attr (Tensor): edge attributes
+            batch (Tensor): batch indicator
+            batch_size (int): Batch size.
+
+        Returns (Tensor):
             node feature representations
         """
-        virtual_node_feat = self.virtual_node_embedding(
-            torch.zeros(batch_size, device=self.config.device, dtype=torch.long))
+        virtual_node_feat = [self.virtual_node_embedding(
+            torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
 
-        x = self.atom_encoder(x)
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
+        layer_feat = [self.atom_encoder(x)]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
             # --- Add global info ---
-            post_conv = post_conv + virtual_node_feat[batch]
+            post_conv = layer_feat[-1] + virtual_node_feat[-1][batch]
             post_conv = batch_norm(conv(post_conv, edge_index, edge_attr))
             if i < len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            post_conv = dropout(post_conv)
+            layer_feat.append(dropout(post_conv))
             # --- update global info ---
             if i < len(self.convs) - 1:
-                virtual_node_feat = self.virtual_mlp(self.virtual_pool(post_conv, batch, batch_size) + virtual_node_feat)
-
-        if self.without_readout or kwargs.get('without_readout'):
-            return post_conv
-        out_readout = self.readout(post_conv, batch, batch_size)
-        return out_readout
+                virtual_node_feat.append(
+                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+        return layer_feat[-1]

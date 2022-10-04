@@ -94,6 +94,18 @@ class GINFeatExtractor(GNNBasic):
             out_readout = self.encoder(x, edge_index, batch, batch_size, **kwargs)
         return out_readout
 
+    def get_node_repr(self, *args, **kwargs):
+
+        if self.edge_feat:
+            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
+            kwargs.pop('batch_size', 'not found')
+            node_repr = self.encoder.get_node_repr(x, edge_index, edge_attr, batch, batch_size, **kwargs)
+        else:
+            x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
+            kwargs.pop('batch_size', 'not found')
+            node_repr = self.encoder.get_node_repr(x, edge_index, batch, batch_size, **kwargs)
+        return node_repr
+
 
 class GINEncoder(BasicEncoder):
     r"""
@@ -110,20 +122,20 @@ class GINEncoder(BasicEncoder):
         self.without_readout = kwargs.get('without_readout')
 
         # self.atom_encoder = AtomEncoder(config.model.dim_hidden)
-
+        self.convs = nn.ModuleList()
         if kwargs.get('without_embed'):
-            self.conv1 = gnn.GINConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
-                                               nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
-                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+            self.convs.append(gnn.GINConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
+                                               nn.BatchNorm1d(2 * config.model.dim_hidden, track_running_stats=True), nn.ReLU(),
+                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden))))
         else:
-            self.conv1 = gnn.GINConv(nn.Sequential(nn.Linear(config.dataset.dim_node, 2 * config.model.dim_hidden),
-                                               nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
-                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+            self.convs.append(gnn.GINConv(nn.Sequential(nn.Linear(config.dataset.dim_node, 2 * config.model.dim_hidden),
+                                               nn.BatchNorm1d(2 * config.model.dim_hidden, track_running_stats=True), nn.ReLU(),
+                                               nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden))))
 
-        self.convs = nn.ModuleList(
+        self.convs = self.convs.extend(
             [
                 gnn.GINConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
-                                      nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
+                                      nn.BatchNorm1d(2 * config.model.dim_hidden, track_running_stats=True), nn.ReLU(),
                                       nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
                 for _ in range(num_layer - 1)
             ]
@@ -140,21 +152,38 @@ class GINEncoder(BasicEncoder):
             batch_size (int): batch size
 
         Returns (Tensor):
+            graph feature representations
+        """
+
+        node_repr = self.get_node_repr(x, edge_index, batch, batch_size, **kwargs)
+
+        if self.without_readout or kwargs.get('without_readout'):
+            return node_repr
+        out_readout = self.readout(node_repr, batch, batch_size)
+        return out_readout
+
+    def get_node_repr(self, x, edge_index, batch, batch_size, **kwargs):
+        r"""
+        The GIN encoder for non-molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            batch (Tensor): batch indicator
+            batch_size (int): batch size
+
+        Returns (Tensor):
             node feature representations
         """
 
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index))))
+        layer_feat = [x]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
-            post_conv = batch_norm(conv(post_conv, edge_index))
+            post_conv = batch_norm(conv(layer_feat[-1], edge_index))
             if i != len(self.convs) - 1:
                 post_conv = relu(post_conv)
-            post_conv = dropout(post_conv)
-
-        if self.without_readout or kwargs.get('without_readout'):
-            return post_conv
-        out_readout = self.readout(post_conv, batch, batch_size)
-        return out_readout
+            layer_feat.append(dropout(post_conv))
+        return layer_feat[-1]
 
 
 class GINMolEncoder(BasicEncoder):
@@ -173,11 +202,12 @@ class GINMolEncoder(BasicEncoder):
         else:
             self.atom_encoder = AtomEncoder(config.model.dim_hidden)
 
-        self.conv1 = GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
+        self.convs = nn.ModuleList(
+            [
+                GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
                                             nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
                                             nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
-
-        self.convs = nn.ModuleList(
+            ] +
             [
                 GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
                                        nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
@@ -198,21 +228,38 @@ class GINMolEncoder(BasicEncoder):
             batch_size (int): Batch size.
 
         Returns (Tensor):
-            node feature representations
+            graph feature representations
         """
-        x = self.atom_encoder(x)
-        post_conv = self.dropout1(self.relu1(self.batch_norm1(self.conv1(x, edge_index, edge_attr))))
-        for i, (conv, batch_norm, relu, dropout) in enumerate(
-                zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
-            post_conv = batch_norm(conv(post_conv, edge_index, edge_attr))
-            if i < len(self.convs) - 1:
-                post_conv = relu(post_conv)
-            post_conv = dropout(post_conv)
+        node_repr = self.get_node_repr(x, edge_index, edge_attr, batch, batch_size, **kwargs)
 
         if self.without_readout or kwargs.get('without_readout'):
-            return post_conv
-        out_readout = self.readout(post_conv, batch, batch_size)
+            return node_repr
+        out_readout = self.readout(node_repr, batch, batch_size)
         return out_readout
+
+    def get_node_repr(self, x, edge_index, edge_attr, batch, batch_size, **kwargs):
+        r"""
+        The GIN encoder for molecule data.
+
+        Args:
+            x (Tensor): node features
+            edge_index (Tensor): edge indices
+            edge_attr (Tensor): edge attributes
+            batch (Tensor): batch indicator
+            batch_size (int): Batch size.
+
+        Returns (Tensor):
+            node feature representations
+        """
+
+        layer_feat = [self.atom_encoder(x)]
+        for i, (conv, batch_norm, relu, dropout) in enumerate(
+                zip(self.convs, self.batch_norms, self.relus, self.dropouts)):
+            post_conv = batch_norm(conv(layer_feat[-1], edge_index, edge_attr))
+            if i < len(self.convs) - 1:
+                post_conv = relu(post_conv)
+            layer_feat.append(dropout(post_conv))
+        return layer_feat[-1]
 
 
 class GINEConv(gnn.MessagePassing):
