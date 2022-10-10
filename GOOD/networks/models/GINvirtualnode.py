@@ -151,7 +151,7 @@ class vGINEncoder(GINEncoder, VirtualNodeEncoder):
             # --- update global info ---
             if 0 < i < len(self.convs) - 1:
                 virtual_node_feat.append(
-                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch, batch_size) + virtual_node_feat[-1]))
         return layer_feat[-1]
 
 
@@ -218,5 +218,5 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
             # --- update global info ---
             if i < len(self.convs) - 1:
                 virtual_node_feat.append(
-                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch) + virtual_node_feat[-1]))
+                    self.virtual_mlp(self.virtual_pool(layer_feat[-1], batch, batch_size) + virtual_node_feat[-1]))
         return layer_feat[-1]

@@ -28,8 +28,10 @@ class GEIGIN(GNNBasic):
         self.sub_gnn = GINFeatExtractor(config)
         self.extractor = ExtractorMLP(config)
 
-        self.inv_gnn = GINFeatExtractor(config)
-        self.var_gnn = GINFeatExtractor(config)
+        self.lc_gnn = GINFeatExtractor(config)
+        self.la_gnn = GINFeatExtractor(config)
+        self.ec_gnn = GINFeatExtractor(config)
+        self.ea_gnn = GINFeatExtractor(config)
 
         self.lc_classifier = Classifier(config)
         self.la_classifier = Classifier(config)
@@ -72,27 +74,27 @@ class GEIGIN(GNNBasic):
             edge_att = self.lift_node_att_to_edge_att(att, data.edge_index)
 
 
-        set_masks(edge_att, self)
-        lc_logits = self.lc_classifier(self.inv_gnn(*args, **kwargs))
+        set_masks(edge_att, self.lc_gnn)
+        lc_logits = self.lc_classifier(self.lc_gnn(*args, **kwargs))
         clear_masks(self)
 
         if self.LA:
-            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self)
-            la_logits = self.la_classifier(self.var_gnn(*args, **kwargs))
+            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self.la_gnn)
+            la_logits = self.la_classifier(self.la_gnn(*args, **kwargs))
             clear_masks(self)
         else:
             la_logits = None
 
         if self.EC:
-            set_masks(1 - edge_att, self)
-            ec_logits = self.ec_classifier(self.var_gnn(*args, **kwargs))
+            set_masks(1 - edge_att, self.ec_gnn)
+            ec_logits = self.ec_classifier(self.ec_gnn(*args, **kwargs))
             clear_masks(self)
         else:
             ec_logits = None
 
         if self.EA:
-            set_masks(edge_att, self)
-            ea_logits = self.ea_classifier(GradientReverseLayerF.apply(self.inv_gnn(*args, **kwargs), self.config.train.alpha))
+            set_masks(GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self.ea_gnn)
+            ea_logits = self.ea_classifier(self.ea_gnn(*args, **kwargs))
             clear_masks(self)
         else:
             ea_logits = None
@@ -132,7 +134,10 @@ class GEIvGIN(GEIGIN):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEIvGIN, self).__init__(config)
-        self.gnn = vGINFeatExtractor(config)
+        self.lc_gnn = vGINFeatExtractor(config)
+        self.la_gnn = vGINFeatExtractor(config)
+        self.ec_gnn = vGINFeatExtractor(config)
+        self.ea_gnn = vGINFeatExtractor(config)
 
 
 class ExtractorMLP(nn.Module):

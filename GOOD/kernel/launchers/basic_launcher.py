@@ -4,6 +4,7 @@ import shlex
 from GOOD import config_summoner
 from GOOD import register
 from GOOD.utils.args import args_parser
+from multiprocessing import Manager, Process, Lock, Pool, Queue
 
 
 @register.launcher_register
@@ -13,10 +14,9 @@ class Launcher:
 
     def __call__(self, jobs_group, auto_args):
         ready_jobs_group = []
-        for cmd_args in jobs_group:
-            args = args_parser(shlex.split(cmd_args)[1:])
-            config = config_summoner(args)
-            last_line = self.harvest(config.log_path)
+        with Pool(20) as pool:
+            read_results = pool.map(self.log_reader, jobs_group)
+        for cmd_args, last_line in read_results:
             if last_line.startswith('INFO: ChartInfo'):
                 print(cmd_args, '\033[1;32m[DONE]\033[0m')
             else:
@@ -43,6 +43,12 @@ class Launcher:
             exit(0)
         else:
             raise ValueError(f'Unexpected value {ans}.')
+
+    def log_reader(self, cmd_args):
+        args = args_parser(shlex.split(cmd_args)[1:])
+        config = config_summoner(args)
+        last_line = self.harvest(config.log_path)
+        return cmd_args, last_line
 
     def harvest(self, log_path):
         try:

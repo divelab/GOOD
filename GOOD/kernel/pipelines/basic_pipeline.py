@@ -371,6 +371,9 @@ class Pipeline:
             'epoch': epoch,
             'max epoch': config.train.max_epoch
         }
+        if epoch < config.train.pre_train:
+            return
+
         if not (config.metric.best_stat['score'] is None or config.metric.lower_better * val_stat[
             'score'] < config.metric.lower_better *
                 config.metric.best_stat['score']

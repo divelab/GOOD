@@ -18,6 +18,7 @@ class TrainArgs(Tap):
     ctn_epoch: int = None  #: Start epoch for continue training.
     max_epoch: int = None  #: Max epochs for training stop.
     save_gap: int = None  #: Hard checkpoint saving gap.
+    pre_train: int = None  #: Pre-train epoch before picking checkpoints.
 
     train_bs: int = None  #: Batch size for training.
     val_bs: int = None  #: Batch size for validation.

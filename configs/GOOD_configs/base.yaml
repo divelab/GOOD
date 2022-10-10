@@ -17,6 +17,7 @@ train:
   ctn_epoch: 0
   alpha: 0.2  # parameter for DANN
   stage_stones: []
+  pre_train: 0
 model:
   dim_hidden: 300
   dim_ffn: 300
