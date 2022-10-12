@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 install_requires = [
-    'setuptools==61.2.0'
+    'setuptools==61.2.0',
     'cilog==1.2.3',
     'gdown==4.4.0',
     'matplotlib==3.5.2',
