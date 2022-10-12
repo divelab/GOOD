@@ -13,23 +13,12 @@ GOOD depends on `PyTorch (>=1.6.0) <https://pytorch.org/get-started/previous-ver
 .. warning::
    Due to a known issue, please install PyG through Pip to avoid incompatibility.
 
-Install through Pip
----------------
 
-Package usage installation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: shell
-
-   pip install graph-ood
-
-
-Project usage installation
+GOOD installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-(recommended)
 
 .. code-block:: shell
 
    git clone https://github.com/divelab/GOOD.git && cd GOOD
+   # In your anaconda environment
    pip install -e .

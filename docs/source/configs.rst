@@ -1,25 +1,22 @@
-Configs and Command-line interface (CLI)
+Configs and CLI
 ============================================
 
 There are always many configuration dilemmas in managing code running configurations.
 
-Traditional CLI arguments
+CLI arguments
 ------------------------------------
 
-When we only use CLI arguments as running configs, it is always annoying to run code like this:
+When we only use CLI to load running configs:
 
 .. code-block:: shell
 
    python run_my_code.py --model GCN --layers 5 --dim_hidden 300 --save_dir xx/xx ......
 
-These running commands bring difficulties running batches of experiments and achieving easy reproducibility.
-
-Traditional YAML-file-based configs
+YAML-file-based configs
 -------------------------------------------
 
-It is a better idea for data scientists to adopt reading dictionaries from YAML files as their parameters storage strategy. However,
-when the configuration scale becomes large, we will face a hard time remembering all the names of configs, so
-that we can access the config like this:
+Reading configurations from YAML files is also a good idea. However, when the configuration scale becomes large,
+we will face a hard time remembering all the names of configs:
 
 .. code-block:: python
 
@@ -28,11 +25,7 @@ that we can access the config like this:
    model_name: str = config['model']['model_name']
    ...
 
-It is okay if we can remember all details of these parameters, such as their names, types, and attributes.
-
-If we cannot, here is the strategy we design.
-
-GOOD Configs and command line Arguments (CA)
+GOOD Config and Argument Setting (CA)
 -----------------------------------------------
 
 There are several advantages of using our configuration strategy.
