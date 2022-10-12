@@ -29,6 +29,7 @@ jobs:
             conda install -y -c conda-forge rdkit==2020.09.5
             pip install torch-scatter==2.0.9 torch-sparse==0.6.13 torch-geometric==2.0.4 -f https://data.pyg.org/whl/torch-${TORCH}+cpu.html
             pip install -e .
+            pip list
       - run:
           name: Test
           no_output_timeout: 1h
