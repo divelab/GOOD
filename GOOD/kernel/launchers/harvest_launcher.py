@@ -3,6 +3,7 @@ import os
 import shlex
 import shutil
 from pathlib import Path
+import distutils.dir_util
 
 import numpy as np
 from ruamel.yaml import YAML
@@ -63,7 +64,7 @@ class HarvestLauncher(Launcher):
             while ans != 'y' and ans != 'n':
                 ans = input(f'Invalid input: {ans}. Please answer y or n.')
             if ans == 'y':
-                shutil.copytree(auto_args.config_root, auto_args.final_root)
+                distutils.dir_util.copy_tree(str(auto_args.config_root), str(auto_args.final_root))
             elif ans == 'n':
                 pass
             else:
