@@ -30,7 +30,7 @@ New features' description will be updated on this README earlier than on the doc
 - [ ] More detailed tutorial for adding new algorithms. [In progress]
 ### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
-- [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for the official implementation. It was accepted by NeurIPS 2022 recently:smile:]
+- [ ] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for [the official implementation](https://github.com/LFhase/CIGA). It was accepted by NeurIPS 2022 recently:smile:]
 - [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
   - [x] Method reproduction.
   - [ ] Experiments: hyperparameter sweeping
