@@ -134,6 +134,7 @@ class GEIvGIN(GEIGIN):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEIvGIN, self).__init__(config)
+        self.sub_gnn = vGINFeatExtractor(config)
         self.lc_gnn = vGINFeatExtractor(config)
         self.la_gnn = vGINFeatExtractor(config)
         self.ec_gnn = vGINFeatExtractor(config)
