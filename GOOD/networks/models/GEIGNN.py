@@ -17,7 +17,9 @@ from .BaseGNN import GNNBasic
 from .Classifiers import Classifier
 from .GINs import GINFeatExtractor
 from .GINvirtualnode import vGINFeatExtractor
+from .Pooling import GlobalMeanPool
 from munch import munchify
+from .MolEncoders import AtomEncoder, BondEncoder
 
 
 @register.model_register
@@ -25,13 +27,30 @@ class GEIGIN(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEIGIN, self).__init__(config)
-        self.sub_gnn = GINFeatExtractor(config)
+        self.config = config
+
+        self.learn_edge_att = True
+        self.LA = config.ood.extra_param[0]
+        self.EC = config.ood.extra_param[1]
+        self.EA = config.ood.extra_param[2]
+        self.EF = config.ood.extra_param[4]
+
+        fe_kwargs = {'without_embed': True if self.EF else False}
+
+        # --- Build networks ---
+        self.sub_gnn = GINFeatExtractor(config, **fe_kwargs)
         self.extractor = ExtractorMLP(config)
 
-        self.lc_gnn = GINFeatExtractor(config)
-        self.la_gnn = GINFeatExtractor(config)
-        self.ec_gnn = GINFeatExtractor(config)
-        self.ea_gnn = GINFeatExtractor(config)
+        self.ef_mlp = EFMLP(config)
+        self.ef_pool = GlobalMeanPool()
+        self.ef_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
+                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
+
+
+        self.lc_gnn = GINFeatExtractor(config, **fe_kwargs)
+        self.la_gnn = GINFeatExtractor(config, **fe_kwargs)
+        self.ec_gnn = GINFeatExtractor(config, **fe_kwargs)
+        self.ea_gnn = GINFeatExtractor(config, **fe_kwargs)
 
         self.lc_classifier = Classifier(config)
         self.la_classifier = Classifier(config)
@@ -39,12 +58,7 @@ class GEIGIN(GNNBasic):
                                                    'dataset': {'num_classes': config.dataset.num_envs}}))
         self.ea_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
-        self.config = config
 
-        self.learn_edge_att = True
-        self.LA = config.ood.extra_param[0]
-        self.EC = config.ood.extra_param[1]
-        self.EA = config.ood.extra_param[2]
 
 
     def forward(self, *args, **kwargs):
@@ -60,6 +74,17 @@ class GEIGIN(GNNBasic):
 
         """
         data = kwargs.get('data')
+
+        # --- Filter environment info in features (only features) ---
+        if self.EF:
+            filtered_features = self.ef_mlp(data.x)
+            ef_logits = self.ef_classifier(GradientReverseLayerF.apply(self.ef_pool(filtered_features, data.batch), self.config.train.alpha))
+            data.x = filtered_features
+            kwargs['data'] = data
+        else:
+            ef_logits = None
+
+
         node_repr = self.sub_gnn.get_node_repr(*args, **kwargs)
         att_log_logits = self.extractor(node_repr, data.edge_index, data.batch)
         att = self.sampling(att_log_logits, self.training)
@@ -99,9 +124,7 @@ class GEIGIN(GNNBasic):
         else:
             ea_logits = None
 
-
-
-        return (lc_logits, la_logits, ec_logits, ea_logits), att, edge_att
+        return (lc_logits, la_logits, ec_logits, ea_logits, ef_logits), att, edge_att
 
     def sampling(self, att_log_logits, training):
         att = self.concrete_sample(att_log_logits, temp=1, training=training)
@@ -134,11 +157,30 @@ class GEIvGIN(GEIGIN):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEIvGIN, self).__init__(config)
-        self.sub_gnn = vGINFeatExtractor(config)
-        self.lc_gnn = vGINFeatExtractor(config)
-        self.la_gnn = vGINFeatExtractor(config)
-        self.ec_gnn = vGINFeatExtractor(config)
-        self.ea_gnn = vGINFeatExtractor(config)
+        fe_kwargs = {'without_embed': True if self.EF else False}
+        self.sub_gnn = vGINFeatExtractor(config, **fe_kwargs)
+        self.lc_gnn = vGINFeatExtractor(config, **fe_kwargs)
+        self.la_gnn = vGINFeatExtractor(config, **fe_kwargs)
+        self.ec_gnn = vGINFeatExtractor(config, **fe_kwargs)
+        self.ea_gnn = vGINFeatExtractor(config, **fe_kwargs)
+
+
+class EFMLP(nn.Module):
+
+    def __init__(self, config: Union[CommonArgs, Munch]):
+        super(EFMLP, self).__init__()
+        if config.dataset.dataset_type == 'mol':
+            self.atom_encoder = AtomEncoder(config.model.dim_hidden)
+            self.mlp = MLP([config.model.dim_hidden, config.model.dim_hidden, 2 * config.model.dim_hidden,
+                            config.model.dim_hidden],
+                           config.model.dropout_rate)
+        else:
+            self.atom_encoder = nn.Identity()
+            self.mlp = MLP([config.dataset.dim_node, config.model.dim_hidden, 2 * config.model.dim_hidden, config.model.dim_hidden],
+                              config.model.dropout_rate)
+
+    def forward(self, x):
+        return self.mlp(self.atom_encoder(x))
 
 
 class ExtractorMLP(nn.Module):
@@ -166,9 +208,10 @@ class ExtractorMLP(nn.Module):
 
 
 class BatchSequential(nn.Sequential):
-    def forward(self, inputs, batch):
+    def forward(self, inputs, batch=None):
         for module in self._modules.values():
             if isinstance(module, (InstanceNorm)):
+                assert batch is not None
                 inputs = module(inputs, batch)
             else:
                 inputs = module(inputs)

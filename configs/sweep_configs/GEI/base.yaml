@@ -1,6 +1,8 @@
 exp_round:
-  - 1
-  - 2
+#  - 1
+#  - 2
+  - 9             # GEI_v0.1.1
+  - 10
 lr:
   - 1e-3
 ood_param:   # information constraint
@@ -13,10 +15,13 @@ extra_param:
     - 1
   -      # EC
     - 0
-    - 0.001
   -      # EA
     - 10
     - 1
     - 0.1
   -       # r decay interval
     - 10
+  -       # EF
+    - 0.1
+    - 0.01
+    - 0.001

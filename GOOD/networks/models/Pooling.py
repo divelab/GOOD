@@ -22,7 +22,7 @@ class GlobalMeanPool(GNNPool):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, batch, batch_size):
+    def forward(self, x, batch, batch_size=None):
         r"""Returns batch-wise graph-level-outputs by averaging node features
             across the node dimension, so that for a single graph
             :math:`\mathcal{G}_i` its output is computed by
@@ -43,6 +43,8 @@ class GlobalMeanPool(GNNPool):
                 batch-wise graph-level-outputs by averaging node features across the node dimension.
 
         """
+        if batch_size is None:
+            batch_size = batch[-1].item() + 1
         return gnn.global_mean_pool(x, batch, batch_size)
 
 
@@ -54,7 +56,7 @@ class GlobalAddPool(GNNPool):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, batch, batch_size):
+    def forward(self, x, batch, batch_size=None):
         r"""Returns batch-wise graph-level-outputs by adding node features
             across the node dimension, so that for a single graph
             :math:`\mathcal{G}_i` its output is computed by
@@ -73,6 +75,8 @@ class GlobalAddPool(GNNPool):
             Returns (Tensor):
                 batch-wise graph-level-outputs by adding node features across the node dimension.
         """
+        if batch_size is None:
+            batch_size = batch[-1].item() + 1
         return gnn.global_add_pool(x, batch, batch_size)
 
 
@@ -83,7 +87,7 @@ class GlobalMaxPool(GNNPool):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, batch, batch_size):
+    def forward(self, x, batch, batch_size=None):
         r"""Returns batch-wise graph-level-outputs by taking the channel-wise
             maximum across the node dimension, so that for a single graph
             :math:`\mathcal{G}_i` its output is computed by
@@ -103,6 +107,8 @@ class GlobalMaxPool(GNNPool):
                    batch-wise graph-level-outputs by taking the channel-wise maximum across the node dimension.
 
         """
+        if batch_size is None:
+            batch_size = batch[-1].item() + 1
         return gnn.global_max_pool(x, batch, batch_size)
 
 
@@ -114,12 +120,13 @@ class IdenticalPool(GNNPool):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, batch):
+    def forward(self, x, batch, batch_size=None):
         r"""Returns batch-wise graph-level-outputs by taking the node features identically.
 
             Args:
                 x (Tensor): Node feature matrix
                 batch (Tensor): Batch vector
+                batch_size (int): Batch size.
 
             Returns (Tensor):
                    batch-wise graph-level-outputs by taking the node features identically.

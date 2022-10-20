@@ -27,7 +27,7 @@ class GEI(BaseOODAlg):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEI, self).__init__(config)
-        self.la_out, self.ec_out, self.ea_out = None, None, None
+        self.la_out, self.ec_out, self.ea_out, self.ef_out = None, None, None, None
         self.att = None
         self.edge_att = None
         self.targets = None
@@ -38,6 +38,7 @@ class GEI(BaseOODAlg):
         self.EA = config.ood.extra_param[2]
         self.decay_r = 0.1
         self.decay_interval = config.ood.extra_param[3]
+        self.EF = config.ood.extra_param[4]
         # self.final_r = config.ood.extra_param[2]      # 0.5 or 0.7
 
     def output_postprocess(self, model_output: Tensor, **kwargs) -> Tensor:
@@ -51,7 +52,7 @@ class GEI(BaseOODAlg):
             model raw predictions.
 
         """
-        (raw_out, self.la_out, self.ec_out, self.ea_out), self.att, self.edge_att = model_output
+        (raw_out, self.la_out, self.ec_out, self.ea_out, self.ef_out), self.att, self.edge_att = model_output
         return raw_out
 
 
@@ -107,6 +108,9 @@ class GEI(BaseOODAlg):
         """
 
         self.spec_loss = OrderedDict()
+        if self.EF:
+            self.spec_loss['EF'] = self.EF * config.metric.cross_entropy_with_logit(self.ef_out, data.env_id, reduction='mean')
+
         if self.LA:
             self.spec_loss['LA'] = self.LA * (config.metric.loss_func(self.la_out, self.targets,
                                                             reduction='none') * mask).sum() / mask.sum()
