@@ -73,13 +73,21 @@ class HarvestLauncher(Launcher):
             shutil.copytree(auto_args.config_root, auto_args.final_root)
 
     def picky_farmer(self, result_dict):
+        WATCH = True
         best_fruits = dict()
+        sorted_fruits = dict()
         for ddsa_key in result_dict.keys():
             for key, value in result_dict[ddsa_key].items():
                 result_dict[ddsa_key][key] = np.stack([np.mean(value, axis=1), np.std(value, axis=1)], axis=1)
             # lambda x: x[1][?, 0]  - ? denotes the result used to choose the best setting.
-            # best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-2, 0] + x[1][-2, 1])
-            best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-2, 0] + x[1][-2, 1])
+            if WATCH:
+                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-2, 0] + x[1][-1, 0], reverse=True)
+            else:
+                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-2, 0] + x[1][-2, 1])
+            # best_fruits[ddsa_key] = sorted_fruits[ddsa_key][0]
+        if WATCH:
+            print(sorted_fruits)
+            exit(0)
         print(best_fruits)
         return best_fruits
 
@@ -106,6 +114,7 @@ class HarvestLauncher(Launcher):
             if not last_line.startswith('INFO: ChartInfo'):
                 print(cmd_args, 'Unfinished')
                 all_finished = False
+                continue
             result = last_line.split(' ')[2:]
             key_args = shlex.split(cmd_args)[1:]
             round_index = key_args.index('--exp_round')
@@ -126,7 +135,7 @@ class HarvestLauncher(Launcher):
                 result_dict[ddsa_key][key_str] = [[] for _ in range(5)]
             result_dict[ddsa_key][key_str] = [r + [eval(result[i])] for i, r in
                                               enumerate(result_dict[ddsa_key][key_str])]
-        if not all_finished:
-            print('Please launch unfinished jobs using other launchers before harvesting.')
-            exit(1)
+        # if not all_finished:
+        #     print('Please launch unfinished jobs using other launchers before harvesting.')
+        #     exit(1)
         return result_dict
