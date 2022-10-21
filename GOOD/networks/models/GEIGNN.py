@@ -78,7 +78,7 @@ class GEIGIN(GNNBasic):
         # --- Filter environment info in features (only features) ---
         if self.EF:
             filtered_features = self.ef_mlp(data.x)
-            ef_logits = self.ef_classifier(GradientReverseLayerF.apply(self.ef_pool(filtered_features, data.batch), self.config.train.alpha))
+            ef_logits = self.ef_classifier(GradientReverseLayerF.apply(self.ef_pool(filtered_features, data.batch), self.EF * self.config.train.alpha))
             data.x = filtered_features
             kwargs['data'] = data
         else:
@@ -104,7 +104,7 @@ class GEIGIN(GNNBasic):
         clear_masks(self)
 
         if self.LA:
-            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self.la_gnn)
+            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.LA * self.config.train.alpha), self.la_gnn)
             la_logits = self.la_classifier(self.la_gnn(*args, **kwargs))
             clear_masks(self)
         else:
@@ -118,7 +118,7 @@ class GEIGIN(GNNBasic):
             ec_logits = None
 
         if self.EA:
-            set_masks(GradientReverseLayerF.apply(edge_att, self.config.train.alpha), self.ea_gnn)
+            set_masks(GradientReverseLayerF.apply(edge_att, self.EA * self.config.train.alpha), self.ea_gnn)
             ea_logits = self.ea_classifier(self.ea_gnn(*args, **kwargs))
             clear_masks(self)
         else:

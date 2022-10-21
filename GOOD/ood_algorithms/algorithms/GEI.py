@@ -109,16 +109,16 @@ class GEI(BaseOODAlg):
 
         self.spec_loss = OrderedDict()
         if self.EF:
-            self.spec_loss['EF'] = self.EF * config.metric.cross_entropy_with_logit(self.ef_out, data.env_id, reduction='mean')
+            self.spec_loss['EF'] = config.metric.cross_entropy_with_logit(self.ef_out, data.env_id, reduction='mean')
 
         if self.LA:
-            self.spec_loss['LA'] = self.LA * (config.metric.loss_func(self.la_out, self.targets,
+            self.spec_loss['LA'] = (config.metric.loss_func(self.la_out, self.targets,
                                                             reduction='none') * mask).sum() / mask.sum()
         if self.EC:
             self.spec_loss['EC'] = self.EC * config.metric.cross_entropy_with_logit(self.ec_out, data.env_id, reduction='mean')
 
         if self.EA:
-            self.spec_loss['EA'] = self.EA * config.metric.cross_entropy_with_logit(self.ea_out, data.env_id, reduction='mean')
+            self.spec_loss['EA'] = config.metric.cross_entropy_with_logit(self.ea_out, data.env_id, reduction='mean')
 
         if self.IF:
             att = self.att

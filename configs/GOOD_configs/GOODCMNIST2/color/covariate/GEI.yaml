@@ -10,7 +10,7 @@ ood:
     - 0      # EC
     - 10     # EA
     - 10     # r decay interval
-    - 1       # EF
+    - 0       # EF
 train:
   max_epoch: 200
   lr: 1e-3
