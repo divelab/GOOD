@@ -2,6 +2,8 @@
 
 [license-url]: https://github.com/divelab/GOOD/blob/main/LICENSE
 [license-image]:https://img.shields.io/badge/license-GPL3.0-green.svg
+[contributing-image]:https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+[contributing-url]:https://good.readthedocs.io/en/latest/contributing.html
 
 [![Documentation Status](https://readthedocs.org/projects/good/badge/?version=latest)](https://good.readthedocs.io/en/latest/?badge=latest)
 ![Last Commit](https://img.shields.io/github/last-commit/divelab/DIG)
@@ -9,6 +11,7 @@
 [![codecov](https://codecov.io/gh/divelab/GOOD/branch/main/graph/badge.svg?token=W41HSP0XCY)](https://codecov.io/gh/divelab/GOOD)
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
+[![Contributing][contributing-image]][contributing-url]
 
 [**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1
 <!-- > We are actively building the document. -->
