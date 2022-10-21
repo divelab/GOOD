@@ -188,9 +188,9 @@ Deep into details (Preparations for adding new algorithms)
    pipeline = load_pipeline(config.pipeline, config.task, model, loader, ood_algorithm, config)
    pipeline.load_task()
 
-After that, the loaded `pipeline` object will take over the training and test process. The default pipeline is `Pipeline`
+After that, the loaded `pipeline` instance will take over the training and test process. The default pipeline is `Pipeline`
 defined in :mod:`GOOD.kernel.pipelines.basic_pipeline`. Generally, it is not necessary to modify the pipeline to add new algorithms,
-but we allow you to create your own pipelines by creating your pipeline and registering it:
+but we allow you to create your own pipelines by creating a pipeline class and registering it:
 
 .. code-block:: python
 

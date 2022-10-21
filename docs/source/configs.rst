@@ -33,9 +33,9 @@ There are several advantages of using our configuration strategy.
 - Convenient: GOOD CA allows reading configs from YAML files with :obj:`include` support.
 - Flexible: GOOD CA enables overwriting specific reading configs by passing CLI arguments.
 - Diversified access & code-complete support: With the help of `Munch <https://github.com/Infinidat/munch>`_, we can
-access configs in both dictionary and objective ways. In GOOD, configs and CLI arguments are coherently connected;
-therefore, by defining command line arguments, the names, types, and attributes of configs can be easily found. Hence,
-many plugins and IDEs (*e.g.*, PyCharm) can use this connection and provide code-completion support.
+  access configs in both dictionary and objective ways. In GOOD, configs and CLI arguments are coherently connected;
+  therefore, by defining command line arguments, the names, types, and attributes of configs can be easily found. Hence,
+  many plugins and IDEs (*e.g.*, PyCharm) can use this connection and provide code-completion support.
 
 Config file
 ^^^^^^^^^^^^^^
@@ -97,11 +97,12 @@ Arguments passed as CLI arguments will overwrite arguments in config files. For 
 
    goodtg --config_path XXX/XXX.yaml --gpu_idx 1
 
-This command will overwrite the config's :obj:`gpu_idx` argument to 1, which implying using the index 1 GPU.
+This command will overwrite the config's :obj:`gpu_idx` argument by 1, which implying using the index 1 GPU.
 
 **Command line argument structure**
 
 As config code hints, the CLI argument structure has a corresponding one-to-one relationship with the config structure.
+As shown in `GOOD/utils/args.py`:
 
 .. code-block:: python
 
@@ -138,7 +139,7 @@ As config code hints, the CLI argument structure has a corresponding one-to-one 
    class OODArgs(Tap):
        ...
 
-.. note::
+.. warning::
    There should not be any arguments with the same name, even in different argument classes.
 
 **Code completion & new arguments**
@@ -151,15 +152,34 @@ When we connect our configs with the command line arguments, many IDEs will prov
    config.  # It will prompt: random_seed, task, train, model, dataset, etc.
    config.model.  # It will prompt: model_name, model_layer, dim_hidden, etc.
 
-.. warning::
+.. note::
    When adding a **new custom argument** into a config file, we will be warned to add corresponding arguments into
-   the command line argument class. For example, when we add an argument as :obj:`config.dataset.author`, we should also add
-   argument :obj:`author` to class :class:`GOOD.utils.args.DatasetArgs`.
+   the command line argument class. For example, when we add an argument as :obj:`config.dataset.author` in yaml files, we should also add
+   argument :obj:`author` to class :class:`GOOD.utils.args.DatasetArgs` in `GOOD/utils/args.py`.
 
-How to pass configs to an object (Module usage)
----------------------------------------------------
+How to obtain the configs instance
+-----------------------------------
 
-When we use GOOD for modules, it is still simple to pass configs. Take :class:`GroupDRO <GOOD.ood_algorithms.algorithms.GroupDRO.GroupDRO>`
+.. code-block:: python
+
+   # Import the CLI argument parser and the config file reader/processor.
+   from GOOD.utils.args import args_parser
+   from GOOD import config_summoner
+
+   # Parse the CLI arguments including `--config_path /path/to/config/file.yaml`
+   args = args_parser()
+
+   # If there is no command line interface, we can pass `--config_path /path/to/config/file.yaml` directly to args_parser.
+   args = args_parser(['--config_path', '/path/to/config/file.yaml'])
+
+   # Use parsed args to load config which should be accessed anywhere in this project.
+   config = config_summoner(args)
+
+
+How to pass configs to an object without using the config from a yaml file.
+-----------------------------------------------------------------------------
+
+When we use GOOD modules, we need to build the config dictionary to pass configs. Take :class:`GroupDRO <GOOD.ood_algorithms.algorithms.GroupDRO.GroupDRO>`
 as an example. When we use the ``loss_postprocess`` function, there should be ``device``, ``dataset.num_envs``, and ``ood.ood_param``
 passed in using ``config`` as mentioned in the docs. Therefore, we can use the function as:
 

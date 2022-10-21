@@ -86,7 +86,7 @@ class BaseOODAlg(ABC):
 
     def loss_calculate(self, raw_pred: Tensor, targets: Tensor, mask: Tensor, node_norm: Tensor, config: Union[CommonArgs, Munch]) -> Tensor:
         r"""
-        Calculate loss
+        Calculate prediction loss without any special OOD constrains
 
         Args:
             raw_pred (Tensor): model predictions

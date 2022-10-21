@@ -16,50 +16,6 @@ from typing import Tuple
 
 
 @register.model_register
-class DANN_vGIN(GNNBasic):
-    r"""
-        The Graph Neural Network modified from the `"Domain-Adversarial Training of Neural Networks"
-        <https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper and `"Neural Message Passing for Quantum Chemistry"
-        <https://proceedings.mlr.press/v70/gilmer17a.html>`_ paper.
-
-        Args:
-            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_envs`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
-    """
-
-    def __init__(self, config: Union[CommonArgs, Munch]):
-        super().__init__(config)
-        self.encoder = vGINFeatExtractor(config)
-        self.classifier = Classifier(config)
-
-        self.dc = nn.Linear(config.model.dim_hidden, config.dataset.num_envs)
-
-        self.dropout = nn.Dropout(config.model.dropout_rate)
-        self.graph_repr = None
-        self.config = config
-
-    def forward(self, *args, **kwargs) -> Tuple[torch.Tensor, torch.Tensor]:
-        r"""
-        The DANN-vGIN model implementation.
-
-        Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-
-        Returns (Tensor):
-            [label predictions, domain predictions]
-
-        """
-        out_readout = self.encoder(*args, **kwargs)
-        self.graph_repr = out_readout
-
-        dc_out = GradientReverseLayerF.apply(out_readout, self.config.train.alpha)
-        dc_out = self.dc(dc_out)
-
-        out = self.classifier(out_readout)
-        return out, dc_out
-
-
-@register.model_register
 class DANN_GIN(GNNBasic):
     r"""
     The Graph Neural Network modified from the `"Domain-Adversarial Training of Neural Networks"
@@ -101,6 +57,22 @@ class DANN_GIN(GNNBasic):
 
         out = self.classifier(out_readout)
         return out, dc_out
+
+
+@register.model_register
+class DANN_vGIN(DANN_GIN):
+    r"""
+        The Graph Neural Network modified from the `"Domain-Adversarial Training of Neural Networks"
+        <https://www.jmlr.org/papers/volume17/15-239/15-239.pdf>`_ paper and `"Neural Message Passing for Quantum Chemistry"
+        <https://proceedings.mlr.press/v70/gilmer17a.html>`_ paper.
+
+        Args:
+            config (Union[CommonArgs, Munch]): munchified dictionary of args (:obj:`config.model.dim_hidden`, :obj:`config.model.model_layer`, :obj:`config.dataset.dim_node`, :obj:`config.dataset.num_envs`, :obj:`config.dataset.num_classes`, :obj:`config.dataset.dataset_type`, :obj:`config.model.dropout_rate`)
+    """
+
+    def __init__(self, config: Union[CommonArgs, Munch]):
+        super().__init__(config)
+        self.encoder = vGINFeatExtractor(config)
 
 
 class GradientReverseLayerF(Function):

@@ -32,6 +32,8 @@ Any contribution is welcomed!
    tutorial
    configs
    custom
+   contributing
+   QA
 
 
 Package reference

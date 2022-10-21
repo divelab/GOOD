@@ -10,7 +10,7 @@
 [![CircleCI](https://circleci.com/gh/divelab/GOOD/tree/main.svg?style=svg)](https://circleci.com/gh/divelab/GOOD/tree/main)
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 
-[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1
+[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1
 <!-- > We are actively building the document. -->
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
@@ -21,13 +21,11 @@
 
 For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch.
 
-New features' description will be updated on this README earlier than on the documentation.
-
 ## Roadmap
 
 ### Tutorial
 - [x] More flexible pipelines and dataloaders. Please refer to branch [dev](https://github.com/divelab/GOOD/tree/dev) for more details.
-- [ ] More detailed tutorial for adding new algorithms. [In progress]
+- [x] More detailed tutorial for adding new algorithms. Please refer to [Add a new algorithm](#add-a-new-algorithm). [**New!**]
 ### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
 - [ ] [Invariance Principle Meets Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for the official implementation. It was accepted by NeurIPS 2022 recently:smile:]
@@ -44,6 +42,7 @@ New features' description will be updated on this README earlier than on the doc
 * [Why GOOD?](#why-good)
 * [Installation](#installation)
 * [Quick tutorial](#quick-tutorial)
+* [Add a new algorithm](#add-a-new-algorithm)
 * [Citing GOOD](#citing-good)
 * [License](#license)
 * [Contact](#contact)
@@ -173,6 +172,12 @@ The output numpy array:
 * Columns: Mean/Std.
 
 You can customize your own launcher at `GOOD/kernel/launchers/`.
+
+## Add a new algorithm
+
+Please follow [this documentation](https://good.readthedocs.io/en/latest/custom.html#practical-steps-to-add-a-new-ood-algorithm) to add a new algorithm.
+
+Any contributions are welcomed! Please refer to [contributing](http://localhost:63342/GOOD/docs/build/contributing.html) for adding your algorithm into GOOD.
 
 ## Test
 

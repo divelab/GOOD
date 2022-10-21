@@ -9,7 +9,7 @@ from GOOD import register
 from GOOD.utils.config_reader import Union, CommonArgs, Munch
 from .BaseGNN import GNNBasic
 from .Classifiers import Classifier
-from .GINs import GINEncoder, GINMolEncoder
+from .GINs import GINEncoder, GINMolEncoder, GINFeatExtractor
 from .Pooling import GlobalAddPool
 
 
@@ -47,7 +47,7 @@ class vGIN(GNNBasic):
         return out
 
 
-class vGINFeatExtractor(GNNBasic):
+class vGINFeatExtractor(GINFeatExtractor):
     r"""
         vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
 
@@ -64,27 +64,6 @@ class vGINFeatExtractor(GNNBasic):
         else:
             self.encoder = vGINEncoder(config, **kwargs)
             self.edge_feat = False
-
-    def forward(self, *args, **kwargs):
-        r"""
-        vGIN feature extractor using the :class:`~vGINEncoder` or :class:`~vGINMolEncoder`.
-
-        Args:
-            *args (list): argument list for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-            **kwargs (dict): key word arguments for the use of arguments_read. Refer to :func:`arguments_read <GOOD.networks.models.BaseGNN.GNNBasic.arguments_read>`
-
-        Returns (Tensor):
-            node feature representations
-        """
-        if self.edge_feat:
-            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
-            kwargs.pop('batch_size', 'not found')
-            out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size, **kwargs)
-        else:
-            x, edge_index, batch, batch_size = self.arguments_read(*args, **kwargs)
-            kwargs.pop('batch_size', 'not found')
-            out_readout = self.encoder(x, edge_index, batch, batch_size, **kwargs)
-        return out_readout
 
 
 class VirtualNodeEncoder(torch.nn.Module):
