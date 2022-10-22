@@ -38,6 +38,8 @@ For the original code used in the paper, please check branch [GOOD version 0](ht
 ### New features
 - [x] Automatic program launcher.
 - [x] Automatic hyperparameter sweeping and config updating.
+### Leaderboard
+- [ ] New leaderboard is under construction.
 
 ## Table of contents
 
