@@ -226,7 +226,7 @@ class MLP(BatchSequential):
 
             if i < len(channels) - 1:
                 # m.append(InstanceNorm(channels[i]))
-                m.append(nn.BatchNorm1d(channels[i], track_running_stats=True))
+                m.append(nn.BatchNorm1d(channels[i]))#, track_running_stats=True))
                 m.append(nn.ReLU())
                 m.append(nn.Dropout(dropout))
 
