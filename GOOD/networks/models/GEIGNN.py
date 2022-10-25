@@ -43,8 +43,10 @@ class GEIGIN(GNNBasic):
 
         self.ef_mlp = EFMLP(config)
         self.ef_pool = GlobalMeanPool()
-        self.ef_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
-                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
+        self.ef_classifier = MLP([config.model.dim_hidden, 2 * config.model.dim_hidden, config.dataset.num_envs],
+                                 dropout=config.model.dropout_rate)
+            # Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
+            #                                        'dataset': {'num_classes': config.dataset.num_envs}}))
 
 
         self.lc_gnn = GINFeatExtractor(config, **fe_kwargs)
