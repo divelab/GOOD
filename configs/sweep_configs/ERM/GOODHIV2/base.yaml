@@ -1,0 +1,6 @@
+includes:
+  - ../base.yaml
+weight_decay:
+  - 0.
+  - 1e-4
+  - 1e-5

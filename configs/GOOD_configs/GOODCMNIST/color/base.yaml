@@ -8,4 +8,4 @@ train:
   train_bs: 128
   val_bs: 256
   test_bs: 256
-  weight_decay: 0
+  weight_decay: 0.

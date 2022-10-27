@@ -13,6 +13,6 @@ train:
   lr: 1e-3
   stage_stones: [200]
 #  weight_decay: 1e-3
-  weight_decay: 0
+  weight_decay: 0.
   mile_stones: [150]
 #  train_bs: 128

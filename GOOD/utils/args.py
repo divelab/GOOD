@@ -50,6 +50,7 @@ class DatasetArgs(Tap):
     dim_edge: int = None  #: Dimension of edge
     num_classes: int = None  #: Number of labels for multi-label classifications.
     num_envs: int = None  #: Number of environments in training set.
+    num_domains: int = None  #: Number of domains in training set.
 
 
 class ModelArgs(Tap):

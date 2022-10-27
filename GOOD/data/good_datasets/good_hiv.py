@@ -405,6 +405,7 @@ class GOODHIV(InMemoryDataset):
         meta_info.dim_node = train_dataset.num_node_features
         meta_info.dim_edge = train_dataset.num_edge_features
 
+        # meta_info.num_domains = train_dataset.data.domain_id.max() + 1
         meta_info.num_envs = torch.unique(train_dataset.data.env_id).shape[0]
 
         # Define networks' output shape.

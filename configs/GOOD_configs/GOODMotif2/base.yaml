@@ -12,7 +12,7 @@ train:
   train_bs: 32
   val_bs: 256
   test_bs: 256
-  weight_decay: 0
+  weight_decay: 0.
 dataset:
   dataset_name: GOODMotif2
   domain: basis

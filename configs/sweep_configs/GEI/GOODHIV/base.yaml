@@ -1,5 +1,9 @@
 includes:
   - ../base.yaml
+weight_decay:
+  - 0.
+  - 1e-4
+  - 1e-5
 extra_param:
   -     # LA
 #    - 100
@@ -15,8 +19,8 @@ extra_param:
     - 10
   -       # EF
     - 0
-#    - 1e-1
+    - 1e-1
     - 1e-2
     - 1e-3
-    - 1e-4
+#    - 1e-4
 #    - 1e-5

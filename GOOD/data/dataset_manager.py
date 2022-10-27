@@ -16,6 +16,7 @@ def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
     config.dataset.num_envs = meta_info.num_envs
     config.dataset.num_classes = meta_info.num_classes
     config.dataset.num_train_nodes = meta_info.get('num_train_nodes')
+    # config.dataset.num_domains = meta_info.get('num_domains')
 
 
 def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:

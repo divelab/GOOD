@@ -7,4 +7,4 @@ train:
   max_epoch: 100
   train_bs: 2048
   num_steps: 10
-  weight_decay: 0
+  weight_decay: 0.

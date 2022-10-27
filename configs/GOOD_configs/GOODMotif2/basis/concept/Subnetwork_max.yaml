@@ -11,6 +11,6 @@ train:
 #  ctn_epoch: 140
   lr: 1e-3
   stage_stones: [140, 200]
-  weight_decay: 0
+  weight_decay: 0.
   mile_stones: [150]
 #random_seed: 2341

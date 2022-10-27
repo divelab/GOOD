@@ -12,8 +12,8 @@ ood:
     - 10     # r decay interval
     - 1       # EF
 train:
-  max_epoch: 300
+  max_epoch: 200
   lr: 1e-3
-  pre_train: 100
+  pre_train: 150
 
 

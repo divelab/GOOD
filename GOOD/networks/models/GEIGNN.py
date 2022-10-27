@@ -27,6 +27,8 @@ class GEIGIN(GNNBasic):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GEIGIN, self).__init__(config)
+        # if config.dataset.dataset_name == 'GOODHIV' is not None:
+        #     config.dataset.num_envs = config.dataset.num_domains
         self.config = config
 
         self.learn_edge_att = True

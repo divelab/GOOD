@@ -1,0 +1,14 @@
+exp_round:
+#  - 1
+#  - 2
+#  - 9             # GEI_v0.1.1
+#  - 10
+  - 11              # GEI_v0.1.1 fix loss, scaling gradients.
+  - 12
+lr:
+  - 1e-3
+ood_param:   # information constraint
+  - 0.1
+  - 0.01
+  - 0.001
+  - 0.0001
