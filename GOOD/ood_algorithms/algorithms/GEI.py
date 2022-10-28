@@ -106,8 +106,8 @@ class GEI(BaseOODAlg):
             loss based on DIR algorithm
 
         """
-        # if config.dataset.dataset_name == 'GOODHIV' and getattr(data, 'domain_id') is not None:
-        #     data.env_id = data.domain_id
+        if config.dataset.dataset_name == 'GOODHIV' and getattr(data, 'domain_id') is not None:
+            data.env_id = data.domain_id
 
         self.spec_loss = OrderedDict()
         if self.EF:

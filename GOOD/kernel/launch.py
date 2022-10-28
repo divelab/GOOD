@@ -62,7 +62,7 @@ def make_list_cmds(auto_args, conda_goodtg):
                     # config = config_summoner(args)
 
                     if auto_args.sweep_root:
-                        cmd_args = [f'{conda_goodtg} --config_path \"{ood_config_path}\" --log_file default']
+                        cmd_args = [f'{conda_goodtg} --config_path \"{ood_config_path}\"']
 
                         if os.path.isabs(auto_args.sweep_root):
                             sweep_root = Path(auto_args.sweep_root)

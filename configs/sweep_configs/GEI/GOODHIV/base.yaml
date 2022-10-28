@@ -1,12 +1,14 @@
 includes:
   - ../base.yaml
-weight_decay:
-  - 0.
-  - 1e-4
-  - 1e-5
+log_file:
+  - fine_env
+#weight_decay:
+#  - 0.
+#  - 1e-4
+#  - 1e-5
 extra_param:
   -     # LA
-#    - 100
+    - 100
     - 10
     - 1
   -      # EC
