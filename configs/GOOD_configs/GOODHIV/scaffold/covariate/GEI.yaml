@@ -14,6 +14,6 @@ ood:
 train:
   max_epoch: 200
   lr: 1e-3
-  pre_train: 150
+  pre_train: 20
 
 
