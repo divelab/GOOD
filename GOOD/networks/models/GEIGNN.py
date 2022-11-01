@@ -174,7 +174,7 @@ class EFMLP(nn.Module):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(EFMLP, self).__init__()
         if config.dataset.dataset_type == 'mol':
-            self.atom_encoder = AtomEncoder(config.model.dim_hidden)
+            self.atom_encoder = AtomEncoder(config.model.dim_hidden, config)
             self.mlp = MLP([config.model.dim_hidden, config.model.dim_hidden, 2 * config.model.dim_hidden,
                             config.model.dim_hidden],
                            config.model.dropout_rate)

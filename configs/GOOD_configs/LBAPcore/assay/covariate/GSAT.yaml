@@ -1,0 +1,16 @@
+includes:
+  - base.yaml
+model:
+  model_name: GSATvGIN
+ood:
+  ood_alg: GSAT
+  ood_param: 1.0    # info loss coefficient
+  extra_param:
+    - true    # learn_edge_att
+    - 20      # decay_interval
+    - 0.5     # final_r
+train:
+  max_epoch: 200
+  lr: 1e-3
+
+

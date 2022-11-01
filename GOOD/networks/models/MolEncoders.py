@@ -4,6 +4,7 @@ Atom (node) and bond (edge) feature encoding specified for molecule data.
 import torch
 from torch import Tensor
 from GOOD.utils.data import x_map, e_map
+from GOOD.utils.config_reader import Union, CommonArgs, Munch
 
 
 class AtomEncoder(torch.nn.Module):
@@ -14,13 +15,13 @@ class AtomEncoder(torch.nn.Module):
         emb_dim: number of dimensions of embedding
     """
 
-    def __init__(self, emb_dim):
+    def __init__(self, emb_dim, config: Union[CommonArgs, Munch]):
 
         super(AtomEncoder, self).__init__()
 
         self.atom_embedding_list = torch.nn.ModuleList()
 
-        feat_dims = list(map(len, x_map.values()))
+        feat_dims = config.dataset.feat_dims if config.dataset.feat_dims is not None else list(map(len, x_map.values()))
 
         for i, dim in enumerate(feat_dims):
             emb = torch.nn.Embedding(dim, emb_dim)
@@ -52,12 +53,12 @@ class BondEncoder(torch.nn.Module):
         emb_dim: number of dimensions of embedding
     """
 
-    def __init__(self, emb_dim):
+    def __init__(self, emb_dim, config: Union[CommonArgs, Munch]):
         super(BondEncoder, self).__init__()
 
         self.bond_embedding_list = torch.nn.ModuleList()
 
-        edge_feat_dims = list(map(len, e_map.values()))
+        edge_feat_dims = config.dataset.edge_feat_dims if config.dataset.edge_feat_dims is not None else list(map(len, e_map.values()))
 
         for i, dim in enumerate(edge_feat_dims):
             emb = torch.nn.Embedding(dim, emb_dim)

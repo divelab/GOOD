@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+dataset:
+  domain: assay
+train:
+  max_epoch: 200
+  train_bs: 32
+  val_bs: 256
+  test_bs: 256
+  weight_decay: 0.

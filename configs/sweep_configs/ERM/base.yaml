@@ -5,5 +5,10 @@ exp_round:
 #  - 10
   - 11              # GEI_v0.1.1 fix loss, scaling gradients.
   - 12
+weight_decay:
+  - 0.
+  - 1e-3
+  - 1e-4
+  - 1e-5
 lr:
   - 1e-3

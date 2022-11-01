@@ -205,7 +205,7 @@ class GINMolEncoder(BasicEncoder):
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(GINMolEncoder, self).__init__(config)
         num_layer = config.model.model_layer
-        self.atom_encoder = AtomEncoder(config.model.dim_hidden)
+        self.atom_encoder = AtomEncoder(config.model.dim_hidden, config)
 
         self.convs = nn.ModuleList(
             [
@@ -321,7 +321,7 @@ class GINEConv(gnn.MessagePassing):
             in_channels = self.nn[0].in_features
         else:
             in_channels = self.nn[0].in_channels
-        self.bone_encoder = BondEncoder(in_channels)
+        self.bone_encoder = BondEncoder(in_channels, config)
         # if edge_dim is not None:
         #     self.lin = Linear(edge_dim, in_channels)
         #     # self.lin = Linear(edge_dim, config.model.dim_hidden)

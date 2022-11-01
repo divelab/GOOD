@@ -30,5 +30,7 @@ dataset:
   dim_edge: null
   num_classes: null
   num_envs: null
+  feat_dims: null
+  edge_feat_dims: null
 ood:
   extra_param: null

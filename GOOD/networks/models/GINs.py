@@ -200,18 +200,18 @@ class GINMolEncoder(BasicEncoder):
         if kwargs.get('without_embed'):
             self.atom_encoder = Identity()
         else:
-            self.atom_encoder = AtomEncoder(config.model.dim_hidden)
+            self.atom_encoder = AtomEncoder(config.model.dim_hidden, config)
 
         self.convs = nn.ModuleList(
             [
                 GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
-                                            nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
-                                            nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+                                       nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
+                                       nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)), config)
             ] +
             [
                 GINEConv(nn.Sequential(nn.Linear(config.model.dim_hidden, 2 * config.model.dim_hidden),
                                        nn.BatchNorm1d(2 * config.model.dim_hidden), nn.ReLU(),
-                                       nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)))
+                                       nn.Linear(2 * config.model.dim_hidden, config.model.dim_hidden)), config)
                 for _ in range(num_layer - 1)
             ]
         )
@@ -302,8 +302,8 @@ class GINEConv(gnn.MessagePassing):
           :math:`(|\mathcal{V}_t|, F_{out})` if bipartite
     """
 
-    def __init__(self, nn: Callable, eps: float = 0., train_eps: bool = False,
-                 edge_dim: Optional[int] = None, **kwargs):
+    def __init__(self, nn: Callable, config, eps: float = 0., train_eps: bool = False, edge_dim: Optional[int] = None,
+                 **kwargs):
         kwargs.setdefault('aggr', 'add')
         super().__init__(**kwargs)
         self.nn = nn
@@ -317,7 +317,7 @@ class GINEConv(gnn.MessagePassing):
             in_channels = self.nn[0].in_features
         else:
             in_channels = self.nn[0].in_channels
-        self.bone_encoder = BondEncoder(in_channels)
+        self.bone_encoder = BondEncoder(in_channels, config)
         # if edge_dim is not None:
         #     self.lin = Linear(edge_dim, in_channels)
         #     # self.lin = Linear(edge_dim, config.model.dim_hidden)

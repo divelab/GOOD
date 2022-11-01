@@ -17,6 +17,8 @@ def read_meta_info(meta_info, config: Union[CommonArgs, Munch]):
     config.dataset.num_classes = meta_info.num_classes
     config.dataset.num_train_nodes = meta_info.get('num_train_nodes')
     config.dataset.num_domains = meta_info.get('num_domains')
+    config.dataset.feat_dims = meta_info.get('feat_dims')
+    config.dataset.edge_feat_dims = meta_info.get('edge_feat_dims')
 
 
 def load_dataset(name: str, config: Union[CommonArgs, Munch]) -> dir:

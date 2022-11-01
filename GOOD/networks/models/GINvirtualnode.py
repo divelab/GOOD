@@ -206,6 +206,9 @@ class vGINMolEncoder(GINMolEncoder, VirtualNodeEncoder):
         virtual_node_feat = [self.virtual_node_embedding(
             torch.zeros(batch[-1].item() + 1, device=self.config.device, dtype=torch.long))]
 
+        # for i, sub_x in enumerate(x):
+        #     print(i)
+        #     self.atom_encoder(sub_x[None, :])
         layer_feat = [self.atom_encoder(x)]
         for i, (conv, batch_norm, relu, dropout) in enumerate(
                 zip(self.convs, self.batch_norms, self.relus, self.dropouts)):

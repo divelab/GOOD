@@ -51,6 +51,8 @@ class DatasetArgs(Tap):
     num_classes: int = None  #: Number of labels for multi-label classifications.
     num_envs: int = None  #: Number of environments in training set.
     num_domains: int = None  #: Number of domains in training set.
+    feat_dims: List[int] = None  #: Number of integer values for each x feature.
+    edge_feat_dims: List[int] = None  #: Number of integer values for each edge feature.
 
 
 class ModelArgs(Tap):
