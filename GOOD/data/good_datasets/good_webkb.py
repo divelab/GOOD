@@ -86,12 +86,8 @@ class GOODWebKB(InMemoryDataset):
         self.generate = generate
 
         super().__init__(root, transform, pre_transform)
-        if shift == 'covariate':
-            subset_pt = 1
-        elif shift == 'concept':
-            subset_pt = 2
-        else:
-            subset_pt = 0
+        shift_mode = {'no_shift': 0, 'covariate': 1, 'concept': 2}
+        subset_pt = shift_mode[shift]
 
         self.data, self.slices = torch.load(self.processed_paths[subset_pt])
 

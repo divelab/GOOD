@@ -86,24 +86,9 @@ class GOODHIV(InMemoryDataset):
         self.generate = generate
 
         super().__init__(root, transform, pre_transform)
-        if shift == 'covariate':
-            subset_pt = 3
-        elif shift == 'concept':
-            subset_pt = 8
-        elif shift == 'no_shift':
-            subset_pt = 0
-        else:
-            raise ValueError(f'Unknown shift: {shift}.')
-        if subset == 'train':
-            subset_pt += 0
-        elif subset == 'val':
-            subset_pt += 1
-        elif subset == 'test':
-            subset_pt += 2
-        elif subset == 'id_val':
-            subset_pt += 3
-        else:
-            subset_pt += 4
+        shift_mode = {'no_shift': 0, 'covariate': 3, 'concept': 8}
+        mode = {'train': 0, 'val': 1, 'test': 2, 'id_val': 3, 'id_test': 4}
+        subset_pt = shift_mode[shift] + mode[subset]
 
         self.data, self.slices = torch.load(self.processed_paths[subset_pt])
 
