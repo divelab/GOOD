@@ -5,6 +5,10 @@ exp_round:
 #  - 10
   - 11              # GEI_v0.1.1 fix loss, scaling gradients.
   - 12
+weight_decay:
+  - 0.
+  - 1e-4
+  - 1e-5
 lr:
   - 1e-3
 ood_param:   # information constraint
@@ -25,6 +29,6 @@ extra_param:
     - 10
   -       # EF
     - 0
-    - 0.1
+#    - 0.1
     - 0.01
-#    - 0.001
+    - 0.001

@@ -1,0 +1,12 @@
+includes:
+  - base.yaml
+model:
+  model_name: DIRvGIN
+ood:
+  ood_alg: DIR
+  ood_param: 0.8    # causal ratio
+  extra_param:
+    - 10 #1e-4
+train:
+  max_epoch: 100
+  lr: 1e-3
