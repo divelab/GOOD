@@ -26,7 +26,7 @@ class GOODCMNIST(InMemoryDataset):
 
     Args:
         root (str): The dataset saving root.
-        domain (str): The domain selection. Allowed: 'color'.
+        domain (str): The domain selection. Allowed: 'color', 'background'.
         shift (str): The distributional shift we pick. Allowed: 'no_shift', 'covariate', and 'concept'.
         subset (str): The split set. Allowed: 'train', 'id_val', 'id_test', 'val', and 'test'. When shift='no_shift',
             'id_val' and 'id_test' are not applicable.
@@ -40,7 +40,7 @@ class GOODCMNIST(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1yQ4uACTPA1VfLqTzusXW2nCmei16Oy-w/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1F2r2kVmA0X07AXyap9Y_rOM6LipDzwhq/view?usp=sharing'
 
         self.generate = generate
 
