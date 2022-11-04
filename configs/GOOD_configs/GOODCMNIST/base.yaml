@@ -1,5 +1,7 @@
 includes:
   - ../base.yaml
+dataset:
+  dataset_name: GOODCMNIST
 model:
   model_layer: 5
   global_pool: mean

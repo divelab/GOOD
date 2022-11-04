@@ -1,0 +1,14 @@
+includes:
+  - base.yaml
+model:
+  model_name: Sub_vGIN
+ood:
+  ood_alg: Subnetwork
+  ood_param: 1e-5
+train:
+  max_epoch: 700
+#  tr_ctn: True
+#  ctn_epoch: 140
+  lr: 1e-3
+  stage_stones: [300, 400]
+  mile_stones: [300]

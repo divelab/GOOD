@@ -85,7 +85,7 @@ class GINFeatExtractor(GNNBasic):
             node feature representations
         """
         if self.edge_feat:
-            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
+            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, edge_feat=self.edge_feat, **kwargs)
             kwargs.pop('batch_size', 'not found')
             out_readout = self.encoder(x, edge_index, edge_attr, batch, batch_size, **kwargs)
         else:
@@ -335,7 +335,7 @@ class GINEConv(gnn.MessagePassing):
     def forward(self, x: Union[Tensor, OptPairTensor], edge_index: Adj,
                 edge_attr: OptTensor = None, size: Size = None) -> Tensor:
         """"""
-        if self.bone_encoder:
+        if self.bone_encoder and edge_attr is not None:
             edge_attr = self.bone_encoder(edge_attr)
         if isinstance(x, Tensor):
             x: OptPairTensor = (x, x)
@@ -350,15 +350,20 @@ class GINEConv(gnn.MessagePassing):
         return self.nn(out)
 
     def message(self, x_j: Tensor, edge_attr: Tensor) -> Tensor:
-        if self.lin is None and x_j.size(-1) != edge_attr.size(-1):
-            raise ValueError("Node and edge feature dimensionalities do not "
-                             "match. Consider setting the 'edge_dim' "
-                             "attribute of 'GINEConv'")
+        if edge_attr is not None:
+            if self.lin is None and x_j.size(-1) != edge_attr.size(-1):
+                raise ValueError("Node and edge feature dimensionalities do not "
+                                 "match. Consider setting the 'edge_dim' "
+                                 "attribute of 'GINEConv'")
 
-        if self.lin is not None:
-            edge_attr = self.lin(edge_attr)
+            if self.lin is not None:
+                edge_attr = self.lin(edge_attr)
 
-        return (x_j + edge_attr).relu()
+            m = x_j + edge_attr
+        else:
+            m = x_j
+
+        return m.relu()
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(nn={self.nn})'

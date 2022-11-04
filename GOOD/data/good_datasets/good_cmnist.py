@@ -40,7 +40,7 @@ class GOODCMNIST(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1yQ4uACTPA1VfLqTzusXW2nCmei16Oy-w/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1F2r2kVmA0X07AXyap9Y_rOM6LipDzwhq/view?usp=sharing'
 
         self.generate = generate
 

@@ -5,7 +5,7 @@ from math import sqrt
 
 import torch
 from sklearn.metrics import roc_auc_score as sk_roc_auc, mean_squared_error, \
-    accuracy_score, average_precision_score, mean_absolute_error, f1_score
+    accuracy_score, average_precision_score, mean_absolute_error, f1_score, matthews_corrcoef
 from torch.nn.functional import cross_entropy, l1_loss, binary_cross_entropy_with_logits
 
 
@@ -31,6 +31,7 @@ class Metric(object):
             'F1': self.f1,
             'ROC-AUC': self.roc_auc_score,
             'Accuracy': self.acc,
+            'MCC': self.mcc
         }
         self.loss_func = self.cross_entropy_with_logit
         self.score_func = self.roc_auc_score
@@ -75,6 +76,25 @@ class Metric(object):
             self.lower_better = 1
         else:
             self.lower_better = -1
+
+    def mcc(self, y_true, y_pred):
+        r"""
+        Calculate Matthews correlation coefficient score
+
+        Args:
+            y_true (torch.tensor): input labels
+            y_pred (torch.tensor): label predictions
+
+        Returns (float):
+            Matthews correlation coefficient score
+
+        """
+
+        true = torch.tensor(y_true)
+        pred_label = torch.tensor(y_pred)
+        pred_label = pred_label.round() if self.dataset_task == "Binary classification" else torch.argmax(pred_label,
+                                                                                                          dim=1)
+        return matthews_corrcoef(true, pred_label)
 
     def f1(self, y_true, y_pred):
         r"""

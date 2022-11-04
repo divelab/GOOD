@@ -2,58 +2,16 @@
 The GOOD-HIV dataset adapted from `MoleculeNet
 <https://pubs.rsc.org/en/content/articlehtml/2018/sc/c7sc02664a>`_.
 """
-import copy
 import itertools
 import os
 import os.path as osp
-import random
-from copy import deepcopy
 
 import gdown
-import numpy as np
 import torch
 from munch import Munch
-from rdkit import Chem
-from rdkit.Chem.Scaffolds import MurckoScaffold
 from torch_geometric.data import InMemoryDataset, extract_zip, Data
-from torch_geometric.datasets import MoleculeNet
 from tqdm import tqdm
 
-
-class DomainGetter():
-    r"""
-    A class containing methods for data domain extraction.
-    """
-    def __init__(self):
-        pass
-
-    def get_scaffold(self, smile: str) -> str:
-        """
-        Args:
-            smile (str): A smile string for a molecule.
-        Returns:
-            The scaffold string of the smile.
-        """
-        try:
-            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=Chem.MolFromSmiles(smile), includeChirality=False)
-            return scaffold
-        except ValueError as e:
-            print('Get scaffold error.')
-            raise e
-
-    def get_nodesize(self, smile: str) -> int:
-        """
-        Args:
-            smile (str): A smile string for a molecule.
-        Returns:
-            The number of node in the molecule.
-        """
-        mol = Chem.MolFromSmiles(smile)
-        if (mol is None):
-            print('GetNumAtoms error, smiles:{}'.format(smile))
-            return len(smile)
-        number_atom = mol.GetNumAtoms()
-        return number_atom
 
 class DummyDataset(InMemoryDataset):
 
@@ -61,10 +19,8 @@ class DummyDataset(InMemoryDataset):
                  pre_transform=None, generate: bool = False):
         super().__init__(root, transform, pre_transform)
 
+
 from GOOD import register
-
-
-
 
 
 @register.dataset_register
@@ -99,7 +55,8 @@ class LBAPcore(InMemoryDataset):
         mode = {'train': 0, 'val': 1, 'test': 2, 'id_val': 3, 'id_test': 4}
         subset_pt = shift_mode[shift] + mode[subset]
 
-        self.data, self.slices, self.max_x_feat, self.max_edge_feat, self.min_x_feat, self.min_edge_feat = torch.load(self.processed_paths[subset_pt])
+        self.data, self.slices, self.max_x_feat, self.max_edge_feat, self.min_x_feat, self.min_edge_feat = torch.load(
+            self.processed_paths[subset_pt])
 
     @property
     def raw_dir(self):
@@ -132,7 +89,8 @@ class LBAPcore(InMemoryDataset):
         max_edge_feat = []
         for subset in tqdm(['train', 'ood_val', 'ood_test', 'iid_val', 'iid_test']):
             temp_dataset = DummyDataset('dummy_root', 'dummy_name')
-            temp_dataset.data, temp_dataset.slices = torch.load(os.path.join(self.root, 'ginv', 'data', 'DrugOOD', f'drugood_lbap_core_ic50_{self.domain}_{subset}.pt'))
+            temp_dataset.data, temp_dataset.slices = torch.load(
+                os.path.join(self.root, 'ginv', 'data', 'DrugOOD', f'drugood_lbap_core_ic50_{self.domain}_{subset}.pt'))
             data_list = []
             for data in temp_dataset:
                 data_list.append(Data(x=data.x.long(),
@@ -154,7 +112,8 @@ class LBAPcore(InMemoryDataset):
                 data, slices = self.collate(final_data_list)
                 data.x = data.x - min_x_feat[None, :]
                 data.edge_attr = data.edge_attr - min_edge_feat[None, :]
-                torch.save((data, slices, max_x_feat, max_edge_feat, min_x_feat, min_edge_feat), self.processed_paths[i])
+                torch.save((data, slices, max_x_feat, max_edge_feat, min_x_feat, min_edge_feat),
+                           self.processed_paths[i])
 
         # exit(66)
 
@@ -180,30 +139,23 @@ class LBAPcore(InMemoryDataset):
         meta_info.model_level = 'graph'
 
         train_dataset = LBAPcore(root=dataset_root,
-                                domain=domain, shift=shift, subset='train', generate=generate)
+                                 domain=domain, shift=shift, subset='train', generate=generate)
         id_val_dataset = LBAPcore(root=dataset_root,
-                                 domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
+                                  domain=domain, shift=shift, subset='id_val',
+                                  generate=generate) if shift != 'no_shift' else None
         id_test_dataset = LBAPcore(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
+                                   domain=domain, shift=shift, subset='id_test',
+                                   generate=generate) if shift != 'no_shift' else None
         val_dataset = LBAPcore(root=dataset_root,
-                              domain=domain, shift=shift, subset='val', generate=generate)
+                               domain=domain, shift=shift, subset='val', generate=generate)
         test_dataset = LBAPcore(root=dataset_root,
-                               domain=domain, shift=shift, subset='test', generate=generate)
+                                domain=domain, shift=shift, subset='test', generate=generate)
 
         meta_info.dim_node = train_dataset.num_node_features
         meta_info.dim_edge = train_dataset.num_edge_features
 
-        # max_x_feat = []
-        # min_x_feat = []
-        # max_edge_feat = []
-        # min_edge_feat = []
-        # for sub_dataset in [train_dataset, id_val_dataset, id_test_dataset, val_dataset, test_dataset]:
-        #     max_x_feat.append(sub_dataset.data.x.long().max(0).values)
-        #     min_x_feat.append(sub_dataset.data.x.long().min(0).values)
-        #     max_edge_feat.append(sub_dataset.data.edge_attr.long().max(0).values)
-        #     min_edge_feat.append(sub_dataset.data.edge_attr.long().min(0).values)
-        meta_info.feat_dims = train_dataset.max_x_feat # torch.stack(max_x_feat).max(0).values - torch.stack(min_x_feat).min(0).values + 1
-        meta_info.edge_feat_dims = train_dataset.max_edge_feat # torch.stack(max_edge_feat).max(0).values - torch.stack(min_edge_feat).min(0).values + 1
+        meta_info.feat_dims = train_dataset.max_x_feat  # torch.stack(max_x_feat).max(0).values - torch.stack(min_x_feat).min(0).values + 1
+        meta_info.edge_feat_dims = train_dataset.max_edge_feat  # torch.stack(max_edge_feat).max(0).values - torch.stack(min_edge_feat).min(0).values + 1
 
         meta_info.num_envs = torch.unique(train_dataset.data.env_id).shape[0]
 
