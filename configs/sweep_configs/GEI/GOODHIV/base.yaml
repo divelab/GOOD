@@ -1,28 +1,33 @@
 includes:
   - ../base.yaml
-log_file:
-  - fine_env
-weight_decay:
-  - 0.
+lr:
+#  - 1e-3
   - 1e-4
-  - 1e-5
+weight_decay:
+#  - 0.
+#  - 1e-3
+  - 1e-4
+#  - 1e-5
 extra_param:
   -     # LA
-    - 100
-    - 10
+#    - 10
     - 1
+    - 0.1
   -      # EC
     - 0
   -      # EA
-    - 10
+#    - 10
     - 1
     - 0.1
   -       # r decay interval
-    - 10
+    - 20
   -       # EF
     - 0
-#    - 1e-1
-    - 1e-2
-    - 1e-3
-#    - 1e-4
-#    - 1e-5
+#    - 0.1
+    - 0.01
+    - 0.001
+  -
+    - true
+    - false
+pretrain:
+  - 50

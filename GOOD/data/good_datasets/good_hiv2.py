@@ -83,7 +83,7 @@ class GOODHIV2(InMemoryDataset):
         self.task = 'Binary classification'
         self.url = ''
 
-        self.generate = generate
+        self.generate = True
 
         super().__init__(root, transform, pre_transform)
         if shift == 'covariate':

@@ -1,2 +1,15 @@
 includes:
   - ../base.yaml
+extra_param:
+  -     # LA
+    - 10
+    - 1
+  -      # EC
+    - 0
+  -      # EA
+    - 10
+    - 1
+  -       # r decay interval
+    - 10
+  -       # EF
+    - 0.1

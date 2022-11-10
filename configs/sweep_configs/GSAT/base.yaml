@@ -1,13 +1,5 @@
-exp_round:
-  - 11
-  - 12
-weight_decay:
-  - 0.
-  - 1e-3
-  - 1e-4
-  - 1e-5
-lr:
-  - 1e-3
+includes:
+  - ../base.yaml
 extra_param:
   -     # learn_edge_att
     - true

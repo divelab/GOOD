@@ -43,12 +43,14 @@ class GEIGIN(GNNBasic):
         self.sub_gnn = GINFeatExtractor(config, **fe_kwargs)
         self.extractor = ExtractorMLP(config)
 
-        self.ef_mlp = EFMLP(config)
+        bn = config.ood.extra_param[5]
+        self.ef_mlp = EFMLP(config, bn=bn)
+        self.ef_discr_mlp = MLP([config.model.dim_hidden, 2 * config.model.dim_hidden, config.model.dim_hidden],
+                                 dropout=config.model.dropout_rate, config=config, bn=bn)
         self.ef_pool = GlobalMeanPool()
-        self.ef_classifier = MLP([config.model.dim_hidden, 2 * config.model.dim_hidden, config.dataset.num_envs],
-                                 dropout=config.model.dropout_rate)
-            # Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
-            #                                        'dataset': {'num_classes': config.dataset.num_envs}}))
+        self.ef_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
+                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
+
 
 
         self.lc_gnn = GINFeatExtractor(config, **fe_kwargs)
@@ -81,8 +83,9 @@ class GEIGIN(GNNBasic):
 
         # --- Filter environment info in features (only features) ---
         if self.EF:
-            filtered_features = self.ef_mlp(data.x)
-            ef_logits = self.ef_classifier(GradientReverseLayerF.apply(self.ef_pool(filtered_features, data.batch), self.EF * self.config.train.alpha))
+            filtered_features = self.ef_mlp(data.x, data.batch)
+            adversarial_features = GradientReverseLayerF.apply(filtered_features, self.EF * self.config.train.alpha)
+            ef_logits = self.ef_classifier(self.ef_pool(self.ef_discr_mlp(adversarial_features, data.batch), data.batch))
             data.x = filtered_features
             kwargs['data'] = data
         else:
@@ -171,20 +174,19 @@ class GEIvGIN(GEIGIN):
 
 class EFMLP(nn.Module):
 
-    def __init__(self, config: Union[CommonArgs, Munch]):
+    def __init__(self, config: Union[CommonArgs, Munch], bn):
         super(EFMLP, self).__init__()
         if config.dataset.dataset_type == 'mol':
             self.atom_encoder = AtomEncoder(config.model.dim_hidden, config)
             self.mlp = MLP([config.model.dim_hidden, config.model.dim_hidden, 2 * config.model.dim_hidden,
-                            config.model.dim_hidden],
-                           config.model.dropout_rate)
+                            config.model.dim_hidden], config.model.dropout_rate, config, bn=bn)
         else:
             self.atom_encoder = nn.Identity()
-            self.mlp = MLP([config.dataset.dim_node, config.model.dim_hidden, 2 * config.model.dim_hidden, config.model.dim_hidden],
-                              config.model.dropout_rate)
+            self.mlp = MLP([config.dataset.dim_node, config.model.dim_hidden, 2 * config.model.dim_hidden,
+                            config.model.dim_hidden], config.model.dropout_rate, config, bn=bn)
 
-    def forward(self, x):
-        return self.mlp(self.atom_encoder(x))
+    def forward(self, x, batch):
+        return self.mlp(self.atom_encoder(x), batch)
 
 
 class ExtractorMLP(nn.Module):
@@ -196,9 +198,11 @@ class ExtractorMLP(nn.Module):
         dropout_p = config.model.dropout_rate
 
         if self.learn_edge_att:
-            self.feature_extractor = MLP([hidden_size * 2, hidden_size * 4, hidden_size, 1], dropout=dropout_p)
+            self.feature_extractor = MLP([hidden_size * 2, hidden_size * 4, hidden_size, 1], dropout=dropout_p,
+                                         config=config)
         else:
-            self.feature_extractor = MLP([hidden_size * 1, hidden_size * 2, hidden_size, 1], dropout=dropout_p)
+            self.feature_extractor = MLP([hidden_size * 1, hidden_size * 2, hidden_size, 1], dropout=dropout_p,
+                                         config=config)
 
     def forward(self, emb, edge_index, batch):
         if self.learn_edge_att:
@@ -223,14 +227,17 @@ class BatchSequential(nn.Sequential):
 
 
 class MLP(BatchSequential):
-    def __init__(self, channels, dropout, bias=True):
+    def __init__(self, channels, dropout, config, bias=True, bn=False):
         m = []
         for i in range(1, len(channels)):
             m.append(nn.Linear(channels[i - 1], channels[i], bias))
 
             if i < len(channels) - 1:
-                # m.append(InstanceNorm(channels[i]))
-                m.append(nn.BatchNorm1d(channels[i], track_running_stats=True))
+                if bn:
+                    m.append(nn.BatchNorm1d(channels[i]))
+                else:
+                    m.append(InstanceNorm(channels[i]))
+
                 m.append(nn.ReLU())
                 m.append(nn.Dropout(dropout))
 
