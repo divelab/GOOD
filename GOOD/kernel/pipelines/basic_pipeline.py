@@ -293,7 +293,7 @@ class Pipeline:
                       f'OOD Test Loss: {ckpt["test_loss"].item():.4f}\n')
 
                 print(f'#IN#ChartInfo {id_ckpt["id_test_score"]:.4f} {id_ckpt["test_score"]:.4f} '
-                      f'{ckpt["id_test_score"]:.4f} {ckpt["test_score"]:.4f} {ckpt["val_score"]:.4f}', end='')
+                      f'{ckpt["id_test_score"]:.4f} {ckpt["test_score"]:.4f} {ckpt["id_val_score"]:.4f} {ckpt["val_score"]:.4f}', end='')
 
             else:
                 print(f'#IN#No In-Domain checkpoint.')
