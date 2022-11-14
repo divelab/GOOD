@@ -81,7 +81,7 @@ class GOODWebKB(InMemoryDataset):
         assert domain in ['university']
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1tatdDrcwZAS2iUZujB4AEsTvPF-3LYoX/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1DOdUOzAMBtcHXTphrWrKhNWPxzMDNvnb/view?usp=sharing'
 
         self.generate = generate
 
@@ -215,11 +215,6 @@ class GOODWebKB(InMemoryDataset):
         ood_val_list = ood_test_list[: len(ood_test_list) // 2]
         ood_test_list = ood_test_list[len(ood_test_list) // 2:]
 
-        num_id_test = int(num_data * id_test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
-                                                train_list[-2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 2
         num_per_env = len(train_list) // num_env_train
@@ -231,6 +226,12 @@ class GOODWebKB(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
+
+        num_id_test = int(num_data * id_test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
+                                                train_list[-2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
 
         return self.assign_masks(train_list, ood_val_list, ood_test_list, id_val_list, id_test_list, graph)
 

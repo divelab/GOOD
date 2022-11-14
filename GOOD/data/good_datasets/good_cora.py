@@ -94,7 +94,7 @@ class GOODCora(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1VD1nGDvLBn2xpYAp12irBLkTRRZ282Qm/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1OyMOwT4bn_4fLdpl5B3ie18OmGsUNQxS/view?usp=sharing'
 
         self.generate = generate
 
@@ -230,11 +230,6 @@ class GOODCora(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        num_id_test = int(num_data * id_test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
         num_per_env = len(train_list) // num_env_train
@@ -246,6 +241,12 @@ class GOODCora(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
+
+        num_id_test = int(num_data * id_test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
+                                                                                -2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
 
         return self.assign_masks(train_list, ood_val_list, ood_test_list, id_val_list, id_test_list, graph)
 

@@ -100,7 +100,7 @@ def test_regenerate(dataset_paths):
         return regenerator.config.dataset.dataset_name
 
     for dataset_path in dataset_paths:
-        if 'GOODSST2' in dataset_path:
+        if 'GOODSST2' in dataset_path or 'GOODArxiv' in dataset_path:
             return
         dataset_name = regenerate_dataset(dataset_path)
     # release regenerate datasets space
