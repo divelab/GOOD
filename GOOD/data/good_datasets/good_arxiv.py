@@ -97,17 +97,13 @@ class GOODArxiv(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1-Wq7PoHTAiLsos20bLlq_xNvrV5AHSWu/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1r1OTQJ5YxQAAYJiYfyDmCknmpVmiUksi/view?usp=sharing'
 
         self.generate = generate
 
         super().__init__(root, transform, pre_transform)
-        if shift == 'covariate':
-            subset_pt = 1
-        elif shift == 'concept':
-            subset_pt = 2
-        else:
-            subset_pt = 0
+        shift_mode = {'no_shift': 0, 'covariate': 1, 'concept': 2}
+        subset_pt = shift_mode[shift]
 
         self.data, self.slices = torch.load(self.processed_paths[subset_pt])
 
@@ -247,11 +243,6 @@ class GOODArxiv(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        num_id_test = int(num_data * id_test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
         num_per_env = len(train_list) // num_env_train
@@ -263,6 +254,12 @@ class GOODArxiv(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
+
+        num_id_test = int(num_data * id_test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
+                                                                                -2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
 
         return self.assign_masks(train_list, ood_val_list, ood_test_list, id_val_list, id_test_list, graph)
 
@@ -413,6 +410,7 @@ class GOODArxiv(InMemoryDataset):
 
     def process(self):
         from ogb.nodeproppred import PygNodePropPredDataset
+
         dataset = PygNodePropPredDataset(root=self.root, name='ogbn-arxiv')
         graph = dataset[0]
         graph.edge_index = to_undirected(graph.edge_index, graph.num_nodes)

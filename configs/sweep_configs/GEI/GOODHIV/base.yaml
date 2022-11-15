@@ -32,6 +32,6 @@ extra_param:
     - 0.001
   -
     - true
-    - false
+#    - false
 pretrain:
   - 50

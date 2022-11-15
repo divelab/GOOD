@@ -23,6 +23,7 @@ class DomainGetter():
     r"""
     A class containing methods for data domain extraction.
     """
+
     def __init__(self):
         pass
 
@@ -81,7 +82,7 @@ class GOODHIV(InMemoryDataset):
         self.domain = domain
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1GNc0HUee5YQH4Vtlk8ZbDjyJBYTEyabo/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1CoOqYCuLObnG5M0D8a2P2NyL61WjbCzo/view?usp=sharing'
 
         self.generate = generate
 
@@ -163,11 +164,6 @@ class GOODHIV(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        num_id_test = int(num_data * test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
         num_per_env = len(train_list) // num_env_train
@@ -179,6 +175,13 @@ class GOODHIV(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
+
+        num_id_test = int(num_data * test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
+                                                                                -2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
+
         all_env_list = [train_list, ood_val_list, ood_test_list, id_val_list, id_test_list]
 
         return all_env_list
@@ -379,9 +382,11 @@ class GOODHIV(InMemoryDataset):
         train_dataset = GOODHIV(root=dataset_root,
                                 domain=domain, shift=shift, subset='train', generate=generate)
         id_val_dataset = GOODHIV(root=dataset_root,
-                                 domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
+                                 domain=domain, shift=shift, subset='id_val',
+                                 generate=generate) if shift != 'no_shift' else None
         id_test_dataset = GOODHIV(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
+                                  domain=domain, shift=shift, subset='id_test',
+                                  generate=generate) if shift != 'no_shift' else None
         val_dataset = GOODHIV(root=dataset_root,
                               domain=domain, shift=shift, subset='val', generate=generate)
         test_dataset = GOODHIV(root=dataset_root,
@@ -390,7 +395,6 @@ class GOODHIV(InMemoryDataset):
         meta_info.dim_node = train_dataset.num_node_features
         meta_info.dim_edge = train_dataset.num_edge_features
 
-        meta_info.num_domains = train_dataset.data.domain_id.max() + 1
         meta_info.num_envs = torch.unique(train_dataset.data.env_id).shape[0]
 
         # Define networks' output shape.

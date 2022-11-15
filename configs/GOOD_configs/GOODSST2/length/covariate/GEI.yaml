@@ -7,11 +7,14 @@ ood:
   ood_param: 0  # infomation constraint
   extra_param:
     - 1    # LA
-    - 0.01      # EC
-    - 0.01     # EA
+    - 0      # EC
+    - 1     # EA
     - 10     # r decay interval
+    - 0.001       # EF
+    - true  # If batchnorm/instancenorm (true/false)
 train:
   max_epoch: 200
   lr: 1e-3
-  pre_train: 100
+  pre_train: 50
+
 

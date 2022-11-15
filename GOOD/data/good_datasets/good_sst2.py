@@ -10,19 +10,17 @@ from copy import deepcopy
 import gdown
 import numpy as np
 import torch
-from munch import Munch
-from rdkit import Chem
-from rdkit.Chem.Scaffolds import MurckoScaffold
-from torch_geometric.data import InMemoryDataset, extract_zip, Data
-from torch_geometric.datasets import MoleculeNet
-from tqdm import tqdm
 from dig.xgraph.dataset import SentiGraphDataset
+from munch import Munch
+from torch_geometric.data import InMemoryDataset, extract_zip, Data
+from tqdm import tqdm
 
 
 class DomainGetter():
     r"""
     A class containing methods for data domain extraction.
     """
+
     def __init__(self):
         pass
 
@@ -60,29 +58,14 @@ class GOODSST2(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1e2GmmeN-mN6X5KL6t8CosBujS1kfjeNS/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1lGNMbQebKIbS-NnbPxmY4_uDGI7EWXBP/view?usp=sharing'
 
         self.generate = generate
 
         super().__init__(root, transform, pre_transform)
-        if shift == 'covariate':
-            subset_pt = 3
-        elif shift == 'concept':
-            subset_pt = 8
-        elif shift == 'no_shift':
-            subset_pt = 0
-        else:
-            raise ValueError(f'Unknown shift: {shift}.')
-        if subset == 'train':
-            subset_pt += 0
-        elif subset == 'val':
-            subset_pt += 1
-        elif subset == 'test':
-            subset_pt += 2
-        elif subset == 'id_val':
-            subset_pt += 3
-        else:
-            subset_pt += 4
+        shift_mode = {'no_shift': 0, 'covariate': 3, 'concept': 8}
+        mode = {'train': 0, 'val': 1, 'test': 2, 'id_val': 3, 'id_test': 4}
+        subset_pt = shift_mode[shift] + mode[subset]
 
         self.data, self.slices = torch.load(self.processed_paths[subset_pt])
 
@@ -155,12 +138,6 @@ class GOODSST2(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        id_test_ratio = 0.15
-        num_id_test = int(len(train_list) * id_test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
-                                                                                -2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
         num_per_env = len(train_list) // num_env_train
@@ -172,6 +149,14 @@ class GOODSST2(InMemoryDataset):
                 cur_env_id += 1
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
+
+        id_test_ratio = 0.15
+        num_id_test = int(len(train_list) * id_test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], train_list[
+                                                                                -2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
+
         all_env_list = [train_list, ood_val_list, ood_test_list, id_val_list, id_test_list]
 
         return all_env_list
@@ -369,15 +354,17 @@ class GOODSST2(InMemoryDataset):
         meta_info.model_level = 'graph'
 
         train_dataset = GOODSST2(root=dataset_root,
-                                domain=domain, shift=shift, subset='train', generate=generate)
+                                 domain=domain, shift=shift, subset='train', generate=generate)
         id_val_dataset = GOODSST2(root=dataset_root,
-                                 domain=domain, shift=shift, subset='id_val', generate=generate) if shift != 'no_shift' else None
+                                  domain=domain, shift=shift, subset='id_val',
+                                  generate=generate) if shift != 'no_shift' else None
         id_test_dataset = GOODSST2(root=dataset_root,
-                                  domain=domain, shift=shift, subset='id_test', generate=generate) if shift != 'no_shift' else None
+                                   domain=domain, shift=shift, subset='id_test',
+                                   generate=generate) if shift != 'no_shift' else None
         val_dataset = GOODSST2(root=dataset_root,
-                              domain=domain, shift=shift, subset='val', generate=generate)
+                               domain=domain, shift=shift, subset='val', generate=generate)
         test_dataset = GOODSST2(root=dataset_root,
-                               domain=domain, shift=shift, subset='test', generate=generate)
+                                domain=domain, shift=shift, subset='test', generate=generate)
 
         meta_info.dim_node = train_dataset.num_node_features
         meta_info.dim_edge = train_dataset.num_edge_features

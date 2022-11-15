@@ -23,6 +23,6 @@ extra_param:
     - 0.001
   -           # If batchnorm/instancenorm (true/false)
     - true
-    - false
+#    - false
 pretrain:
   - 50

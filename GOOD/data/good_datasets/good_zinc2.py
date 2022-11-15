@@ -179,11 +179,6 @@ class GOODZINC2(InMemoryDataset):
 
         train_list, ood_val_list, ood_test_list = train_val_test_list
 
-        num_id_test = int(num_data * test_ratio)
-        random.shuffle(train_list)
-        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
-                                                train_list[-2 * num_id_test: - num_id_test], \
-                                                train_list[- num_id_test:]
         # Compose domains to environments
         num_env_train = 10
         num_per_env = len(train_list) // num_env_train
@@ -196,6 +191,12 @@ class GOODZINC2(InMemoryDataset):
             cur_domain_id = data.domain_id
             data.env_id = cur_env_id
         all_env_list = [train_list, ood_val_list, ood_test_list, id_val_list, id_test_list]
+
+        num_id_test = int(num_data * test_ratio)
+        random.shuffle(train_list)
+        train_list, id_val_list, id_test_list = train_list[: -2 * num_id_test], \
+                                                train_list[-2 * num_id_test: - num_id_test], \
+                                                train_list[- num_id_test:]
 
         return all_env_list
 
