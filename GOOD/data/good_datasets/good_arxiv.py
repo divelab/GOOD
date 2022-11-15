@@ -13,7 +13,6 @@ import gdown
 import numpy as np
 import torch
 from munch import Munch
-from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.data import Data
 from torch_geometric.data import InMemoryDataset, extract_zip
 from torch_geometric.utils import degree, to_undirected
@@ -410,6 +409,8 @@ class GOODArxiv(InMemoryDataset):
         return sorted_data_list, sorted_domain_split_data_list
 
     def process(self):
+        raise Exception('OGB changed the Arxiv version. Regeneration will not be valid anymore.')
+        from ogb.nodeproppred import PygNodePropPredDataset
 
         dataset = PygNodePropPredDataset(root=self.root, name='ogbn-arxiv')
         graph = dataset[0]

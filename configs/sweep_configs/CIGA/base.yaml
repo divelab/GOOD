@@ -1,0 +1,17 @@
+exp_round:
+  - 1
+  - 2
+  - 3
+lr:
+  - 1e-2
+  - 1e-3
+  - 1e-4
+extra_param:
+  -     # learn_edge_att
+    - 0.5
+    - 1
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
