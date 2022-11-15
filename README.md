@@ -28,11 +28,13 @@ For the original code used in the paper, please check branch [GOOD version 0](ht
 
 ### Tutorial
 - [x] More flexible pipelines and dataloaders. Please refer to branch [dev](https://github.com/divelab/GOOD/tree/dev) for more details.
-- [x] More detailed tutorial for adding new algorithms. Please refer to [Add a new algorithm](#add-a-new-algorithm). [**New!**]
+- [x] More detailed tutorial for adding new algorithms. Please refer to [Add a new algorithm](#add-a-new-algorithm). 
 ### Algorithms (plan to include)
 - [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
-- [ ] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for [the official implementation](https://github.com/LFhase/CIGA). It was accepted by NeurIPS 2022 recently:smile:]
-- [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
+- [x] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [NeurIPS 2022] [[GitHub](https://github.com/LFhase/CIGA)]
+  - [x] Method reproduction by its authors. Check [the CIGA branch](https://github.com/divelab/GOOD/tree/CIGA) for your convenience. :smile: [**New!**]
+  - [ ] Experiments: hyperparameter sweeping
+- [x] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [ICML 2022] [[GitHub](https://github.com/Graph-COM/GSAT)]
   - [x] Method reproduction.
   - [ ] Experiments: hyperparameter sweeping
 ### New features
