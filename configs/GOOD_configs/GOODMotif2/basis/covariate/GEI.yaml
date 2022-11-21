@@ -10,6 +10,8 @@ ood:
     - 0.01      # EC
     - 1     # EA
     - 10     # r decay interval
+    - 0.001
+    - true
 train:
   max_epoch: 200
   lr: 1e-3

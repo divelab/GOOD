@@ -79,6 +79,26 @@ class GNNBasic(torch.nn.Module):
         # nodes x classes
         return self(*args, **kwargs).softmax(dim=1)
 
+    def at_stage(self, i):
+        r"""
+        Test if the current training stage at stage i.
+
+        Args:
+            i: Stage that is possibly 1, 2, 3, ...
+
+        Returns: At stage i.
+
+        """
+        if i - 1 < 0:
+            raise ValueError(f"Stage i must be equal or larger than 0, but got {i}.")
+        if i > len(self.config.train.stage_stones):
+            raise ValueError(f"Stage i should be smaller than the largest stage {len(self.config.train.stage_stones)},"
+                             f"but got {i}.")
+        if i - 2 < 0:
+            return self.config.train.epoch < self.config.train.stage_stones[i - 1]
+        else:
+            return self.config.train.stage_stones[i - 2] <= self.config.train.epoch < self.config.train.stage_stones[i - 1]
+
 
 class BasicEncoder(torch.nn.Module):
     r"""

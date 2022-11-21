@@ -1,6 +1,6 @@
 includes:
   - ../base.yaml
-ood_param:   # information constraint
+ood_param:
   - 100
   - 10
   - 1

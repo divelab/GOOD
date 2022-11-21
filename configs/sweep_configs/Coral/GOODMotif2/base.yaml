@@ -1,2 +1,10 @@
 includes:
   - ../base.yaml
+lr:
+  - 1e-3
+#  - 1e-4
+weight_decay:
+  - 0.
+#  - 1e-3
+#  - 1e-4
+#  - 1e-5

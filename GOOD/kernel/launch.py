@@ -51,7 +51,7 @@ def make_list_cmds(auto_args, conda_goodtg):
                     allowed = False
                     if auto_args.allow_algs:
                         for allowed_alg in auto_args.allow_algs:
-                            if allowed_alg in ood_config_path.name:
+                            if allowed_alg == ood_config_path.stem:
                                 allowed = True
                     else:
                         allowed = True

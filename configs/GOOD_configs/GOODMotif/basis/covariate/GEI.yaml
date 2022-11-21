@@ -11,6 +11,7 @@ ood:
     - 0.01     # EA
     - 10     # r decay interval
     - 1     # EF
+    - true  # batchnorm or instancenorm for EF
 train:
   max_epoch: 200
   lr: 1e-3

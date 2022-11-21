@@ -33,5 +33,5 @@ extra_param:
   -
     - true
 #    - false
-pretrain:
+pre_train:
   - 50

@@ -7,9 +7,7 @@ ood_param: # causal ratio
   - 0.8
 extra_param:
   -         # additional loss control
-    - 1e2
     - 1e1
     - 1
     - 1e-1
     - 1e-2
-    - 1e-3
