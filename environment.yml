@@ -21,7 +21,7 @@ dependencies:
     - matplotlib==3.5.2
     - munch==2.5.0
     - networkx==2.8
-    - ogb==1.3.3
+    - ogb>=1.3.3
     - pytest==7.1.2
     - ruamel.yaml==0.17.21
     - protobuf==3.20.1

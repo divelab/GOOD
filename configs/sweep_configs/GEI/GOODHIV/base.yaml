@@ -1,5 +1,6 @@
 includes:
   - ../base.yaml
+  - ../../GOODHIV.yaml
 lr:
 #  - 1e-3
   - 1e-4
@@ -24,19 +25,19 @@ extra_param:
 #    - 1
     - 0.1
     - 0.01
-    - 0.001
+#    - 0.001
   -       # r decay interval
 #    - 30
 #    - 40
     - 60
   -       # EF
     - 0
-    - 1
+#    - 1
     - 0.1
     - 0.01
 #    - 0.001
   -
     - true
-#    - false
+    - false
 pre_train:
   - 50

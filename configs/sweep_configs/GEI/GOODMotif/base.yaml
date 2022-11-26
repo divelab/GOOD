@@ -1,29 +1,26 @@
 includes:
   - ../base.yaml
-lr:
-  - 1e-3
-#  - 1e-4
-weight_decay:
-  - 0.
-#  - 1e-3
-#  - 1e-4
-#  - 1e-5
+  - ../../GOODMotif.yaml
 ood_param:   # information constraint
   - 0
 #  - 1
 extra_param:
   -     # LA
+#    - 100
     - 10
     - 1
-    - 0.1
+#    - 0.1
+#    - 0.01
   -      # EC
     - 0
   -      # EA
+#    - 100
     - 10
     - 1
-    - 0.1
+#    - 0.1
+#    - 0.01
   -       # r decay interval
-    - 20
+    - 50
   -       # EF
     - 0
 #    - 0.1
@@ -33,4 +30,4 @@ extra_param:
     - true
 #    - false
 pre_train:
-  - 50
+  - 100

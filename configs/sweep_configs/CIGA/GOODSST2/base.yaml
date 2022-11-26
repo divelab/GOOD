@@ -1,5 +1,6 @@
 includes:
   - ../base.yaml
+  - ../../GOODSST2.yaml
 lr:
   - 1e-3
 #  - 1e-4

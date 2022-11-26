@@ -1,5 +1,6 @@
 includes:
   - ../base.yaml
+  - ../../GOODSST2.yaml
 lr:
   - 1e-3
 #  - 1e-4
@@ -31,7 +32,7 @@ extra_param:
     - 0.001
     - 0.0001
   -
-    - true
-#    - false
+#    - true
+    - false
 pre_train:
   - 50

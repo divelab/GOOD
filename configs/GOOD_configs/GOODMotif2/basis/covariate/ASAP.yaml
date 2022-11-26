@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: ASAPGIN
+ood:
+  ood_alg: ASAP
+  ood_param: 0.25    # causal ratio
+train:
+  max_epoch: 200
+  lr: 1e-3
+  mile_stones: [150]
+
+

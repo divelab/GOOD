@@ -43,10 +43,9 @@ class GEIGIN(GNNBasic):
         self.sub_gnn = GINFeatExtractor(config, **fe_kwargs)
         self.extractor = ExtractorMLP(config)
 
-        bn = config.ood.extra_param[5]
-        self.ef_mlp = EFMLP(config, bn=bn)
+        self.ef_mlp = EFMLP(config, bn=True)
         self.ef_discr_mlp = MLP([config.model.dim_hidden, 2 * config.model.dim_hidden, config.model.dim_hidden],
-                                 dropout=config.model.dropout_rate, config=config, bn=bn)
+                                 dropout=config.model.dropout_rate, config=config, bn=True)
         self.ef_pool = GlobalMeanPool()
         self.ef_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
                                                    'dataset': {'num_classes': config.dataset.num_envs}}))
@@ -199,10 +198,10 @@ class ExtractorMLP(nn.Module):
 
         if self.learn_edge_att:
             self.feature_extractor = MLP([hidden_size * 2, hidden_size * 4, hidden_size, 1], dropout=dropout_p,
-                                         config=config)
+                                         config=config, bn=config.ood.extra_param[5])
         else:
             self.feature_extractor = MLP([hidden_size * 1, hidden_size * 2, hidden_size, 1], dropout=dropout_p,
-                                         config=config)
+                                         config=config, bn=config.ood.extra_param[5])
 
     def forward(self, emb, edge_index, batch):
         if self.learn_edge_att:
