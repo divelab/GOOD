@@ -73,7 +73,7 @@ class HarvestLauncher(Launcher):
             shutil.copytree(auto_args.config_root, auto_args.final_root)
 
     def picky_farmer(self, result_dict):
-        WATCH = True
+        WATCH = False
         best_fruits = dict()
         sorted_fruits = dict()
         for ddsa_key in result_dict.keys():
@@ -133,6 +133,7 @@ class HarvestLauncher(Launcher):
             key_str = ' '.join(key_args)
             if key_str not in result_dict[ddsa_key].keys():
                 result_dict[ddsa_key][key_str] = [[] for _ in range(6)]
+            # print(f'{ddsa_key}_{key_str}: {result}')
             result_dict[ddsa_key][key_str] = [r + [eval(result[i])] for i, r in
                                               enumerate(result_dict[ddsa_key][key_str])]
         # if not all_finished:

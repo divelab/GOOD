@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: GIN
+ood:
+  ood_alg: MetaSplit
+  ood_param: -1
+train:
+  max_epoch: 200
+  lr: 1e-3
+  weight_decay: 0.
+  mile_stones: [150]
+  train_bs: 256

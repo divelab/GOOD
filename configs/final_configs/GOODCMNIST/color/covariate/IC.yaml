@@ -1,0 +1,11 @@
+includes:
+  - base.yaml
+model:
+  model_name: ICNN_vGIN
+ood:
+  ood_alg: IC
+  ood_param: 1e-2
+train:
+  max_epoch: 500
+  lr: 1e-3
+  mile_stones: [300]

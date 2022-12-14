@@ -1,14 +1,6 @@
 includes:
   - ../base.yaml
   - ../../GOODSST2.yaml
-lr:
-  - 1e-3
-#  - 1e-4
-weight_decay:
-  - 0.
-#  - 1e-3
-#  - 1e-4
-#  - 1e-5
 ood_param:
   - 0
   - 1
@@ -17,22 +9,25 @@ extra_param:
 #    - 10
     - 1
     - 0.1
+    - 0.01
   -      # EC
     - 0
   -      # EA
 #    - 10
-    - 1
+#    - 1
     - 0.1
+    - 0.01
   -       # r decay interval
-    - 30
+    - 60
 #    - 40
   -       # EF
     - 0
+    - 0.1
     - 0.01
-    - 0.001
-    - 0.0001
+#    - 0.001
+#    - 0.0001
   -
-#    - true
+    - true
     - false
 pre_train:
   - 50

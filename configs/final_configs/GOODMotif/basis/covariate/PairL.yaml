@@ -1,0 +1,15 @@
+includes:
+  - base.yaml
+model:
+  model_name: PL_GIN
+ood:
+  ood_alg: PairL
+  ood_param: 0.5 # ratio
+  extra_param:
+    - 7        # max_k
+train:
+  max_epoch: 200
+  lr: 1e-3
+  mile_stones: [150]
+dataset:
+  dataloader_name: PairDataLoader

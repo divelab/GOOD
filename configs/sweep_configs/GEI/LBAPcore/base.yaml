@@ -1,13 +1,6 @@
 includes:
   - ../base.yaml
-lr:
-#  - 1e-3
-  - 1e-4
-weight_decay:
-#  - 0.
-#  - 1e-3
-  - 1e-4
-#  - 1e-5
+  - ../../LBAPcore.yaml
 ood_param:   # information constraint
 #  - 0
   - 1
@@ -16,6 +9,7 @@ extra_param:
 #    - 10
     - 1
     - 0.1
+    - 0.01
   -      # EC
     - 0
   -      # EA
@@ -23,10 +17,12 @@ extra_param:
 #    - 1
     - 0.1
     - 0.01
+    - 0.001
   -       # r decay interval
-    - 60
+#    - 60
+    - 90
   -       # EF
-    - 0
+#    - 0
     - 0.1
     - 0.01
 #    - 0.001
@@ -34,4 +30,4 @@ extra_param:
     - true
 #    - false
 pre_train:
-  - 50
+  - 20

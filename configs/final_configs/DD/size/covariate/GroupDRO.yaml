@@ -1,0 +1,12 @@
+includes:
+  - base.yaml
+model:
+  model_name: vGIN
+ood:
+  ood_alg: GroupDRO
+  ood_param: 0.01
+train:
+  max_epoch: 200
+  lr: 1e-3
+
+

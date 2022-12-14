@@ -1,0 +1,15 @@
+includes:
+  - base.yaml
+model:
+  model_name: Sub_GIN
+ood:
+  ood_alg: Subnetwork
+  ood_param: 1e-4
+train:
+  max_epoch: 200
+  tr_ctn: True
+  ctn_epoch: 140
+  lr: 1e-3
+  stage_stones: [140]
+  weight_decay: 0.
+  mile_stones: [150]

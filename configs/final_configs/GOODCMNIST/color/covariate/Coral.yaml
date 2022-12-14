@@ -1,0 +1,12 @@
+includes:
+  - base.yaml
+model:
+  model_name: Coral_vGIN
+ood:
+  ood_alg: Coral
+  ood_param: 0.1
+train:
+  max_epoch: 500
+  lr: 1e-3
+  mile_stones: [300]
+

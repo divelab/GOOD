@@ -1,26 +1,3 @@
 includes:
   - ../base.yaml
-lr:
-  - 1e-3
-#  - 1e-4
-weight_decay:
-  - 0.
-#  - 1e-3
-#  - 1e-4
-#  - 1e-5
-ood_param:   # causal ratio
-  - 0.2
-  - 0.4
-  - 0.6
-  - 0.8
-extra_param:
-  -
-    - 0.5
-    - 1
-    - 2
-    - 4
-  -
-    - 0.5
-    - 1
-    - 2
-    - 4
+  - ../../GOODMotif.yaml

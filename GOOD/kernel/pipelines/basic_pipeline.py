@@ -411,3 +411,5 @@ class Pipeline:
             config.metric.best_stat['loss'] = val_stat['loss']
             shutil.copy(saved_file, os.path.join(config.ckpt_dir, f'best.ckpt'))
             print('#IM#Saved a new best checkpoint.')
+        if config.clean_save:
+            os.unlink(saved_file)

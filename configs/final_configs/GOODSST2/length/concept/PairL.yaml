@@ -1,0 +1,14 @@
+includes:
+  - base.yaml
+model:
+  model_name: PL_vGIN
+ood:
+  ood_alg: PairL
+  ood_param: 0.5
+  extra_param:
+    - 100
+train:
+  max_epoch: 200
+  lr: 1e-3
+dataset:
+  dataloader_name: PairDataLoader

@@ -23,9 +23,13 @@ class ASAPGIN(nn.Module):
         super(ASAPGIN, self).__init__()
         self.pool = ASAPooling(config.model.dim_hidden, config.ood.ood_param, dropout=config.model.dropout_rate)
 
+        orig_model_layer = config.model.model_layer
+        config.model.model_layer = orig_model_layer - 2
         self.sub_encoder = GINFeatExtractor(config)
 
+        config.model.model_layer = 2
         self.gnn = GINFeatExtractor(config, without_embed=True)
+        config.model.model_layer = orig_model_layer
 
         self.classifier = Classifier(config)
         self.config = config
@@ -35,18 +39,14 @@ class ASAPGIN(nn.Module):
         data = kwargs.get('data')
         pooled_x, pooled_edge_index, pooled_edge_weight, pooled_batch, perm = self.pool(h, data.edge_index,
                                                                                         batch=data.batch)
-        col, row = data.edge_index
-        node_mask = torch.zeros(data.x.size(0)).to(self.config.device)
-        node_mask[perm] = 1
-        edge_mask = node_mask[col] * node_mask[row]
-        if self.config.dataset.dataset_type == 'mol' or self.config.dataset.dim_edge:
-            pooled_edge_attr = data.edge_attr[edge_mask]
-        else:
-            pooled_edge_attr = None
+        # col, row = data.edge_index
+        # node_mask = torch.zeros(data.x.size(0)).to(self.config.device)
+        # node_mask[perm] = 1
+        # edge_mask = node_mask[col] * node_mask[row]
 
         pooled_data = Batch(x=pooled_x,
                             edge_index=pooled_edge_index,
-                            edge_attr=pooled_edge_attr,
+                            edge_attr=None,
                             batch=pooled_batch)
         set_masks(pooled_edge_weight, self.gnn)
         out_readout = self.gnn(data=pooled_data)
@@ -60,8 +60,13 @@ class ASAPvGIN(ASAPGIN):
 
     def __init__(self, config: Union[CommonArgs, Munch]):
         super(ASAPvGIN, self).__init__(config)
+        orig_model_layer = config.model.model_layer
+        config.model.model_layer = orig_model_layer - 2
         self.sub_encoder = vGINFeatExtractor(config)
+
+        config.model.model_layer = 2
         self.gnn = vGINFeatExtractor(config, without_embed=True)
+        config.model.model_layer = orig_model_layer
 
 
 def set_masks(mask: Tensor, model: nn.Module):

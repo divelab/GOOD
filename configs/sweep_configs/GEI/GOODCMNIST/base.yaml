@@ -1,5 +1,6 @@
 includes:
   - ../base.yaml
+  - ../../GOODCMNIST.yaml
 extra_param:
   -     # LA
     - 10
@@ -13,3 +14,5 @@ extra_param:
     - 10
   -       # EF
     - 0.1
+  -
+    - true

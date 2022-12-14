@@ -13,4 +13,7 @@ train:
   max_epoch: 200
   lr: 1e-3
   mile_stones: [300]
+  train_bs: 64
+  val_bs: 128
+  test_bs: 128
 

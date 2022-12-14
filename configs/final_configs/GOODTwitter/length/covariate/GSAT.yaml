@@ -1,0 +1,18 @@
+includes:
+  - base.yaml
+model:
+  model_name: GSATvGIN
+ood:
+  ood_alg: GSAT
+  ood_param: 1.0
+  extra_param:
+    - true
+    - 10
+    - 0.7
+train:
+  max_epoch: 200
+  lr: 0.001
+  weight_decay: 0.0
+  pre_train: 50
+log_file: exp_0
+clean_save: true

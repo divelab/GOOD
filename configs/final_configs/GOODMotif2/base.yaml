@@ -1,0 +1,19 @@
+includes:
+  - ../base.yaml
+model:
+  model_layer: 3
+  global_pool: mean
+  dim_hidden: 300
+  dim_ffn: 300
+  dropout_rate: 0.5
+train:
+  num_steps: 10
+  max_epoch: 200
+  train_bs: 32
+  val_bs: 256
+  test_bs: 256
+  weight_decay: 0.
+dataset:
+  dataset_name: GOODMotif2
+  domain: basis
+  generate: true

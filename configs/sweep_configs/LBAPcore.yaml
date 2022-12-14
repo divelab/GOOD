@@ -1,0 +1,10 @@
+exp_round:
+  - 1
+  - 2
+  - 3
+log_file:
+  - exp_0
+lr:
+  - 1e-4
+weight_decay:
+  - 1e-4

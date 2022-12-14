@@ -79,7 +79,7 @@ class CIGAGIN(GNNBasic):
                 data=Data(x=spu_x, edge_index=spu_edge_index,
                           edge_attr=spu_edge_attr, batch=spu_batch),
                 batch_size=batch_size
-            ).detach()
+            ) #.detach()
             spu_out = self.get_spu_pred(spu_rep)
             clear_masks(self)
             # if self.contrast_rep == "feat":

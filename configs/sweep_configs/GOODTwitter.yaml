@@ -1,0 +1,12 @@
+exp_round:
+  - 1
+  - 2
+  - 3
+log_file:
+  - exp_0
+lr:
+  - 1e-3
+weight_decay:
+  - 0.
+pre_train:
+  - 50

@@ -1,0 +1,21 @@
+includes:
+  - base.yaml
+model:
+  model_name: GEIvGIN
+ood:
+  ood_alg: GEI
+  ood_param: 1.0
+  extra_param:
+    - 1
+    - 0
+    - 0.01
+    - 60
+    - 0
+    - true
+train:
+  max_epoch: 200
+  lr: 0.0001
+  pre_train: 50
+  weight_decay: 0.0001
+log_file: exp_0
+clean_save: true

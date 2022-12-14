@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: vGIN
+ood:
+  ood_alg: ERM
+  ood_param: -1.0
+train:
+  max_epoch: 300
+  lr: 0.0001
+  weight_decay: 0.0001
+log_file: exp_0
+clean_save: true

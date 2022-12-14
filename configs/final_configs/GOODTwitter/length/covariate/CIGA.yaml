@@ -1,0 +1,17 @@
+includes:
+  - base.yaml
+model:
+  model_name: CIGAvGIN
+ood:
+  ood_alg: CIGA
+  ood_param: 0.4
+  extra_param:
+    - 0.5
+    - 0.5
+train:
+  max_epoch: 200
+  lr: 0.001
+  weight_decay: 0.0
+  pre_train: 50
+log_file: exp_0
+clean_save: true
