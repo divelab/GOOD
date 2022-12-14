@@ -90,9 +90,15 @@ Besides, if you hope to include your algorithms in the leaderboard, please conta
 GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-versions/), [PyG (>=2.0)](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), and
 [RDKit (>=2020.09.5)](https://www.rdkit.org/docs/Install.html). For more details: [conda environment](/../../blob/main/environment.yml)
 
-> Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.3), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
->
-> Attention! Due to a known issue, please install PyG through Pip to avoid incompatibility.
+> Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.4), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
+
+A recommended installation example:
+```shell
+# Create your own conda environment, then...
+conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
+conda install pyg -c pyg
+conda install -c conda-forge rdkit==2020.09.5
+```
 
 ### Pip
 

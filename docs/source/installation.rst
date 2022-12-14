@@ -10,9 +10,6 @@ GOOD depends on `PyTorch (>=1.6.0) <https://pytorch.org/get-started/previous-ver
 .. note::
    Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.3), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
 
-.. warning::
-   Due to a known issue, please install PyG through Pip to avoid incompatibility.
-
 
 GOOD installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
