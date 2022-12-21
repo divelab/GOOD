@@ -4,14 +4,16 @@ model:
   model_name: GSATGIN
 ood:
   ood_alg: GSAT
-  ood_param: 1.0    # info loss coefficient
+  ood_param: 1.0
   extra_param:
-    - true    # learn_edge_att
-    - 20      # decay_interval
-    - 0.5     # final_r
+    - true
+    - 20
+    - 0.7
 train:
   max_epoch: 200
-  lr: 1e-3
-  mile_stones: [150]
-
-
+  lr: 0.001
+  mile_stones:
+    - 150
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true

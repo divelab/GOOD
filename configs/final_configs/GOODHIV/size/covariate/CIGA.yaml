@@ -4,10 +4,10 @@ model:
   model_name: CIGAvGIN
 ood:
   ood_alg: CIGA
-  ood_param: 0.4
+  ood_param: 0.2
   extra_param:
+    - 1
     - 0.5
-    - 2
 train:
   max_epoch: 200
   train_bs: 32

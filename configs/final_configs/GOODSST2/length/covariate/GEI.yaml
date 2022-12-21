@@ -4,17 +4,18 @@ model:
   model_name: GEIvGIN
 ood:
   ood_alg: GEI
-  ood_param: 0  # infomation constraint
+  ood_param: 0.0
   extra_param:
-    - 1    # LA
-    - 0      # EC
-    - 1     # EA
-    - 10     # r decay interval
-    - 0.001       # EF
-    - true  # If batchnorm/instancenorm (true/false)
+    - 0.1
+    - 0
+    - 0.1
+    - 60
+    - 0.01
+    - true
 train:
   max_epoch: 200
-  lr: 1e-3
+  lr: 0.001
   pre_train: 50
-
-
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true

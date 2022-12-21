@@ -4,9 +4,12 @@ model:
   model_name: Coral_vGIN
 ood:
   ood_alg: Coral
-  ood_param: 0.1
+  ood_param: 1.0
 train:
   max_epoch: 500
-  lr: 1e-3
-  mile_stones: [300]
-
+  lr: 0.001
+  mile_stones:
+    - 300
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true

@@ -4,10 +4,12 @@ model:
   model_name: ASAPGIN
 ood:
   ood_alg: ASAP
-  ood_param: 0.25    # causal ratio
+  ood_param: 0.8
 train:
   max_epoch: 200
-  lr: 1e-3
-  mile_stones: [150]
-
-
+  lr: 0.001
+  mile_stones:
+    - 150
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true

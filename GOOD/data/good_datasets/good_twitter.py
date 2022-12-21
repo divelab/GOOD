@@ -58,7 +58,7 @@ class GOODTwitter(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1wpRbpxLUGlAq04mF9TJpetPwFH6MDIRV/view?usp=sharing'
+        self.url = 'https://drive.google.com/file/d/1um-ruqg58ULRkMZLOekF5FmLv4ZhGDnS/view?usp=sharing'
 
         self.generate = generate
 

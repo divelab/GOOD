@@ -4,9 +4,13 @@ model:
   model_name: CIGAvGIN
 ood:
   ood_alg: CIGA
-  ood_param: 0.8    # causal ratio
+  ood_param: 0.8
   extra_param:
-    - 1 #1e-4
+    - 2
+    - 0.5
 train:
   max_epoch: 200
-  lr: 1e-3
+  lr: 0.001
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true
