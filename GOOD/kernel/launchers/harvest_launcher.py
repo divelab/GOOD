@@ -73,7 +73,7 @@ class HarvestLauncher(Launcher):
             shutil.copytree(auto_args.config_root, auto_args.final_root)
 
     def picky_farmer(self, result_dict):
-        WATCH = True
+        WATCH = False
         best_fruits = dict()
         sorted_fruits = dict()
         for ddsa_key in result_dict.keys():

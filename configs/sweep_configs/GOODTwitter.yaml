@@ -5,8 +5,8 @@ exp_round:
 log_file:
   - exp_0
 lr:
-  - 1e-3
+  - 1e-4
 weight_decay:
-  - 0.
+  - 1e-4
 pre_train:
-  - 50
+  - 5

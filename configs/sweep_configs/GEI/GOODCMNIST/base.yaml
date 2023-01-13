@@ -17,5 +17,6 @@ extra_param:
   -       # EF
     - 1
     - 0.1
+    - 0
   -
     - true

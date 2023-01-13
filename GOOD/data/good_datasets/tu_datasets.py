@@ -144,7 +144,10 @@ class _TU(InMemoryDataset):
             for data in dataset[data_ids]:
                 data_list.append(data)
             sorted_data_list, _ = self.get_domain_sorted_list(data_list, self.domain)
-            data_list = self.split_envs(copy.deepcopy(sorted_data_list), fix_env=-1)
+            if subset == 'train':
+                data_list = self.split_envs(copy.deepcopy(sorted_data_list))
+            else:
+                data_list = self.split_envs(copy.deepcopy(sorted_data_list), fix_env=-1)
             covariate_shift_list.append(data_list)
 
         all_data_list = covariate_shift_list

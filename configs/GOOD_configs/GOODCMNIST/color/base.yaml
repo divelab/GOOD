@@ -5,6 +5,6 @@ dataset:
 train:
   max_epoch: 500
   train_bs: 128
-  val_bs: 256
-  test_bs: 256
+  val_bs: 128
+  test_bs: 128
   weight_decay: 0.
