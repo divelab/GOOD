@@ -60,7 +60,7 @@ For the original code used in the paper, please check branch [GOOD version 0](ht
 to make develop and benchmark OOD algorithms easily.
 
 Currently, GOOD contains 11 datasets with 17 domain selections. When combined with covariate, concept, and no shifts, we obtain 51 different splits.
-We provide performance results on 10 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, MixupForGraph, DIR, EERM,SRGNN) including 4 graph specific methods with 10 random runs.
+We provide performance results on 12 commonly used baseline methods (ERM, IRM, VREx, GroupDRO, Coral, DANN, MixupForGraph, DIR, GSAT, CIGA, EERM,SRGNN) including 6 graph specific methods with 10 random runs.
 
 The GOOD dataset summaries are shown in the following figure.
 
