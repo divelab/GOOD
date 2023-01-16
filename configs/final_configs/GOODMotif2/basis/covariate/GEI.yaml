@@ -4,18 +4,20 @@ model:
   model_name: GEIGIN
 ood:
   ood_alg: GEI
-  ood_param: 0  # infomation constraint
+  ood_param: 0.0
   extra_param:
-    - 10    # LA
-    - 0.01      # EC
-    - 1     # EA
-    - 10     # r decay interval
-    - 0.001
+    - 10
+    - 0
+    - 20
+    - 20
+    - 0
     - true
 train:
   max_epoch: 200
-  lr: 1e-3
-  mile_stones: [150]
+  lr: 0.001
+  mile_stones:
+    - 150
   pre_train: 100
-
-
+  weight_decay: 0.0
+log_file: exp_0
+clean_save: true

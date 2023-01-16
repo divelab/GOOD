@@ -1,2 +1,35 @@
 includes:
   - ../base.yaml
+extra_param:
+  -     # LA
+#    - 20
+    - 10
+    - 5
+    - 1
+    - 0
+#    - 0.1
+#    - 0.01
+  -      # EC
+    - 0
+#    - 0.001
+  -      # EA
+#    - 100
+#    - 40
+    - 20
+    - 10
+    - 0
+#    - 5
+#    - 1
+#    - 0.1
+#    - 0.01
+#    - 0.001
+  -       # r decay interval
+    - 50
+  -       # EF
+    - 0
+#    - 0.1
+#    - 0.01
+#    - 0.001
+  -           # If batchnorm/instancenorm (true/false)
+    - true
+#    - false

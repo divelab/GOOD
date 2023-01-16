@@ -81,9 +81,9 @@ class HarvestLauncher(Launcher):
                 result_dict[ddsa_key][key] = np.stack([np.mean(value, axis=1), np.std(value, axis=1)], axis=1)
             # lambda x: x[1][?, 0]  - ? denotes the result used to choose the best setting.
             if WATCH:
-                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0] + x[1][-2, 0], reverse=True)
+                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0], reverse=True)
             else:
-                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0] + x[1][-2, 0])
+                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0])
             # best_fruits[ddsa_key] = sorted_fruits[ddsa_key][0]
         if WATCH:
             print(sorted_fruits)

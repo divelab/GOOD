@@ -4,7 +4,7 @@ model:
   model_name: ASAPGIN
 ood:
   ood_alg: ASAP
-  ood_param: 0.6
+  ood_param: 0.2
 train:
   max_epoch: 200
   lr: 0.001
