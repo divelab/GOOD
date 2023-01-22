@@ -13,7 +13,8 @@
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 [![Contributing][contributing-image]][contributing-url]
 
-[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1
+[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) 
+<!-- | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1 -->
 <!-- > We are actively building the document. -->
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
@@ -22,7 +23,7 @@
 
 :tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!**
 
-For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch.
+<!-- For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch. -->
 
 ## Roadmap
 
