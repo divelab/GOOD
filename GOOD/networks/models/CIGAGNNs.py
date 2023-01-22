@@ -36,6 +36,8 @@ class CIGAGIN(GNNBasic):
         if type(config.ood.extra_param[-1]) == str:
             self.contrast_rep = config.ood.extra_param[-1]
 
+        self.edge_mask = None
+
     def forward(self, *args, **kwargs):
         r"""
         The CIGA model implementation.
@@ -71,6 +73,7 @@ class CIGAGIN(GNNBasic):
         causal_out = self.get_causal_pred(causal_rep)
         clear_masks(self)
 
+        self.edge_mask = causal_edge_index
         
         if self.training:
             # --- Conf repr ---

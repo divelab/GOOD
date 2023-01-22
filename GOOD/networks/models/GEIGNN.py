@@ -64,6 +64,8 @@ class GEIGIN(GNNBasic):
         self.ea_classifier = Classifier(munchify({'model': {'dim_hidden': config.model.dim_hidden},
                                                   'dataset': {'num_classes': config.dataset.num_envs}}))
 
+        self.edge_mask = None
+
 
 
     def forward(self, *args, **kwargs):
@@ -129,6 +131,8 @@ class GEIGIN(GNNBasic):
             clear_masks(self)
         else:
             ea_logits = None
+
+        self.edge_mask = edge_att
 
         return (lc_logits, la_logits, ec_logits, ea_logits, ef_logits), att, edge_att
 

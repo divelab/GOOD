@@ -97,7 +97,7 @@ class GINFeatExtractor(GNNBasic):
     def get_node_repr(self, *args, **kwargs):
 
         if self.edge_feat:
-            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, **kwargs)
+            x, edge_index, edge_attr, batch, batch_size = self.arguments_read(*args, edge_feat=self.edge_feat, **kwargs)
             kwargs.pop('batch_size', 'not found')
             node_repr = self.encoder.get_node_repr(x, edge_index, edge_attr, batch, batch_size, **kwargs)
         else:

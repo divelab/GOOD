@@ -22,6 +22,8 @@ from .basic_launcher import Launcher
 class HarvestLauncher(Launcher):
     def __init__(self):
         super(HarvestLauncher, self).__init__()
+        self.watch = True
+        self.pick_reference = [-1, -2]
 
     def __call__(self, jobs_group, auto_args: AutoArgs):
         result_dict = self.harvest_all_fruits(jobs_group)
@@ -73,19 +75,18 @@ class HarvestLauncher(Launcher):
             shutil.copytree(auto_args.config_root, auto_args.final_root)
 
     def picky_farmer(self, result_dict):
-        WATCH = False
         best_fruits = dict()
         sorted_fruits = dict()
         for ddsa_key in result_dict.keys():
             for key, value in result_dict[ddsa_key].items():
                 result_dict[ddsa_key][key] = np.stack([np.mean(value, axis=1), np.std(value, axis=1)], axis=1)
             # lambda x: x[1][?, 0]  - ? denotes the result used to choose the best setting.
-            if WATCH:
-                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0], reverse=True)
+            if self.watch:
+                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference), reverse=True)
             else:
-                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0])
+                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference))
             # best_fruits[ddsa_key] = sorted_fruits[ddsa_key][0]
-        if WATCH:
+        if self.watch:
             print(sorted_fruits)
             exit(0)
         print(best_fruits)
@@ -116,6 +117,7 @@ class HarvestLauncher(Launcher):
                 all_finished = False
                 continue
             result = last_line.split(' ')[2:]
+            num_result = len(result)
             key_args = shlex.split(cmd_args)[1:]
             round_index = key_args.index('--exp_round')
             key_args = key_args[:round_index] + key_args[round_index + 2:]
@@ -132,7 +134,7 @@ class HarvestLauncher(Launcher):
 
             key_str = ' '.join(key_args)
             if key_str not in result_dict[ddsa_key].keys():
-                result_dict[ddsa_key][key_str] = [[] for _ in range(6)]
+                result_dict[ddsa_key][key_str] = [[] for _ in range(num_result)]
             # print(f'{ddsa_key}_{key_str}: {result}')
             result_dict[ddsa_key][key_str] = [r + [eval(result[i])] for i, r in
                                               enumerate(result_dict[ddsa_key][key_str])]

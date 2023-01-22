@@ -15,7 +15,7 @@ from torch_geometric.utils import remove_self_loops, to_networkx, subgraph, k_ho
 
 def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', font_size=12, node_size=300,
                arrows=True, vmin=None, vmax=None, pos=None, line_width=1.0,
-               enable_label=True, label_attr=None, enable_colorbar=True, save_fig_path=None):
+               enable_label=True, label_attr=None, enable_colorbar=True, save_fig_path=None, **kwargs):
     r"""
     Plot a graph with Matplotlib
 
@@ -60,10 +60,10 @@ def plot_graph(nx_Gs, color_attr=None, colors=None, font_color='white', font_siz
     # nx_Gs.nodes.data()
     # nx.draw(nx_Gs, pos, with_labels=True, node_color=colors, cmap=plt.cm.jet)
     ec = nx.draw_networkx_edges(nx_Gs, pos, edgelist=nx_Gs.edges, node_size=node_size, arrowstyle="<|-", arrows=arrows,
-                                ax=ax, width=line_width)
-    nc = nx.draw_networkx_nodes(nx_Gs, pos, nodelist=nx_Gs.nodes, node_color=colors, cmap=plt.cm.get_cmap('brg'),
+                                ax=ax, width=line_width, edge_color=kwargs.get('edge_color').cpu().numpy(), edge_cmap=plt.cm.get_cmap('hot'), edge_vmin=0, edge_vmax=1)
+    nc = nx.draw_networkx_nodes(nx_Gs, pos, nodelist=nx_Gs.nodes, node_color=colors, cmap=plt.cm.get_cmap('tab20c'), # plt.cm.get_cmap('brg'
                                 vmin=vmin, vmax=vmax,
-                                ax=ax, node_size=node_size)
+                                ax=ax, node_size=node_size, edgecolors='black')
     if enable_label:
         lc = nx.draw_networkx_labels(nx_Gs, pos, labels=nx.get_node_attributes(nx_Gs, label_attr), font_color=font_color, font_size=font_size, ax=ax)
     if enable_colorbar:

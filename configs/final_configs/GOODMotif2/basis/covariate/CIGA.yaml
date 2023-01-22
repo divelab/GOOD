@@ -6,8 +6,8 @@ ood:
   ood_alg: CIGA
   ood_param: 0.8
   extra_param:
-    - 2
-    - 1
+    - 0.5
+    - 0.5
 train:
   max_epoch: 200
   lr: 0.001

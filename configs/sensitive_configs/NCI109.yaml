@@ -1,0 +1,8 @@
+lr:
+  - 1e-3
+weight_decay:
+  - 0.
+pre_train:
+  - 50
+num_workers:
+  - 1

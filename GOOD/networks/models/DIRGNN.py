@@ -34,6 +34,7 @@ class DIRGIN(GNNBasic):
         self.num_tasks = config.dataset.num_classes
         self.causal_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
         self.conf_lin = torch.nn.Linear(config.model.dim_hidden, self.num_tasks)
+        self.edge_mask = None
 
     def forward(self, *args, **kwargs):
         r"""
@@ -66,6 +67,7 @@ class DIRGIN(GNNBasic):
         )
         causal_out = self.get_causal_pred(causal_rep)
         clear_masks(self)
+        self.edge_mask = causal_edge_index
 
 
         if self.training:

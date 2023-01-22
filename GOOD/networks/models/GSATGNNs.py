@@ -30,6 +30,8 @@ class GSATGIN(GNNBasic):
         self.learn_edge_att = config.ood.extra_param[0]
         self.config = config
 
+        self.edge_mask = None
+
     def forward(self, *args, **kwargs):
         r"""
         The GSAT model implementation.
@@ -59,6 +61,7 @@ class GSATGIN(GNNBasic):
         set_masks(edge_att, self)
         logits = self.classifier(self.gnn(*args, **kwargs))
         clear_masks(self)
+        self.edge_mask = edge_att
         return logits, att, edge_att
 
     def sampling(self, att_log_logits, training):

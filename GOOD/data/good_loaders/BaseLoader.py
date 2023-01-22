@@ -48,14 +48,14 @@ class BaseDataLoader(Munch):
                 loader = {'train': loader, 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
                           'test': [graph]}
         else:
-            loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True),
-                      'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False),
-                      'id_val': DataLoader(dataset['id_val'], batch_size=config.train.val_bs, shuffle=False) if dataset.get(
+            loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True, num_workers=config.num_workers),
+                      'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers),
+                      'id_val': DataLoader(dataset['id_val'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers) if dataset.get(
                           'id_val') else None,
                       'id_test': DataLoader(dataset['id_test'], batch_size=config.train.test_bs,
-                                            shuffle=False) if dataset.get(
+                                            shuffle=False, num_workers=config.num_workers) if dataset.get(
                           'id_test') else None,
-                      'val': DataLoader(dataset['val'], batch_size=config.train.val_bs, shuffle=False),
-                      'test': DataLoader(dataset['test'], batch_size=config.train.test_bs, shuffle=False)}
+                      'val': DataLoader(dataset['val'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers),
+                      'test': DataLoader(dataset['test'], batch_size=config.train.test_bs, shuffle=False, num_workers=config.num_workers)}
 
         return cls(loader)

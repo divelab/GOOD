@@ -1,0 +1,27 @@
+includes:
+  - ../base.yaml
+  - ../../GOODTwitter.yaml
+ood_param:
+  - 1
+extra_param:
+  -     # LA
+    - 0.1
+  -      # EC
+    - 0
+  -      # EA
+    - 7e-3
+    - 5e-3
+    - 3e-3
+    - 0.001
+    - 7.5e-4
+    - 5e-4
+    - 2.5e-4
+#    - 0
+  -       # r decay interval
+    - 30
+  -       # EF
+    - 0.001
+  -
+    - true
+pre_train:
+  - 5

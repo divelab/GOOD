@@ -34,6 +34,8 @@ class ASAPGIN(nn.Module):
         self.classifier = Classifier(config)
         self.config = config
 
+        self.edge_mask = None
+
     def forward(self, *args, **kwargs):
         h = self.sub_encoder.get_node_repr(*args, **kwargs)
         data = kwargs.get('data')
@@ -51,6 +53,7 @@ class ASAPGIN(nn.Module):
         set_masks(pooled_edge_weight, self.gnn)
         out_readout = self.gnn(data=pooled_data)
         clear_masks(self.gnn)
+        self.edge_mask = pooled_edge_index
         pred = self.classifier(out_readout)
         return pred
 

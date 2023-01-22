@@ -7,7 +7,7 @@ ood:
   ood_param: 1
   extra_param:
     - true
-    - 20
+    - 10
     - 0.7
 train:
   max_epoch: 200

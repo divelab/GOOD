@@ -1,0 +1,15 @@
+exp_round:
+  - 4
+  - 5
+log_file:
+  - sensitive
+lr:
+  - 1e-3
+  - 1e-4
+weight_decay:
+  - 0.
+  - 1e-3
+  - 1e-4
+#  - 1e-5
+clean_save:           # Comment it to make it false. Att: Setting it to false won't take effects.
+  - true
