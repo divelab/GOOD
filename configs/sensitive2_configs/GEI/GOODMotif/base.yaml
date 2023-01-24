@@ -16,7 +16,6 @@ extra_param:
     - 20
     - 15
     - 10
-    - 5
   -       # r decay interval
     - 50
   -       # EF

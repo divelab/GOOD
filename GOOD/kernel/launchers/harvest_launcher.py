@@ -22,7 +22,7 @@ from .basic_launcher import Launcher
 class HarvestLauncher(Launcher):
     def __init__(self):
         super(HarvestLauncher, self).__init__()
-        self.watch = True
+        self.watch = False
         self.pick_reference = [-1, -2]
 
     def __call__(self, jobs_group, auto_args: AutoArgs):

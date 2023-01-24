@@ -5,13 +5,11 @@ ood_param:   # information constraint
   - 0
 extra_param:
   -     # LA
+    - 9
     - 7
     - 5
     - 3
     - 1
-    - 0.75
-    - 0.5
-    - 0.25
 #    - 0
   -      # EC
     - 0
