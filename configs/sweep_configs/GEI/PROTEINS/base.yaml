@@ -14,7 +14,6 @@ extra_param:
   -      # EA
     - 0.1
     - 0.01
-    - 0.001
   -       # r decay interval
     - 60
   -       # EF

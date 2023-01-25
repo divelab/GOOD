@@ -1,28 +1,26 @@
 includes:
   - ../base.yaml
-ood_param:   # information constraint
-  - 0
-#  - 1
+ood_param:
+  - 1
 extra_param:
   -     # LA
-    - 10
     - 1
     - 0.1
+    - 0.01
   -      # EC
     - 0
   -      # EA
-    - 10
-    - 1
     - 0.1
+    - 0.01
+#    - 0.001
   -       # r decay interval
-    - 20
+    - 60
   -       # EF
     - 0
     - 0.1
     - 0.01
-    - 0.001
-  -           # If sub extractor batchnorm/instancenorm (true/false)
+#    - 0.001
+  -
     - true
-    - false
 pre_train:
   - 50

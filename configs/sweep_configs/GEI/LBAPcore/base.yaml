@@ -17,7 +17,6 @@ extra_param:
   -       # r decay interval
     - 90
   -       # EF
-#    - 0
     - 0.1
     - 0.01
   -           # If batchnorm/instancenorm (true/false)

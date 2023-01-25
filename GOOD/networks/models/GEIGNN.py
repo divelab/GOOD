@@ -111,21 +111,21 @@ class GEIGIN(GNNBasic):
         lc_logits = self.lc_classifier(self.lc_gnn(*args, **kwargs))
         clear_masks(self)
 
-        if self.LA:
+        if self.LA and self.training:
             set_masks(1 - GradientReverseLayerF.apply(edge_att, self.LA * self.config.train.alpha), self.la_gnn)
             la_logits = self.la_classifier(self.la_gnn(*args, **kwargs))
             clear_masks(self)
         else:
             la_logits = None
 
-        if self.EC:
+        if self.EC and self.training:
             set_masks(1 - edge_att, self.ec_gnn)
             ec_logits = self.ec_classifier(self.ec_gnn(*args, **kwargs))
             clear_masks(self)
         else:
             ec_logits = None
 
-        if self.EA:
+        if self.EA and self.training:
             set_masks(GradientReverseLayerF.apply(edge_att, self.EA * self.config.train.alpha), self.ea_gnn)
             ea_logits = self.ea_classifier(self.ea_gnn(*args, **kwargs))
             clear_masks(self)
@@ -150,7 +150,8 @@ class GEIGIN(GNNBasic):
     @staticmethod
     def concrete_sample(att_log_logit, temp, training):
         # if training:
-        if True:
+        # TODO: Change it back to if training
+        if training:
             random_noise = torch.empty_like(att_log_logit).uniform_(1e-10, 1 - 1e-10)
             random_noise = torch.log(random_noise) - torch.log(1.0 - random_noise)
             att_bern = ((att_log_logit + random_noise) / temp).sigmoid()

@@ -23,7 +23,7 @@ class HarvestLauncher(Launcher):
     def __init__(self):
         super(HarvestLauncher, self).__init__()
         self.watch = False
-        self.pick_reference = [-1, -2]
+        self.pick_reference = [-3]
 
     def __call__(self, jobs_group, auto_args: AutoArgs):
         result_dict = self.harvest_all_fruits(jobs_group)
