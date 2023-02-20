@@ -23,7 +23,7 @@ author = 'Shurui Gui, Xiner Li'
 
 # The full version, including alpha/beta/rc tags
 release = '0.3'
-version = '1.0.0'
+version = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -81,3 +81,4 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 
 def setup(app):
     app.connect('autodoc-skip-member', autodoc_skip_member)
+    app.add_css_file('css/my_theme.css')

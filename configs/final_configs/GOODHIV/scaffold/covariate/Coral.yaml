@@ -1,0 +1,13 @@
+includes:
+  - base.yaml
+model:
+  model_name: Coral_vGIN
+ood:
+  ood_alg: Coral
+  ood_param: 1.0
+train:
+  max_epoch: 200
+  lr: 0.001
+  weight_decay: 0.0
+log_file: lb_sweeping
+num_workers: 0

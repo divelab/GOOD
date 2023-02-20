@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+dataset:
+  dataset_name: GOODCBAS
+  domain: color
+train:
+  max_epoch: 200
+  train_bs: 1000
+  num_steps: 10
+  weight_decay: 0

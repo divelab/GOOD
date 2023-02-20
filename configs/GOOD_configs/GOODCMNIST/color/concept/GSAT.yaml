@@ -11,6 +11,9 @@ ood:
     - 0.5     # final_r
 train:
   max_epoch: 200
+  train_bs: 64
+  val_bs: 128
+  test_bs: 128
   lr: 1e-3
   mile_stones: [300]
 

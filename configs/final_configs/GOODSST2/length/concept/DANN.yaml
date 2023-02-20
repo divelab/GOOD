@@ -1,0 +1,12 @@
+includes:
+  - base.yaml
+model:
+  model_name: DANN_vGIN
+ood:
+  ood_alg: DANN
+  ood_param: 0.1
+train:
+  max_epoch: 200
+  lr: 1e-3
+
+

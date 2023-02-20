@@ -1,0 +1,15 @@
+includes:
+  - base.yaml
+model:
+  model_name: Mixup_GIN
+ood:
+  ood_alg: Mixup
+  ood_param: 0.4
+train:
+  max_epoch: 200
+  lr: 0.001
+  mile_stones:
+    - 150
+  weight_decay: 0.0
+log_file: lb_sweeping
+num_workers: 0

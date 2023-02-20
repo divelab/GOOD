@@ -32,6 +32,7 @@ Any contribution is welcomed!
    tutorial
    configs
    custom
+   leaderboard
    contributing
    QA
 

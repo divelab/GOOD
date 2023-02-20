@@ -1,0 +1,17 @@
+includes:
+  - base.yaml
+model:
+  model_name: EERMGCN
+ood:
+  ood_alg: EERM
+  ood_param: 3.
+  extra_param:
+    - 10   # K: Number of context generator
+    - 1   # T
+    - 1   # Number of sample
+    - 1e-3    # Learning rate for REINFORCE
+train:
+  max_epoch: 50
+  lr: 5e-3
+  mile_stones: [150]
+

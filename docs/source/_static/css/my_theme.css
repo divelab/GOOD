@@ -1,0 +1,10 @@
+.std-table-style td,
+.std-table-style th {
+  text-align: center;
+  vertical-align: middle;
+}
+.std-table-style td:nth-child(1),
+.std-table-style th:nth-child(1) {
+  text-align: left;
+  vertical-align: middle;
+}
