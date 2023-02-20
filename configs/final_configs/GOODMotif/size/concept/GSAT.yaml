@@ -1,0 +1,19 @@
+includes:
+  - base.yaml
+model:
+  model_name: GSATGIN
+ood:
+  ood_alg: GSAT
+  ood_param: 1.0
+  extra_param:
+    - true
+    - 20
+    - 0.7
+train:
+  max_epoch: 200
+  lr: 0.001
+  mile_stones:
+    - 150
+  weight_decay: 0.0
+log_file: lb_sweeping
+num_workers: 0

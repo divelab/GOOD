@@ -8,6 +8,7 @@ from GOOD.utils.initial import reset_random_seed
 from typing import List, Iterator
 from torch.utils.data.sampler import Sampler
 from torch_geometric.data.dataset import Dataset
+import numpy as np
 import torch
 
 @register.dataloader_register
@@ -35,6 +36,14 @@ class BaseDataLoader(Munch):
 
         """
         reset_random_seed(config)
+
+        def seed_worker(worker_id):
+            worker_seed = torch.initial_seed() % 2 ** 32
+            np.random.seed(worker_seed)
+            random.seed(worker_seed)
+        g = torch.Generator()
+        g.manual_seed(config.random_seed)
+
         if config.model.model_level == 'node':
             graph = dataset[0]
             loader = GraphSAINTRandomWalkSampler(graph, batch_size=config.train.train_bs,
@@ -48,14 +57,14 @@ class BaseDataLoader(Munch):
                 loader = {'train': loader, 'eval_train': [graph], 'id_val': [graph], 'id_test': [graph], 'val': [graph],
                           'test': [graph]}
         else:
-            loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True),
-                      'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False),
-                      'id_val': DataLoader(dataset['id_val'], batch_size=config.train.val_bs, shuffle=False) if dataset.get(
+            loader = {'train': DataLoader(dataset['train'], batch_size=config.train.train_bs, shuffle=True, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g),
+                      'eval_train': DataLoader(dataset['train'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g),
+                      'id_val': DataLoader(dataset['id_val'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g) if dataset.get(
                           'id_val') else None,
                       'id_test': DataLoader(dataset['id_test'], batch_size=config.train.test_bs,
-                                            shuffle=False) if dataset.get(
+                                            shuffle=False, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g) if dataset.get(
                           'id_test') else None,
-                      'val': DataLoader(dataset['val'], batch_size=config.train.val_bs, shuffle=False),
-                      'test': DataLoader(dataset['test'], batch_size=config.train.test_bs, shuffle=False)}
+                      'val': DataLoader(dataset['val'], batch_size=config.train.val_bs, shuffle=False, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g),
+                      'test': DataLoader(dataset['test'], batch_size=config.train.test_bs, shuffle=False, num_workers=config.num_workers, worker_init_fn=seed_worker, generator=g)}
 
         return cls(loader)

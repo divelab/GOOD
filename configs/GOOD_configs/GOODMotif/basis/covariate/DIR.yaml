@@ -8,7 +8,7 @@ ood:
   extra_param:
     - 1e-2    # additional loss control
 train:
-  max_epoch: 100
+  max_epoch: 200
   lr: 1e-3
   mile_stones: [150]
 

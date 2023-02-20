@@ -13,33 +13,41 @@
 [![GOOD stars](https://img.shields.io/github/stars/divelab/GOOD?style=social)](https://github.com/divelab/GOOD)
 [![Contributing][contributing-image]][contributing-url]
 
-[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) | [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0) | GOOD version 1
+[**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h&referrer=%5Bthe%20profile%20of%20Shurui%20Gui%5D(%2Fprofile%3Fid%3D~Shurui_Gui1)) | [Preprint](https://arxiv.org/abs/2206.08452) 
 <!-- > We are actively building the document. -->
 
 <!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
 
 <!-- :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!** -->
 
-:tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!**
+<!-- :tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!**
 
-For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch.
+For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch. -->
 
 ## Roadmap
 
 ### Tutorial
-- [x] More flexible pipelines and dataloaders. Please refer to branch [dev](https://github.com/divelab/GOOD/tree/dev) for more details.
-- [x] More detailed tutorial for adding new algorithms. Please refer to [Add a new algorithm](#add-a-new-algorithm). [**New!**]
-### Algorithms (plan to include)
-- [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation](https://arxiv.org/pdf/2201.00299.pdf)
-- [ ] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [Waiting for [the official implementation](https://github.com/LFhase/CIGA). It was accepted by NeurIPS 2022 recently:smile:]
-- [ ] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987) [In progress]
-  - [x] Method reproduction.
-  - [ ] Experiments: hyperparameter sweeping
-### New features
-- [x] Automatic program launcher.
-- [x] Automatic hyperparameter sweeping and config updating.
-### Leaderboard
-- [ ] A new leaderboard is under construction.
+- [x] More detailed tutorial to add new algorithms. Please refer to [Add a new algorithm](#add-a-new-algorithm).
+### Algorithms
+
+\* denotes the method is reproduced by its authors.
+
+[//]: # (- [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation]&#40;https://arxiv.org/pdf/2201.00299.pdf&#41;)
+- [x] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [[the official implementation](https://github.com/LFhase/CIGA)]*
+- [x] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987)
+
+### Datasets
+We are planning to include more graph out-of-distribution datasets for your convenience.
+- [ ] Twitter and SST5 from [Explainability in graph neural networks: A taxonomic survey](https://ieeexplore.ieee.org/abstract/document/9875989/citations?tabFilter=papers#citations)
+- [ ] Parts of [DrugOOD](https://github.com/tencent-ailab/DrugOOD) (Task: LBAP, Noise level: core)
+
+### Features
+
+- [x] Updated final result output for an easier result gathering. [Feb 20th updates]
+
+### Leaderboard [Feb 20th updates]
+- [ ] The leaderboard 1.1.0 on latest datasets will have **larger hyperparameter spaces** and **more runs for hyperparameter sweeping**.
+- [ ] Results will be posted on this [leaderboard](https://good.readthedocs.io/en/latest/leaderboard.html) gradually.
 
 ## Table of contents
 
@@ -170,11 +178,8 @@ Note that the results are valid only after 3+ rounds experiments in this benchma
 goodtl --config_root final_configs --launcher HarvestLauncher --allow_datasets GOODMotif --allow_domains basis --allow_shifts covariate --allow_algs GSAT --allow_rounds 1 2 3 4 5 6 7 8 9 10
 ```
 
-(Experimental function.)
-
-The output numpy array:
-* Rows: In-distribution train/In-distribution test/Out-of-distribution train/Out-of-distribution test/Out-of-distribution validation
-* Columns: Mean/Std.
+Output: 
+**Markdown format table.** (This table is also saved in the file: <Project_root>/result_table.md).
 
 You can customize your own launcher at `GOOD/kernel/launchers/`.
 
@@ -184,24 +189,31 @@ Please follow [this documentation](https://good.readthedocs.io/en/latest/custom.
 
 Any contributions are welcomed! Please refer to [contributing](http://localhost:63342/GOOD/docs/build/contributing.html) for adding your algorithm into GOOD.
 
-## Test
+[//]: # (## Test)
 
-### Dataset regeneration test
+[//]: # ()
+[//]: # (### Dataset regeneration test)
 
-This test regenerates all datasets again and compares them with the datasets used in the original training process locates.
-Test details can be found at [test_regenerate_datasets.py](/../../blob/main/test/test_reproduce_full/test_regenerate_datasets.py).
-For a quick review, we provide a [full regeneration test report](https://drive.google.com/file/d/1jIShh3eBXAQ_oQCFL9AVU3OpUlVprsbo/view?usp=sharing).
+[//]: # ()
+[//]: # (This test regenerates all datasets again and compares them with the datasets used in the original training process locates.)
 
-### Sampled tests
+[//]: # (Test details can be found at [test_regenerate_datasets.py]&#40;/../../blob/main/test/test_reproduce_full/test_regenerate_datasets.py&#41;.)
 
-In order to keep the validity of our code all the time, we link our project with circleci service and provide several 
-sampled tests to go through (because of the limitation of computational resources in CI platforms).
+[//]: # (For a quick review, we provide a [full regeneration test report]&#40;https://drive.google.com/file/d/1jIShh3eBXAQ_oQCFL9AVU3OpUlVprsbo/view?usp=sharing&#41;.)
+
+[//]: # ()
+[//]: # (### Sampled tests)
+
+[//]: # ()
+[//]: # (In order to keep the validity of our code all the time, we link our project with circleci service and provide several )
+
+[//]: # (sampled tests to go through &#40;because of the limitation of computational resources in CI platforms&#41;.)
 
 ## Leaderboard
 
-The original leaderboard results are listed in the paper. And the validation of these results is described [here](/../../tree/GOODv0#reproducibility).
+The initial leaderboard results are listed in the paper. And the validation of these results is described [here](/../../tree/GOODv0#reproducibility).
 
-A new leaderboard is under constructed.
+Leaderboard 1.1.0 with updated datasets will be available [here](https://good.readthedocs.io/en/latest/leaderboard.html).
 
 ## Citing GOOD
 If you find this repository helpful, please cite our [paper](https://arxiv.org/abs/2206.08452).

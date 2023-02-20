@@ -3,6 +3,7 @@ import os
 import shlex
 import shutil
 from pathlib import Path
+import distutils.dir_util
 
 import numpy as np
 from ruamel.yaml import YAML
@@ -15,12 +16,18 @@ from GOOD.utils.args import AutoArgs
 from GOOD.utils.args import args_parser
 from GOOD.utils.config_reader import load_config, args2config, merge_dicts
 from .basic_launcher import Launcher
+from typing import Literal
+from cilog import create_logger
 
 
 @register.launcher_register
 class HarvestLauncher(Launcher):
     def __init__(self):
         super(HarvestLauncher, self).__init__()
+        self.watch = False
+        self.pick_reference = [-1]
+        self.test_index = -2
+        self.logger = create_logger('Harvest', file='result_table.md', use_color=False)
 
     def __call__(self, jobs_group, auto_args: AutoArgs):
         result_dict = self.harvest_all_fruits(jobs_group)
@@ -29,6 +36,8 @@ class HarvestLauncher(Launcher):
         if auto_args.sweep_root:
             self.process_final_root(auto_args)
             self.update_best_config(auto_args, best_fruits)
+        else:
+            self.show_your_fruits(best_fruits)
 
     def update_best_config(self, auto_args, best_fruits):
         for ddsa_key in best_fruits.keys():
@@ -63,7 +72,7 @@ class HarvestLauncher(Launcher):
             while ans != 'y' and ans != 'n':
                 ans = input(f'Invalid input: {ans}. Please answer y or n.')
             if ans == 'y':
-                shutil.copytree(auto_args.config_root, auto_args.final_root)
+                distutils.dir_util.copy_tree(str(auto_args.config_root), str(auto_args.final_root))
             elif ans == 'n':
                 pass
             else:
@@ -73,11 +82,20 @@ class HarvestLauncher(Launcher):
 
     def picky_farmer(self, result_dict):
         best_fruits = dict()
+        sorted_fruits = dict()
         for ddsa_key in result_dict.keys():
             for key, value in result_dict[ddsa_key].items():
                 result_dict[ddsa_key][key] = np.stack([np.mean(value, axis=1), np.std(value, axis=1)], axis=1)
-            best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: x[1][-1, 0])
-        print(best_fruits)
+            # lambda x: x[1][?, 0]  - ? denotes the result used to choose the best setting.
+            if self.watch:
+                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference), reverse=True)
+            else:
+                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference))
+            # best_fruits[ddsa_key] = sorted_fruits[ddsa_key][0]
+        if self.watch:
+            print(sorted_fruits)
+            exit(0)
+        # print(best_fruits)
         return best_fruits
 
     def filter_config(self, config: dict, target_keys):
@@ -103,7 +121,9 @@ class HarvestLauncher(Launcher):
             if not last_line.startswith('INFO: ChartInfo'):
                 print(cmd_args, 'Unfinished')
                 all_finished = False
+                continue
             result = last_line.split(' ')[2:]
+            num_result = len(result)
             key_args = shlex.split(cmd_args)[1:]
             round_index = key_args.index('--exp_round')
             key_args = key_args[:round_index] + key_args[round_index + 2:]
@@ -120,10 +140,45 @@ class HarvestLauncher(Launcher):
 
             key_str = ' '.join(key_args)
             if key_str not in result_dict[ddsa_key].keys():
-                result_dict[ddsa_key][key_str] = [[] for _ in range(5)]
+                result_dict[ddsa_key][key_str] = [[] for _ in range(num_result)]
+            # print(f'{ddsa_key}_{key_str}: {result}')
             result_dict[ddsa_key][key_str] = [r + [eval(result[i])] for i, r in
                                               enumerate(result_dict[ddsa_key][key_str])]
-        if not all_finished:
-            print('Please launch unfinished jobs using other launchers before harvesting.')
-            exit(1)
+        # if not all_finished:
+        #     print('Please launch unfinished jobs using other launchers before harvesting.')
+        #     exit(1)
         return result_dict
+
+    @staticmethod
+    def new_container(key, dictionary, container: Literal['dict', 'list'] = 'dict'):
+        if key not in dictionary:
+            dictionary[key] = eval(container)()
+
+    def show_your_fruits(self, best_fruits):
+        format_best_fruits = dict()
+        for ddsa_key, result in best_fruits.items():
+            dataset, domain, shift, algorithm = ddsa_key.split(' ')
+            # self.new_container(dataset, format_best_fruits)
+            # self.new_container(domain, format_best_fruits[dataset])
+            # self.new_container(shift, format_best_fruits[dataset][domain])
+            self.new_container(algorithm, format_best_fruits)
+            dds_key = f'{dataset} {domain} {shift}'
+
+            result = result[1][self.test_index]
+            if 'ZINC' not in dataset:
+                result = f'{result[0] * 100:.2f}({result[1] * 100:.2f})'
+            else:
+                result = f'{result[0]:.4f}({result[1]:.4f})'
+            # format_best_fruits[dataset][domain][shift][algorithm] = result
+            format_best_fruits[algorithm][dds_key] = result
+
+        # for dataset, domain_shift_algorithm in format_best_fruits.items():
+        #     for domain, shift_algorithm in domain_shift_algorithm.items():
+        #         for shift, algorithm_result in shift_algorithm.items():
+        #             self.logger.table_fromlist([[dataset, f'{domain}-{shift}']] + list(algorithm_result.items()))
+        for algorithm, dds_key_result in format_best_fruits.items():
+            headers = ['Method', *list(dds_key_result.keys())]
+            data_row = [algorithm, *list(dds_key_result.values())]
+            self.logger.table_fromlist([headers, data_row])
+
+

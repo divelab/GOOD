@@ -88,7 +88,7 @@ def make_list_cmds(auto_args, conda_goodtg):
                         cmd_args = [' '.join(args_set) for args_set in cmd_args_product]
                     else:
                         cmd_args = [
-                            f'{conda_goodtg} --exp_round {round} --config_path \"{ood_config_path}\" --log_file default'
+                            f'{conda_goodtg} --exp_round {round} --config_path \"{ood_config_path}\"'
                             for round in auto_args.allow_rounds]
 
                     args_group += cmd_args
