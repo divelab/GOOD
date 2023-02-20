@@ -20,7 +20,7 @@
 
 <!-- :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!** -->
 
-:tada: **We are glad to announce that our GOOD paper is accepted by NeurIPS 2022 Datasets and Benchmarks Track!**
+This repo maintains and updates GOOD benchmark which is accepted by NeurIPS 2022 Datasets and Benchmarks Track. :smile:
 
 <!-- For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch. -->
 
