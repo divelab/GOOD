@@ -146,7 +146,7 @@ Try to apply OOD algorithms to your own models?
 
 
 Deep into details (Preparations for adding new algorithms)
-----------------------------------------------
+--------------------------------------------------------------
 
 1. **Config**
 
