@@ -23,7 +23,7 @@ author = 'Shurui Gui, Xiner Li'
 
 # The full version, including alpha/beta/rc tags
 release = '0.3'
-version = '1.1.0'
+version = '1.1.1'
 
 
 # -- General configuration ---------------------------------------------------

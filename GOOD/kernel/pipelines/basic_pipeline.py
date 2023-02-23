@@ -62,6 +62,7 @@ class Pipeline:
 
         mask, targets = nan2zero_get_mask(data, 'train', self.config)
         node_norm = data.get('node_norm') if self.config.model.model_level == 'node' else None
+        node_norm = node_norm.reshape(targets.shape) if node_norm is not None else None
         data, targets, mask, node_norm = self.ood_algorithm.input_preprocess(data, targets, mask, node_norm,
                                                                              self.model.training,
                                                                              self.config)
@@ -189,8 +190,8 @@ class Pipeline:
             mask, targets = nan2zero_get_mask(data, split, self.config)
             if mask is None:
                 return stat
-            node_norm = torch.ones((data.num_nodes,),
-                                   device=self.config.device) if self.config.model.model_level == 'node' else None
+            node_norm = torch.ones_like(targets,
+                                        device=self.config.device) if self.config.model.model_level == 'node' else None
             data, targets, mask, node_norm = self.ood_algorithm.input_preprocess(data, targets, mask, node_norm,
                                                                                  self.model.training,
                                                                                  self.config)

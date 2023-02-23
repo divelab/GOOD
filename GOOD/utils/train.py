@@ -40,6 +40,8 @@ def nan2zero_get_mask(data, task, config: Union[CommonArgs, Munch]):
     if mask is None:
         return None, None
     targets = torch.clone(data.y).detach()
+    assert mask.shape[0] == targets.shape[0]
+    mask = mask.reshape(targets.shape)
     targets[~mask] = 0
 
     return mask, targets
