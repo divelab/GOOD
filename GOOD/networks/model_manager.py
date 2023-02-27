@@ -23,7 +23,7 @@ def load_model(name: str, config: Union[CommonArgs, Munch]) -> torch.nn.Module:
         reset_random_seed(config)
         model = register.models[name](config)
     except KeyError as e:
-        print(f'#E#Model {name} dose not exist.')
+        print(f'#E#Model {name} does not exist.')
         raise e
     return model
 

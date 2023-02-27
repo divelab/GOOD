@@ -122,7 +122,10 @@ class BatchSequential(nn.Sequential):
     def forward(self, inputs, batch):
         for module in self._modules.values():
             if isinstance(module, (InstanceNorm)):
-                inputs = module(inputs, batch)
+                if batch.shape[0] == 0:
+                    inputs = inputs
+                else:
+                    inputs = module(inputs, batch)
             else:
                 inputs = module(inputs)
         return inputs

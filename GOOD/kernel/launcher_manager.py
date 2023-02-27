@@ -28,6 +28,6 @@ def load_launcher(name: str) -> Launcher:
     try:
         launcher = register.launchers[name]()
     except KeyError as e:
-        print(f'#E#Launcher {name} dose not exist.')
+        print(f'#E#Launcher {name} does not exist.')
         raise e
     return launcher

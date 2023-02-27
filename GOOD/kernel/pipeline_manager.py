@@ -36,6 +36,6 @@ def load_pipeline(name: str,
         reset_random_seed(config)
         pipeline = register.pipelines[name](task, model, loader, ood_algorithm, config)
     except KeyError as e:
-        print(f'#E#Pipeline {name} dose not exist.')
+        print(f'#E#Pipeline {name} does not exist.')
         raise e
     return pipeline
