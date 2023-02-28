@@ -2,8 +2,10 @@ Leaderboard
 ==============
 
 In this new leaderboard, hyperparameter spaces are larger, and all hyperparameters are selected according to 3-run
-average performance. All results are obtained by 10 runs. Values in parenthesis are standard deviations.
--(-) denotes abnormal results caused by under-fitting.
+average performance. The hyperparameter searching spaces can be found at `sweep_configs <https://github.com/divelab/GOOD/tree/GOODv1/configs/sweep_configs>`_,
+and the chosen hyperparameters are listed in `final_configs <https://github.com/divelab/GOOD/tree/GOODv1/configs/final_configs>`_.
+All OOD test results are obtained by 10 runs according to OOD validation set. Values in parenthesis are standard deviations.
+We use bold to denote the best results. -(-) denotes abnormal results caused by under-fitting.
 
 Graph-level
 ------------
@@ -39,7 +41,7 @@ Graph-level
 
 
 ..  table::
-    :width: auto
+    :widths: auto
     :class: std-table-style
 
     +-----------+-----------------+-----------------+
