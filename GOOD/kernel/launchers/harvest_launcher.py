@@ -84,13 +84,17 @@ class HarvestLauncher(Launcher):
         best_fruits = dict()
         sorted_fruits = dict()
         for ddsa_key in result_dict.keys():
+            dataset, domain, shift, algorithm = ddsa_key.split(' ')
             for key, value in result_dict[ddsa_key].items():
                 result_dict[ddsa_key][key] = np.stack([np.mean(value, axis=1), np.std(value, axis=1)], axis=1)
             # lambda x: x[1][?, 0]  - ? denotes the result used to choose the best setting.
             if self.watch:
-                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference), reverse=True)
+                sorted_fruits[ddsa_key] = sorted(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference), reverse=True if 'ZINC' not in dataset else False)
             else:
-                best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference))
+                if 'ZINC' in dataset:
+                    best_fruits[ddsa_key] = min(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference))
+                else:
+                    best_fruits[ddsa_key] = max(list(result_dict[ddsa_key].items()), key=lambda x: sum(x[1][i, 0] for i in self.pick_reference))
             # best_fruits[ddsa_key] = sorted_fruits[ddsa_key][0]
         if self.watch:
             print(sorted_fruits)
