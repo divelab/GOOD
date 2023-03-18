@@ -1,6 +1,10 @@
 includes:
   - ../base.yaml
   - ../../NCI1.yaml
+exp_round:
+  - 1
+  - 2
+  - 3
 ood_param:   # information constraint
 #  - 0
   - 1
@@ -14,6 +18,7 @@ extra_param:
   -      # EA
     - 0.1
     - 0.01
+    - 0.001
   -       # r decay interval
     - 60
   -       # EF
@@ -24,4 +29,4 @@ extra_param:
     - true
 #    - false
 pre_train:
-  - 50
+  - 100
