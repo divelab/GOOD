@@ -6,6 +6,7 @@ gpu_idx: 0
 ckpt_root: null
 ckpt_dir: null
 save_tag: null
+clean_save: False
 pytest: False
 pipeline: Pipeline
 num_workers: 0

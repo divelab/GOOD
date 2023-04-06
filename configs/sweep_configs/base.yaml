@@ -9,6 +9,6 @@ lr:
 weight_decay:
   - 0.
 num_workers:
-  - 0
+  - 8
 clean_save:           # Comment it to make it false. Att: Setting it to false won't take effect.
   - true

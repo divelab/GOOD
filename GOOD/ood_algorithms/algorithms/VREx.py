@@ -49,7 +49,7 @@ class VREx(BaseOODAlg):
             env_idx = data.env_id == i
             if loss[env_idx].shape[0] > 0:
                 loss_list.append(loss[env_idx].sum() / mask[env_idx].sum())
-        spec_loss = config.ood.ood_param * torch.var(torch.tensor(loss_list, device=config.device))
+        spec_loss = config.ood.ood_param * torch.var(torch.stack(loss_list))
         if torch.isnan(spec_loss):
             spec_loss = 0
         mean_loss = loss.sum() / mask.sum()
