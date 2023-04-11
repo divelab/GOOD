@@ -1,0 +1,18 @@
+includes:
+  - base.yaml
+model:
+  model_name: CIGAGIN
+  dropout_rate: 0.5
+ood:
+  ood_alg: CIGA
+  ood_param: 0.8
+  extra_param:
+    - 4
+    - 1
+train:
+  train_bs: 128
+  val_bs: 128
+  test_bs: 128
+  max_epoch: 200
+  lr: 0.001
+log_file: default

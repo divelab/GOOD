@@ -1,0 +1,16 @@
+includes:
+  - base.yaml
+model:
+  model_name: CIGAGIN
+ood:
+  ood_alg: CIGA
+  ood_param: 0.3
+  extra_param:
+    - 2
+    - 1
+train:
+  max_epoch: 200
+  lr: 0.001
+  mile_stones:
+    - 150
+log_file: default
