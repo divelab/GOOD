@@ -98,7 +98,7 @@ GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-ver
 
 > Note that we currently test on PyTorch (==1.10.1), PyG (==2.0.4), RDKit (==2020.09.5); thus we strongly encourage to install these versions.
 
-> Warning: Please install with cuda >= 11.3 to avoid unexpected cuda errors.
+> **Warning**: Please install with cuda >= 11.3 to avoid unexpected cuda errors.
 
 A recommended installation example:
 ```shell
