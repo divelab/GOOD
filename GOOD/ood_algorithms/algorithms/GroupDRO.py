@@ -52,7 +52,7 @@ class GroupDRO(BaseOODAlg):
                 loss_list.append(loss[env_idx].sum() / mask[env_idx].sum())
         losses = torch.stack(loss_list)
         group_weights = torch.ones(losses.shape[0], device=config.device)
-        group_weights *= torch.exp(config.ood.ood_param * losses)
+        group_weights *= torch.exp(config.ood.ood_param * losses.data)
         group_weights /= group_weights.sum()
         loss = losses @ group_weights
         self.mean_loss = loss
