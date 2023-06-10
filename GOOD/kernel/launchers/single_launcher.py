@@ -16,5 +16,5 @@ class SingleLauncher(Launcher):
         jobs_group = super(SingleLauncher, self).__call__(jobs_group, auto_args)
         for cmd_args in tqdm(jobs_group):
             subprocess.run(shlex.split(cmd_args) + ['--gpu_idx', f'{auto_args.allow_devices[0]}'], close_fds=True,
-                           stdout=open('debug_out.log', 'a'), stderr=open('debug_error.log', 'a'),
+                           stdout=open('/dev/null', 'a'), stderr=open('/dev/null', 'a'),
                            start_new_session=False)

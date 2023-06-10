@@ -1,0 +1,12 @@
+includes:
+  - GSAT.yaml
+ood:
+  ood_alg: IGA
+  ood_param: 1.0
+train:
+  max_epoch: 50
+  train_bs: 16
+  val_bs: 16
+  test_bs: 16
+
+

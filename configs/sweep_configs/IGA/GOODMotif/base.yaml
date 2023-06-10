@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+  - ../../GOODMotif.yaml
+extra_param:
+  -
+    - true
+  -
+    - 20
+  -
+    - 0.7

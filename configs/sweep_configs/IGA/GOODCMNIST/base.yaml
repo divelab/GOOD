@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+  - ../../GOODCMNIST.yaml
+extra_param:
+  -
+    - true
+  -
+    - 10
+  -
+    - 0.7

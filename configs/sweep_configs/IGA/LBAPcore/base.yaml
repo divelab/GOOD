@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+  - ../../LBAPcore.yaml
+extra_param:
+  -
+    - true
+  -
+    - 90
+  -
+    - 0.5

@@ -1,0 +1,7 @@
+includes:
+  - GSAT.yaml
+ood:
+  ood_alg: IGA
+  ood_param: 1.0
+
+

@@ -1,0 +1,10 @@
+includes:
+  - ../base.yaml
+  - ../../GOODSST2.yaml
+extra_param:
+  -
+    - true
+  -
+    - 60
+  -
+    - 0.5
