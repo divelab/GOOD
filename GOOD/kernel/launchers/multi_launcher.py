@@ -1,4 +1,5 @@
 import shlex
+import os
 import subprocess
 import time
 
@@ -23,7 +24,7 @@ class MultiLauncher(Launcher):
                     cmd_args = jobs_group.pop(0)
                     new_proc = subprocess.Popen(shlex.split(cmd_args) + ['--gpu_idx', f'{gpu_idx}'],
                                                 close_fds=True,
-                                                stdout=open('debug_out.log', 'a'), stderr=open('debug_error.log', 'a'),
+                                                stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'),
                                                 start_new_session=False)
                     procs_by_gpu[idx] = new_proc
                     break

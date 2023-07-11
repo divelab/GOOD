@@ -38,8 +38,8 @@ This repo maintains and updates GOOD benchmark which is accepted by NeurIPS 2022
 
 ### Datasets
 We are planning to include more graph out-of-distribution datasets for your convenience.
-- [ ] Twitter and SST5 from [Explainability in graph neural networks: A taxonomic survey](https://ieeexplore.ieee.org/abstract/document/9875989/citations?tabFilter=papers#citations)
-- [ ] Parts of [DrugOOD](https://github.com/tencent-ailab/DrugOOD) (Task: LBAP, Noise level: core)
+- [x] Twitter from [this survey](https://ieeexplore.ieee.org/abstract/document/9875989/citations?tabFilter=papers#citations), GOOD style splits shared by [LECI](https://github.com/divelab/LECI).
+- [x] Parts of [DrugOOD](https://github.com/tencent-ailab/DrugOOD) (Task: LBAP, Noise level: core)
 
 ### Features
 

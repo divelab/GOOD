@@ -8,6 +8,7 @@ ckpt_dir: null
 save_tag: null
 pytest: False
 pipeline: Pipeline
+clean_save: False
 num_workers: 1
 train:
   weight_decay: 0.
