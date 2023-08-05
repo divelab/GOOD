@@ -3,7 +3,7 @@ exp_round:
   - 2
   - 3
 log_file:
-  - exp_0
+  - exp_stable_leci
 lr:
   - 1e-3
   - 1e-4

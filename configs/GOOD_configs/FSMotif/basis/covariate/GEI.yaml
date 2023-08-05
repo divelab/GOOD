@@ -1,0 +1,21 @@
+includes:
+  - base.yaml
+model:
+  model_name: GEIGIN
+ood:
+  ood_alg: GEI
+  ood_param: 0  # infomation constraint
+  extra_param:
+    - 1    # LA
+    - 0      # EC
+    - 1     # EA
+    - 10     # r decay interval
+    - 0     # EF
+    - true  # batchnorm or instancenorm for Subgraph extractor True or False
+train:
+  max_epoch: 200
+  lr: 1e-3
+  mile_stones: [150]
+  pre_train: 100
+
+

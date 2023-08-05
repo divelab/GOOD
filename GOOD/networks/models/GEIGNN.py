@@ -36,6 +36,7 @@ class GEIGIN(GNNBasic):
         self.EC = config.ood.extra_param[1]
         self.EA = config.ood.extra_param[2]
         self.EF = config.ood.extra_param[4]
+        self.decay_interval = config.ood.extra_param[3]
 
         fe_kwargs = {'without_embed': True if self.EF else False}
 
@@ -81,11 +82,14 @@ class GEIGIN(GNNBasic):
 
         """
         data = kwargs.get('data')
+        alpha = self.config.train.epoch % self.decay_interval
+        alpha_e = 1 if alpha > self.decay_interval // 3 else 0
+        alpha_l = 1 if alpha > (self.decay_interval * 2) // 3 else 0
 
         # --- Filter environment info in features (only features) ---
         if self.EF:
             filtered_features = self.ef_mlp(data.x, data.batch)
-            adversarial_features = GradientReverseLayerF.apply(filtered_features, self.EF * self.config.train.alpha)
+            adversarial_features = GradientReverseLayerF.apply(filtered_features, self.EF * alpha_e)
             ef_logits = self.ef_classifier(self.ef_pool(self.ef_discr_mlp(adversarial_features, data.batch), data.batch))
             data.x = filtered_features
             kwargs['data'] = data
@@ -112,7 +116,7 @@ class GEIGIN(GNNBasic):
         clear_masks(self)
 
         if self.LA and self.training:
-            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.LA * self.config.train.alpha), self.la_gnn)
+            set_masks(1 - GradientReverseLayerF.apply(edge_att, self.LA * alpha_l), self.la_gnn)
             la_logits = self.la_classifier(self.la_gnn(*args, **kwargs))
             clear_masks(self)
         else:
@@ -126,7 +130,7 @@ class GEIGIN(GNNBasic):
             ec_logits = None
 
         if self.EA and self.training:
-            set_masks(GradientReverseLayerF.apply(edge_att, self.EA * self.config.train.alpha), self.ea_gnn)
+            set_masks(GradientReverseLayerF.apply(edge_att, self.EA * alpha_e), self.ea_gnn)
             ea_logits = self.ea_classifier(self.ea_gnn(*args, **kwargs))
             clear_masks(self)
         else:
