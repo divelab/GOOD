@@ -91,6 +91,8 @@ Besides, if you hope to include your algorithms in the leaderboard, please conta
 
 ## Installation 
 
+- Unbuntu >= 18.04
+
 ### Conda dependencies
 
 GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-versions/), [PyG (>=2.0)](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), and
