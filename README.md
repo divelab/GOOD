@@ -24,6 +24,10 @@ This repo maintains and updates GOOD benchmark which is accepted by NeurIPS 2022
 
 <!-- For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch. -->
 
+## News
+
+- Our new graph OOD work on graph-level tasks: [LECI (NeurIPS 2023)](https://github.com/divelab/LECI).
+
 ## Roadmap
 
 ### Tutorial
