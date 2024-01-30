@@ -16,7 +16,7 @@
 [**Documentation**](https://good.readthedocs.io) | [**NeurIPS 2022 Paper**](https://openreview.net/forum?id=8hHg-zs_p-h) | [Preprint](https://arxiv.org/abs/2206.08452) 
 <!-- > We are actively building the document. -->
 
-<!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui, Xiner Li, Limei Wang, and Shuiwang Ji. -->
+<!-- [**GOOD: A Graph Out-of-Distribution Benchmark.**](https://arxiv.org/abs/2206.08452) Shurui Gui*, Xiner Li*, Limei Wang, and Shuiwang Ji. -->
 
 <!-- :fire:**New! The GOOD is now also parts of the software library [DIG](https://github.com/divelab/DIG)! If you wish to use the GOOD datasets with DIG features, you can directly use the [DIG](https://github.com/divelab/DIG) library!** -->
 
