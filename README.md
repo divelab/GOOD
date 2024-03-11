@@ -25,8 +25,8 @@ This repo maintains and updates GOOD benchmark which is accepted by NeurIPS 2022
 <!-- For the original code used in the paper, please check branch [GOOD version 0](https://github.com/divelab/GOOD/tree/GOODv0). All new features, datasets and methods will be updated in this branch. -->
 
 ## News
-
-- Our new graph OOD work on graph-level tasks: [LECI (NeurIPS 2023)](https://github.com/divelab/LECI).
+- Algorithm GIL added: [Learning Invariant Graph Representations for Out-of-Distribution Generalization (NeurIPS 2022)](https://openreview.net/forum?id=acKK8MQe2xc) [Mar 11th, 2024]
+- Our new graph OOD work on graph-level tasks: [Joint Learning of Label and Environment Causal Independence for Graph Out-of-Distribution Generalization (NeurIPS 2023)](https://github.com/divelab/LECI).
 
 ## Roadmap
 
@@ -36,7 +36,7 @@ This repo maintains and updates GOOD benchmark which is accepted by NeurIPS 2022
 
 \* denotes the method is reproduced by its authors.
 
-[//]: # (- [ ] [Improving Out-of-Distribution Robustness via Selective Augmentation]&#40;https://arxiv.org/pdf/2201.00299.pdf&#41;)
+- [x] [Beta: feedback is welcome] [Learning Invariant Graph Representations for Out-of-Distribution Generalization](https://openreview.net/forum?id=acKK8MQe2xc)
 - [x] [Learning Causally Invariant Representations for Out-of-Distribution Generalization on Graphs](https://arxiv.org/pdf/2202.05441.pdf) [[the official implementation](https://github.com/LFhase/CIGA)]*
 - [x] [Interpretable and Generalizable Graph Learning via Stochastic Attention Mechanism](https://arxiv.org/abs/2201.12987)
 
@@ -106,12 +106,20 @@ GOOD depends on [PyTorch (>=1.6.0)](https://pytorch.org/get-started/previous-ver
 
 > **Warning**: Please install with cuda >= 11.3 to avoid unexpected cuda errors.
 
-A recommended installation example:
+Recommended installation examples:
+- PyTorch 1.10.1, PyG 2.0.4, RDKit 2020.09.5, CUDA 11.3
 ```shell
 # Create your own conda environment, then...
 conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
 conda install pyg -c pyg
 conda install -c conda-forge rdkit==2020.09.5
+```
+- PyTorch 2.1.2, PyG 2.5.0, RDKit 2020.09.5, CUDA 11.8
+```shell
+conda install -y pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install -y  pyg -c pyg
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+conda install -c conda-forge rdkit==2020.09.5 # If newer version is used, the dataset generation may fail or results will be different.
 ```
 
 ### Pip
