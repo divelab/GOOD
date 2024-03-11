@@ -99,8 +99,9 @@ class KMeans:
         """
           Get remaining memory in gpu
         """
-        torch.cuda.synchronize()
-        torch.cuda.empty_cache()
+        with torch.cuda.device(self.device):
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
         if self._pynvml_exist:
             pynvml.nvmlInit()
             gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(self.device.index)

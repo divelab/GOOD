@@ -1,0 +1,15 @@
+includes:
+  - base.yaml
+model:
+  model_name: GILvGIN
+ood:
+  ood_alg: GIL
+  ood_param: 1e-3    # IGA lambda
+  extra_param:
+    - 0.6    # Top ratio of subgraphs
+    - 3       # Num of environments
+train:
+  max_epoch: 200
+  lr: 1e-3
+
+
