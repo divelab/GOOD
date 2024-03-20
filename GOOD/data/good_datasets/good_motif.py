@@ -127,7 +127,7 @@ class GOODMotif(InMemoryDataset):
         for motif_id in tqdm(range(3)):
             for _ in range(num_data // 3):
                 basis_id = np.random.choice([0, 1, 2, 3, 4], p=[1. / 5.] * 5)
-                width_basis = 10 + np.random.random_integers(-5, 5)
+                width_basis = 10 + np.random.randint(-5, 5 + 1)
                 data = self.gen_data(basis_id=basis_id, width_basis=width_basis, motif_id=motif_id)
                 data_list.append(data)
 
@@ -177,7 +177,7 @@ class GOODMotif(InMemoryDataset):
                     basis_id = random.randint(0, 2)
                 else:
                     basis_id = split_id + 2
-                width_basis = 10 + np.random.random_integers(-5, 5)
+                width_basis = 10 + np.random.randint(-5, 5 + 1)
                 data = self.gen_data(basis_id=basis_id, width_basis=width_basis, motif_id=motif_id)
                 data.env_id = torch.LongTensor([basis_id])
                 all_split_list[split_id].append(data)
@@ -210,7 +210,7 @@ class GOODMotif(InMemoryDataset):
         for env_id in tqdm(range(len(train_spurious_ratio))):
             for i in range(num_train // len(train_spurious_ratio)):
                 motif_id = random.randint(0, 2)
-                width_basis = 10 + np.random.random_integers(-5, 5)
+                width_basis = 10 + np.random.randint(-5, 5 + 1)
                 if random.random() < train_spurious_ratio[env_id]:
                     basis_id = motif_id
                 else:
@@ -222,7 +222,7 @@ class GOODMotif(InMemoryDataset):
         val_list = []
         for i in range(num_val):
             motif_id = random.randint(0, 2)
-            width_basis = 10 + np.random.random_integers(-5, 5)
+            width_basis = 10 + np.random.randint(-5, 5 + 1)
             if random.random() < val_spurious_ratio[0]:
                 basis_id = motif_id
             else:
@@ -233,7 +233,7 @@ class GOODMotif(InMemoryDataset):
         test_list = []
         for i in range(num_test):
             motif_id = random.randint(0, 2)
-            width_basis = 10 + np.random.random_integers(-5, 5)
+            width_basis = 10 + np.random.randint(-5, 5 + 1)
             if random.random() < test_spurious_ratio[0]:
                 basis_id = motif_id
             else:
