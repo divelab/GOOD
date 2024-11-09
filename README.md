@@ -263,3 +263,7 @@ Please submit [new issues](/../../issues/new) or start [a new discussion](/../..
 
 Please feel free to contact [Shurui Gui](mailto:shurui.gui@tamu.edu), [Xiner Li](mailto:lxe@tamu.edu), or [Shuiwang Ji](mailto:sji@tamu.edu)!
 
+## Acknowledgements
+
+We thank Jundong Li and Jing Ma for insightful discussions. This work was supported in part by National Science Foundation grants IIS-1955189, IIS-1908198, and IIS-1908220.
+
