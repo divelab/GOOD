@@ -142,6 +142,31 @@ Choosing a config file in `configs/GOOD_configs`, we can start a task:
 goodtg --config_path GOOD_configs/GOODCMNIST/color/concept/DANN.yaml
 ```
 
+### Automatic dataset downloads
+
+On the first run, GOOD downloads the selected dataset automatically from
+[`citrinegui/GOOD` on Hugging Face](https://huggingface.co/datasets/citrinegui/GOOD).
+No Hugging Face account, login, manual download, or training command change is needed.
+The mirror contains the original archives for all 13 loaders: GOODArxiv, GOODCBAS,
+GOODCMNIST, GOODCora, GOODHIV, GOODMotif, GOODPCBA, GOODSST2, GOODTwitch,
+GOODTwitter, GOODWebKB, GOODZINC, and LBAPcore. The tensor files, domain directories,
+and train/validation/test splits retain their original format.
+
+Existing datasets in your configured `dataset_root` are reused without network
+access. If processed files are missing, GOOD downloads the archive, validates and
+extracts it in a temporary directory, and installs the missing files. Existing
+files are preserved. Concurrent training jobs sharing a dataset root coordinate
+through a per-dataset file lock. Download failures are reported directly; they do
+not silently switch sources or regenerate splits. The existing `generate=True`
+mode still uses the original generation code and its upstream data sources.
+
+Install or update this checkout with `pip install -e .` to include the download
+dependencies. Archives use the standard Hugging Face cache (normally
+`~/.cache/huggingface/hub`); set `HF_HOME` before starting Python to relocate it.
+Allow disk space for both the cached ZIP and the extracted dataset. Fully
+extracted datasets work offline as before. To extract from an already cached
+archive without contacting Hugging Face, set `HF_HUB_OFFLINE=1`.
+
 ### Hyperparameter sweeping
 
 To perform automatic hyperparameter sweeping and job launching, you can use `goodtl` (GOOD to launch):

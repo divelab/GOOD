@@ -3,18 +3,17 @@ The GOOD-Motif dataset motivated by `Spurious-Motif
 <https://arxiv.org/abs/2201.12872>`_.
 """
 import math
-import os
 import os.path as osp
 import random
 
-import gdown
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip
+from torch_geometric.data import InMemoryDataset
 from torch_geometric.utils import from_networkx
 from tqdm import tqdm
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 from GOOD.utils.synthetic_data.BA3_loc import *
 from GOOD.utils.synthetic_data import synthetic_structsim
 
@@ -41,7 +40,6 @@ class GOODMotif(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/15YRuZG6wI4HF7QgrLI52POKjuObsOyvb/view?usp=sharing'
 
         self.generate = generate
 
@@ -63,16 +61,11 @@ class GOODMotif(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):

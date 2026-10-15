@@ -3,18 +3,16 @@ The GOOD-HIV dataset adapted from `MoleculeNet
 <https://pubs.rsc.org/en/content/articlehtml/2018/sc/c7sc02664a>`_.
 """
 import itertools
-import os
 import os.path as osp
 import random
 from copy import deepcopy
 
-import gdown
 import numpy as np
 import torch
 from munch import Munch
 from rdkit import Chem
 from rdkit.Chem.Scaffolds import MurckoScaffold
-from torch_geometric.data import InMemoryDataset, extract_zip
+from torch_geometric.data import InMemoryDataset
 from torch_geometric.datasets import MoleculeNet
 from tqdm import tqdm
 
@@ -57,6 +55,7 @@ class DomainGetter():
 
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 
 
 @register.dataset_register
@@ -82,7 +81,6 @@ class GOODHIV(InMemoryDataset):
         self.domain = domain
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1CoOqYCuLObnG5M0D8a2P2NyL61WjbCzo/view?usp=sharing'
 
         self.generate = generate
 
@@ -98,16 +96,11 @@ class GOODHIV(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):

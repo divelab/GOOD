@@ -6,10 +6,9 @@ import itertools
 import os
 import os.path as osp
 
-import gdown
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip, Data
+from torch_geometric.data import InMemoryDataset, Data
 from tqdm import tqdm
 
 
@@ -21,6 +20,7 @@ class DummyDataset(InMemoryDataset):
 
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 
 
 @register.dataset_register
@@ -46,7 +46,6 @@ class LBAPcore(InMemoryDataset):
         self.domain = domain
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/106u6ryPikpy_M-Ub8BFM2Lzd09i1FCln/view?usp=sharing'
 
         self.generate = generate
 
@@ -63,16 +62,11 @@ class LBAPcore(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):

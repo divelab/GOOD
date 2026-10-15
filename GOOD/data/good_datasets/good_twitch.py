@@ -4,16 +4,14 @@ Birds of a Feather, from Statistical Descriptors to Parametric Models
 <https://arxiv.org/pdf/2005.07959>`_.
 """
 import itertools
-import os
 import os.path as osp
 import random
 from copy import deepcopy
 
-import gdown
 import numpy as np
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip, Data, Batch
+from torch_geometric.data import InMemoryDataset, Data, Batch
 from torch_geometric.datasets import Twitch
 from torch_geometric.utils import degree
 from tqdm import tqdm
@@ -58,6 +56,7 @@ class DataInfo(object):
 
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 
 
 @register.dataset_register
@@ -82,7 +81,6 @@ class GOODTwitch(InMemoryDataset):
         assert domain in ['language']
         self.metric = 'ROC-AUC'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1wii9CWmtTAUofNTgg-GkpRz_iECcbQzK/view?usp=sharing'
 
         self.generate = generate
 
@@ -97,16 +95,11 @@ class GOODTwitch(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):
