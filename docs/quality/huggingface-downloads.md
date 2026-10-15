@@ -58,7 +58,7 @@ sufficient; no worker-installed skill was needed. The coordinator's separate
 Hugging Face discovery found the Skills CLI unavailable due to a missing `yaml`
 module, and used official Hugging Face documentation instead.
 
-Read local skill files under `/Users/citrine/.agents/skills`; content versions
+Read local skill files from the installed skills directory; content versions
 are SHA-256 identifiers, not assumed upstream Git revisions:
 
 | Skill | Content SHA-256 | Applied method |
@@ -96,9 +96,10 @@ separation of read compatibility from write containment; no additional open
 implementation issue was found. Final independent re-review remains separate.
 
 A separate real-runtime check passed against `cac8049`, with source hashes and
-full results recorded in the local evidence file
-`/Users/citrine/Projects/GOOD-migration/smoke/runtime-evidence.json` (2026-10-15
-03:42:10–03:42:17 UTC). It used Python 3.11.5, PyTorch 2.5.1, PyG 2.6.1, and
+full results recorded in the portable
+[runtime evidence](huggingface-runtime-evidence.json) (2026-10-15
+03:42:10–03:42:17 UTC). Local machine paths are replaced with placeholders;
+measurements and source hashes are unchanged. It used Python 3.11.5, PyTorch 2.5.1, PyG 2.6.1, and
 huggingface_hub 0.36.2:
 
 - An empty dataset root and Hub cache fetched GOODMotif and GOODCBAS anonymously
@@ -116,3 +117,23 @@ huggingface_hub 0.36.2:
 This runtime check is representative of graph and node training data flows, not
 all 13 dataset classes or the full `goodtg` CLI. Original mirror parity for the
 remaining datasets is tracked separately by the migration coordinator.
+
+
+## Final independent implementation review
+
+Recorded: 2026-10-14 20:44 PDT (2026-10-15 03:44 UTC).
+Independent reviewer: `dataset_audit`; reviewed exact implementation target
+`cec4207974825890942d5f13d17c18271c09ce01`.
+
+The reviewer confirmed the earlier P2 symbolic-link cache compatibility finding
+was fixed, independently reran the focused suite (**48 passed in 0.28 seconds**),
+and checked `git diff --check` and the clean worktree. Complete linked caches
+return before network or lock access, partial caches preserve existing linked
+bytes, and new writes still enforce destination containment. **No remaining
+blocking implementation findings.** This review does not claim completed uploads
+or runtime validation of all 13 dataset classes.
+
+This final documentation-only update makes the runtime evidence portable and
+records the review outcome. JSON parsing, evidence counts, repository links,
+source commit/hash consistency, and whitespace were checked. No implementation
+suite rerun was needed because executable code did not change.
