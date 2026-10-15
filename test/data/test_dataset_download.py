@@ -65,6 +65,74 @@ def test_complete_legacy_cache_does_not_need_hub(tmp_path, hub):
     assert expected.read_bytes() == b'legacy'
 
 
+
+@pytest.mark.parametrize('link_kind', ['dataset', 'processed', 'file'])
+def test_complete_symlink_cache_reused_without_network(tmp_path, hub, link_kind):
+    calls, _ = hub
+    root = tmp_path / 'datasets'
+    external = tmp_path / 'external'
+    original = external / 'color/processed/no_shift.pt'
+    original.parent.mkdir(parents=True)
+    original.write_bytes(b'legacy linked data')
+    expected = root / 'GOODCBAS/color/processed/no_shift.pt'
+    if link_kind == 'dataset':
+        root.mkdir()
+        (root / 'GOODCBAS').symlink_to(external, target_is_directory=True)
+    elif link_kind == 'processed':
+        expected.parent.parent.mkdir(parents=True)
+        expected.parent.symlink_to(original.parent, target_is_directory=True)
+    else:
+        expected.parent.mkdir(parents=True)
+        expected.symlink_to(original)
+    downloads.download_dataset('GOODCBAS', root, [expected])
+    assert calls == []
+    assert original.read_bytes() == b'legacy linked data'
+    assert not (root / '.GOODCBAS.download.lock').exists()
+
+
+def test_partial_cache_preserves_linked_existing_file(tmp_path, hub):
+    _, source = hub
+    root = tmp_path / 'datasets'
+    external = tmp_path / 'external.pt'
+    external.write_bytes(b'linked original')
+    existing = root / 'GOODCBAS/color/processed/no_shift.pt'
+    existing.parent.mkdir(parents=True)
+    existing.symlink_to(external)
+    missing = existing.with_name('covariate.pt')
+    make_archive(source, {'GOODCBAS/color/processed/no_shift.pt': b'archive data',
+                          'GOODCBAS/color/processed/covariate.pt': b'new split'})
+    downloads.download_dataset('GOODCBAS', root, [existing, missing])
+    assert existing.is_symlink()
+    assert external.read_bytes() == b'linked original'
+    assert missing.read_bytes() == b'new split'
+
+
+def test_incomplete_dataset_symlink_cannot_redirect_writes(tmp_path, hub):
+    _, source = hub
+    root = tmp_path / 'datasets'
+    external = tmp_path / 'external'
+    external.mkdir()
+    root.mkdir()
+    (root / 'GOODCBAS').symlink_to(external, target_is_directory=True)
+    required = root / 'GOODCBAS/color/processed/no_shift.pt'
+    make_archive(source, {'GOODCBAS/color/processed/no_shift.pt': b'new split'})
+    with pytest.raises(ValueError):
+        downloads.download_dataset('GOODCBAS', root, [required])
+    assert list(external.iterdir()) == []
+
+
+def test_symlinked_dataset_root_is_supported(tmp_path, hub):
+    _, source = hub
+    real_root = tmp_path / 'real-datasets'
+    real_root.mkdir()
+    root = tmp_path / 'linked-datasets'
+    root.symlink_to(real_root, target_is_directory=True)
+    required = root / 'GOODCBAS/color/processed/no_shift.pt'
+    make_archive(source, {'GOODCBAS/color/processed/no_shift.pt': b'new split'})
+    downloads.download_dataset('GOODCBAS', root, [required])
+    assert required.read_bytes() == b'new split'
+
+
 def test_partial_cache_repaired_without_changing_existing_files(tmp_path, hub):
     _, source = hub
     old = tmp_path / 'GOODCBAS/color/processed/no_shift.pt'

@@ -152,8 +152,8 @@ GOODCMNIST, GOODCora, GOODHIV, GOODMotif, GOODPCBA, GOODSST2, GOODTwitch,
 GOODTwitter, GOODWebKB, GOODZINC, and LBAPcore. The tensor files, domain directories,
 and train/validation/test splits retain their original format.
 
-Existing datasets in your configured `dataset_root` are reused without network
-access. If processed files are missing, GOOD downloads the archive, validates and
+Existing datasets in your configured `dataset_root`, including complete caches
+accessed through symbolic links, are reused without network access. If processed files are missing, GOOD downloads the archive, validates and
 extracts it in a temporary directory, and installs the missing files. Existing
 files are preserved. Concurrent training jobs sharing a dataset root coordinate
 through a per-dataset file lock. Download failures are reported directly; they do

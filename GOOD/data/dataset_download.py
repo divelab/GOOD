@@ -13,7 +13,7 @@ DATASET_REPOSITORY = 'citrinegui/GOOD'
 DATASET_REVISION = 'main'
 
 
-def download_dataset(name: str, root: Union[str, Path], required_files: Iterable[str]) -> None:
+def download_dataset(name: str, root: Union[str, Path], required_files: Iterable[Union[str, Path]]) -> None:
     """Ensure the loader's processed files exist, preserving any existing files.
 
     Complete local datasets need no network access. Otherwise the Hub manages
@@ -25,14 +25,19 @@ def download_dataset(name: str, root: Union[str, Path], required_files: Iterable
     """
     if not name.isidentifier():
         raise ValueError('Dataset name must be a single identifier')
-    root = Path(root).expanduser().resolve()
+    root = Path(os.path.abspath(Path(root).expanduser()))
     dataset_dir = root / name
-    required = [Path(path).resolve().relative_to(dataset_dir) for path in required_files]
+    # Preserve the caller's layout here: complete legacy caches may use links.
+    required = [Path(os.path.abspath(Path(path).expanduser())).relative_to(dataset_dir)
+                for path in required_files]
     if not required:
         raise ValueError('At least one processed file is required')
     if _complete(dataset_dir, required):
         return
 
+    # Resolve the configured root for writes, but not nested dataset links.
+    root = root.resolve()
+    dataset_dir = root / name
     root.mkdir(parents=True, exist_ok=True)
     with FileLock(str(root / ('.' + name + '.download.lock'))):
         if _complete(dataset_dir, required):
@@ -70,9 +75,9 @@ def _install_missing_files(extracted: Path, destination: Path) -> None:
         if not source.is_file():
             continue
         target = destination / source.relative_to(extracted)
-        # Existing symlinked subdirectories must not redirect writes elsewhere.
-        target.resolve().relative_to(destination)
         if target.is_file():
             continue
+        # Only new writes need containment; existing linked files are untouched.
+        target.resolve().relative_to(destination)
         target.parent.mkdir(parents=True, exist_ok=True)
         os.replace(str(source), str(target))
