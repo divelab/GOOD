@@ -2,17 +2,15 @@
 The GOOD-SST2 dataset. Adapted from `DIG <https://github.com/divelab/DIG>`_.
 """
 import itertools
-import os
 import os.path as osp
 import random
 from copy import deepcopy
 
-import gdown
 import numpy as np
 import torch
 from dig.xgraph.dataset import SentiGraphDataset
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip, Data
+from torch_geometric.data import InMemoryDataset, Data
 from tqdm import tqdm
 
 
@@ -35,6 +33,7 @@ class DomainGetter():
 
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 
 
 @register.dataset_register
@@ -58,7 +57,6 @@ class GOODSST2(InMemoryDataset):
         self.domain = domain
         self.metric = 'Accuracy'
         self.task = 'Binary classification'
-        self.url = 'https://drive.google.com/file/d/1lGNMbQebKIbS-NnbPxmY4_uDGI7EWXBP/view?usp=sharing'
 
         self.generate = generate
 
@@ -74,16 +72,11 @@ class GOODSST2(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):

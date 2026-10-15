@@ -3,16 +3,14 @@ The GOOD-WebKB dataset adapted from the `Geom-GCN: Geometric Graph Convolutional
 <https://openreview.net/forum?id=S1e2agrFvS>`_.
 """
 import itertools
-import os
 import os.path as osp
 import random
 from copy import deepcopy
 
-import gdown
 import numpy as np
 import torch
 from munch import Munch
-from torch_geometric.data import InMemoryDataset, extract_zip, Data, Batch
+from torch_geometric.data import InMemoryDataset, Data, Batch
 from torch_geometric.datasets import WebKB
 from tqdm import tqdm
 
@@ -58,6 +56,7 @@ class DataInfo(object):
 
 
 from GOOD import register
+from GOOD.data.dataset_download import download_dataset
 
 
 @register.dataset_register
@@ -81,7 +80,6 @@ class GOODWebKB(InMemoryDataset):
         assert domain in ['university']
         self.metric = 'Accuracy'
         self.task = 'Multi-label classification'
-        self.url = 'https://drive.google.com/file/d/1DOdUOzAMBtcHXTphrWrKhNWPxzMDNvnb/view?usp=sharing'
 
         self.generate = generate
 
@@ -96,16 +94,11 @@ class GOODWebKB(InMemoryDataset):
         return osp.join(self.root)
 
     def _download(self):
-        if os.path.exists(osp.join(self.raw_dir, self.name)) or self.generate:
-            return
-        if not os.path.exists(self.raw_dir):
-            os.makedirs(self.raw_dir)
-        self.download()
+        if not self.generate:
+            self.download()
 
     def download(self):
-        path = gdown.download(self.url, output=osp.join(self.raw_dir, self.name + '.zip'), fuzzy=True)
-        extract_zip(path, self.raw_dir)
-        os.unlink(path)
+        download_dataset(self.name, self.raw_dir, self.processed_paths)
 
     @property
     def processed_dir(self):

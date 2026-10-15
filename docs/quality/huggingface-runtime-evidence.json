@@ -1,0 +1,372 @@
+{
+  "started_at_utc": "2026-10-15T03:42:10Z",
+  "source": "<repository-root>",
+  "scope": "Actual GOODMotif and GOODCBAS load/constructors and PyG GCN optimization; not full goodtg CLI.",
+  "versions": {
+    "python": "3.11.5",
+    "torch": "2.5.1",
+    "torch_geometric": "2.6.1",
+    "huggingface_hub": "0.36.2"
+  },
+  "skills": {
+    "discovery": "<installed-skills>/find-skills/SKILL.md",
+    "applied": [
+      "<installed-skills>/clean-code/SKILL.md",
+      "<installed-skills>/codebase-design/SKILL.md"
+    ],
+    "method": "Use existing local Python/testing guidance; test public loader interface, real archive bytes, finite gradients and cache lifecycle. No unrelated skills installed."
+  },
+  "loads": [
+    {
+      "dataset": "GOODMotif",
+      "domain": "basis",
+      "shift": "no_shift",
+      "subsets": {
+        "train": 18000,
+        "val": 6000,
+        "test": 6000,
+        "id_val": null,
+        "id_test": null
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.0905946493148804,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 4.328
+    },
+    {
+      "dataset": "GOODMotif",
+      "domain": "basis",
+      "shift": "covariate",
+      "subsets": {
+        "train": 18000,
+        "val": 3000,
+        "test": 3000,
+        "id_val": 3000,
+        "id_test": 3000
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.0946249961853027,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.014
+    },
+    {
+      "dataset": "GOODMotif",
+      "domain": "basis",
+      "shift": "concept",
+      "subsets": {
+        "train": 12600,
+        "val": 6000,
+        "test": 6000,
+        "id_val": 2700,
+        "id_test": 2700
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.1668781042099,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.015
+    },
+    {
+      "dataset": "GOODMotif",
+      "domain": "size",
+      "shift": "no_shift",
+      "subsets": {
+        "train": 18000,
+        "val": 6000,
+        "test": 6000,
+        "id_val": null,
+        "id_test": null
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.0519788265228271,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.012
+    },
+    {
+      "dataset": "GOODMotif",
+      "domain": "size",
+      "shift": "covariate",
+      "subsets": {
+        "train": 18000,
+        "val": 3000,
+        "test": 3000,
+        "id_val": 3000,
+        "id_test": 3000
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.0905382633209229,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.015
+    },
+    {
+      "dataset": "GOODMotif",
+      "domain": "size",
+      "shift": "concept",
+      "subsets": {
+        "train": 12600,
+        "val": 6000,
+        "test": 6000,
+        "id_val": 2700,
+        "id_test": 2700
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "graph",
+        "dim_node": 1,
+        "dim_edge": 0,
+        "num_envs": 3,
+        "num_classes": 3
+      },
+      "optimization": {
+        "loss": 1.1423777341842651,
+        "samples": 32,
+        "logits_shape": [
+          32,
+          3
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.021
+    },
+    {
+      "dataset": "GOODCBAS",
+      "domain": "color",
+      "shift": "no_shift",
+      "nodes": 700,
+      "edges": 3962,
+      "mask_counts": {
+        "train": 420,
+        "val": 140,
+        "test": 140
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "node",
+        "dim_node": 4,
+        "dim_edge": 0,
+        "num_envs": 5,
+        "num_train_nodes": 420,
+        "num_classes": 4
+      },
+      "optimization": {
+        "loss": 1.4721797704696655,
+        "samples": 420,
+        "logits_shape": [
+          420,
+          4
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.827
+    },
+    {
+      "dataset": "GOODCBAS",
+      "domain": "color",
+      "shift": "covariate",
+      "nodes": 700,
+      "edges": 3962,
+      "mask_counts": {
+        "train": 420,
+        "val": 70,
+        "test": 70,
+        "id_val": 70,
+        "id_test": 70
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "node",
+        "dim_node": 4,
+        "dim_edge": 0,
+        "num_envs": 7,
+        "num_train_nodes": 420,
+        "num_classes": 4
+      },
+      "optimization": {
+        "loss": 1.4397432804107666,
+        "samples": 420,
+        "logits_shape": [
+          420,
+          4
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.013
+    },
+    {
+      "dataset": "GOODCBAS",
+      "domain": "color",
+      "shift": "concept",
+      "nodes": 700,
+      "edges": 3962,
+      "mask_counts": {
+        "train": 140,
+        "val": 140,
+        "test": 140,
+        "id_val": 140,
+        "id_test": 140
+      },
+      "metadata": {
+        "dataset_type": "syn",
+        "model_level": "node",
+        "dim_node": 4,
+        "dim_edge": 0,
+        "num_envs": 7,
+        "num_train_nodes": 140,
+        "num_classes": 4
+      },
+      "optimization": {
+        "loss": 1.4306247234344482,
+        "samples": 140,
+        "logits_shape": [
+          140,
+          4
+        ],
+        "finite_gradients": true,
+        "parameters_changed": true
+      },
+      "elapsed_seconds": 0.003
+    }
+  ],
+  "download_calls": [
+    {
+      "name": "GOODMotif",
+      "repository": "citrinegui/GOOD",
+      "revision": "main",
+      "cache_path": "<validation-workspace>/hf-cache/datasets--citrinegui--GOOD/snapshots/9b3bd311ba195bfc641f3bc927e2984bd28c3ea3/GOODMotif.zip",
+      "elapsed_seconds": 3.992
+    },
+    {
+      "name": "GOODCBAS",
+      "repository": "citrinegui/GOOD",
+      "revision": "main",
+      "cache_path": "<validation-workspace>/hf-cache/datasets--citrinegui--GOOD/snapshots/9b3bd311ba195bfc641f3bc927e2984bd28c3ea3/GOODCBAS.zip",
+      "elapsed_seconds": 0.809
+    }
+  ],
+  "network_hosts": {
+    "huggingface.co": 4,
+    "us.aws.cdn.hf.co": 2
+  },
+  "empty_cache_before_start": true,
+  "source_files_sha256": {
+    "GOOD/data/dataset_download.py": "831b6a9fd3a3081de7105e5378adf32ffccbb56f17401bf2aff116480dcfea89",
+    "GOOD/data/good_datasets/good_motif.py": "d986778116a750670c504f25e1700042d5c1ff1b31b919dfb94f8ca9f7433126",
+    "GOOD/data/good_datasets/good_cbas.py": "be765148f9f0bcea0765d22da028661ccfb42f114d431fb9f9b6fd9a0e975598"
+  },
+  "source_head_at_start": "cac8049bf233e948904adb51f2ec80c6df81195b",
+  "archive_integrity": [
+    {
+      "name": "GOODMotif",
+      "sha256": "d2d60c6f96c7671d3fb26458fe0934167b3d69b0237d909643d544ae8c99810f",
+      "matches_original_download_manifest": true,
+      "extracted_files_byte_identical": 30
+    },
+    {
+      "name": "GOODCBAS",
+      "sha256": "8d57890eedce217f46ce67cd79ffefba8633b9b2721f3b72d532c1e8ddbc75b7",
+      "matches_original_download_manifest": true,
+      "extracted_files_byte_identical": 5
+    }
+  ],
+  "offline_reuse": {
+    "network_and_hub_blocked": true,
+    "actual_constructors_passed": [
+      "GOODMotif",
+      "GOODCBAS"
+    ],
+    "processed_file_sizes_and_mtimes_unchanged": 35
+  },
+  "generate_true_guard": {
+    "actual_constructors_passed_with_download_helper_blocked": [
+      "GOODMotif",
+      "GOODCBAS"
+    ],
+    "existing_original_processed_data_used": true,
+    "limitation": "Confirms generate=True skips HF download; synthetic regeneration itself was not run."
+  },
+  "finished_at_utc": "2026-10-15T03:42:17Z",
+  "status": "passed",
+  "clean_code_review": {
+    "scope": "runtime_smoke.py public-loader seams, named evidence, no repo writes, bounded CPU and data",
+    "findings_fixed": [],
+    "unresolved": []
+  },
+  "portability_note": "Local checkout, validation workspace, and installed skill paths were replaced with placeholders. Measurements, source commit and content hashes are unchanged."
+}

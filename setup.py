@@ -6,7 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 install_requires = [
     'setuptools==59.5.0',
     'cilog>=1.2.3',
-    'gdown>=4.4.0',
+    'huggingface_hub>=0.23,<1',
+    'filelock>=3,<4',
     'matplotlib==3.5.2',
     'munch==2.5.0',
     'networkx==2.8',
