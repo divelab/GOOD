@@ -10,7 +10,7 @@ from filelock import FileLock
 
 
 DATASET_REPOSITORY = 'citrinegui/GOOD'
-DATASET_REVISION = 'main'
+DATASET_REVISION = '29cf40c24604cefaf95f9bd8eb055608ad09da86'
 
 
 def download_dataset(name: str, root: Union[str, Path], required_files: Iterable[Union[str, Path]]) -> None:

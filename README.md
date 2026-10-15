@@ -152,6 +152,11 @@ GOODCMNIST, GOODCora, GOODHIV, GOODMotif, GOODPCBA, GOODSST2, GOODTwitch,
 GOODTwitter, GOODWebKB, GOODZINC, and LBAPcore. The tensor files, domain directories,
 and train/validation/test splits retain their original format.
 
+Downloads are pinned to the complete mirror snapshot
+`29cf40c24604cefaf95f9bd8eb055608ad09da86` for reproducibility. The public
+[dataset manifest](https://huggingface.co/datasets/citrinegui/GOOD/blob/29cf40c24604cefaf95f9bd8eb055608ad09da86/dataset-manifest.json)
+records each archive's original source, size, SHA-256, and processed-file layout.
+
 Existing datasets in your configured `dataset_root`, including complete caches
 accessed through symbolic links, are reused without network access. If processed files are missing, GOOD downloads the archive, validates and
 extracts it in a temporary directory, and installs the missing files. Existing

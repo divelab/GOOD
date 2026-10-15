@@ -137,3 +137,28 @@ This final documentation-only update makes the runtime evidence portable and
 records the review outcome. JSON parsing, evidence counts, repository links,
 source commit/hash consistency, and whitespace were checked. No implementation
 suite rerun was needed because executable code did not change.
+
+## Complete mirror and immutable download revision
+
+Recorded: 2026-10-14 20:52 PDT (2026-10-15 03:52 UTC).
+The migration coordinator completed the public mirror and verified its final
+inventory. Downloads now use the immutable dataset snapshot
+`29cf40c24604cefaf95f9bd8eb055608ad09da86`, which includes all 13 ZIP archives,
+the dataset license, dataset card, and
+[public dataset manifest](https://huggingface.co/datasets/citrinegui/GOOD/blob/29cf40c24604cefaf95f9bd8eb055608ad09da86/dataset-manifest.json).
+
+The manifest records **13 archives**, **9,461,334,090 compressed bytes**,
+**47,665,296,358 expanded bytes**, **22 domains**, and **192 loader-required
+processed tensor files**. Original ZIP CRC validation passed. Every uploaded
+archive's Hugging Face LFS SHA-256 and size matched its original source archive,
+all domain-required processed files were present, and remote metadata was
+accessible anonymously. These whole-mirror integrity checks complement the
+representative actual tensor loading and optimization checks above; they do not
+claim full training runs for every dataset.
+
+The only executable change after the independently reviewed implementation is
+replacing `DATASET_REVISION = 'main'` with the complete snapshot SHA. The focused
+suite passed **48 tests in 0.22 seconds** after this change; the downloader passes
+Python 3.8 grammar parsing and `git diff --check`. Clean-code recheck found no
+new interface, lifecycle, or error-handling change. A final cold-cache check and
+review of this pinned revision are coordinated separately before integration.
